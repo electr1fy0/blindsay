@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -70,6 +71,12 @@ type Question struct {
 	Content string `json:"content"`
 }
 
+type Reply struct {
+	ID         string `json:"id"`
+	Content    string `json:"content"`
+	QuestionID string `json:"questionId"`
+}
+
 func (h *APIHandler) CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	// TODO
 	// check if blocked session
@@ -94,6 +101,22 @@ func (h *APIHandler) CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+func CORS(next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, PATCH, PUT, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Credentials", "True")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
+}
+
 func (h *APIHandler) ListQuestions(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("username")
 
@@ -105,14 +128,15 @@ func (h *APIHandler) ListQuestions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := h.DB.Query(r.Context(), "select content from unsaid_questions where user_id = $1", userID)
+	rows, err := h.DB.Query(r.Context(), "select id, content from unsaid_questions where user_id = $1", userID)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
+
 	for rows.Next() {
 		var q Question
-		err = rows.Scan(&q.Content)
+		err = rows.Scan(&q.ID, &q.Content)
 		questions = append(questions, q)
 	}
 	if err != nil {
@@ -123,8 +147,48 @@ func (h *APIHandler) ListQuestions(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(questions)
 }
 
-func (h *APIHandler) ReplyToQuestion() {
+func (h *APIHandler) ListReplies(w http.ResponseWriter, r *http.Request) {
+	qid := r.PathValue("qid")
 
+	var replies []Reply
+
+	rows, err := h.DB.Query(r.Context(), "select id, content, question_ID from unsaid_replies where question_id = $1", qid)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	for rows.Next() {
+		var r Reply
+		err = rows.Scan(&r.ID, &r.Content, &r.QuestionID)
+		replies = append(replies, r)
+	}
+
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	json.NewEncoder(w).Encode(replies)
+}
+
+func (h *APIHandler) ReplyToQuestion(w http.ResponseWriter, r *http.Request) {
+	qid := r.PathValue("qid")
+
+	var q Question
+	err := json.NewDecoder(r.Body).Decode(&q)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	_, err = h.DB.Exec(r.Context(), "insert into unsaid_replies (content, question_id) values ($1, $2) ", q.Content, qid)
+	if err != nil {
+		fmt.Println(q.ID, "contnt", q.Content)
+		fmt.Println(err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 }
 
 func main() {
@@ -137,11 +201,12 @@ func main() {
 	r.HandleFunc("/auth/signup", h.Signup)
 	r.HandleFunc("POST /{username}/questions", h.CreateQuestion)
 	r.HandleFunc("GET /{username}/questions", h.ListQuestions)
-	// r.HandleFunc("POST /{username}/questions/{qid}", h.ReplyToQuestion)
+	r.HandleFunc("POST /{username}/questions/replies/", h.ReplyToQuestion)
+	r.HandleFunc("GET /{username}/questions/replies/{qid}", h.ListReplies)
 
 	srv := http.Server{
 		Addr:    ":8080",
-		Handler: r,
+		Handler: CORS(r),
 	}
 
 	log.Fatal(srv.ListenAndServe())
