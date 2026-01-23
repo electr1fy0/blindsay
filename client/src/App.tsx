@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "./components/ui/button";
 import {
   Card,
@@ -6,13 +7,14 @@ import {
   CardHeader,
 } from "./components/ui/card";
 import { Input } from "./components/ui/input";
-import { useGetQuestions } from "./hooks/questions";
+import { useGetQuestions, useReplyToQuestion } from "./hooks/questions";
 
 export function App() {
   const { data: questions = [], isLoading } = useGetQuestions();
-
+  const [reply, setReply] = useState<string>("");
+  const { mutate: replyToQn } = useReplyToQuestion();
   if (isLoading) return <div>Loading...</div>;
-  const handleSubmit = () => {};
+
   return (
     <div className="flex justify-center items-center flex-col min-h-screen">
       <header className="w-full max-w-lg my-8 mt-24">
@@ -31,19 +33,25 @@ export function App() {
             <Card key={q.id} className="my-4">
               <CardHeader>{q.content}</CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    replyToQn({ qid: q.id!, content: reply });
+                  }}
+                >
                   <Input
                     type="text"
                     placeholder="Enter your reply..."
                     required
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
                   ></Input>
+
+                  <Button type="submit" variant="default" className="mt-4">
+                    Reply
+                  </Button>
                 </form>
               </CardContent>
-              <CardFooter>
-                <Button type="submit" variant="default" className="hov">
-                  Reply
-                </Button>
-              </CardFooter>
             </Card>
           );
         })}

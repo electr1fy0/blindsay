@@ -173,18 +173,16 @@ func (h *APIHandler) ListReplies(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *APIHandler) ReplyToQuestion(w http.ResponseWriter, r *http.Request) {
-	qid := r.PathValue("qid")
-
-	var q Question
-	err := json.NewDecoder(r.Body).Decode(&q)
+	var a Reply
+	err := json.NewDecoder(r.Body).Decode(&a)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
-	_, err = h.DB.Exec(r.Context(), "insert into unsaid_replies (content, question_id) values ($1, $2) ", q.Content, qid)
+	fmt.Println(a)
+	_, err = h.DB.Exec(r.Context(), "insert into unsaid_replies (content, question_id) values ($1, $2) ", a.Content, a.QuestionID)
+
 	if err != nil {
-		fmt.Println(q.ID, "contnt", q.Content)
-		fmt.Println(err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
@@ -201,7 +199,7 @@ func main() {
 	r.HandleFunc("/auth/signup", h.Signup)
 	r.HandleFunc("POST /{username}/questions", h.CreateQuestion)
 	r.HandleFunc("GET /{username}/questions", h.ListQuestions)
-	r.HandleFunc("POST /{username}/questions/replies/", h.ReplyToQuestion)
+	r.HandleFunc("POST /{username}/questions/replies", h.ReplyToQuestion)
 	r.HandleFunc("GET /{username}/questions/replies/{qid}", h.ListReplies)
 
 	srv := http.Server{

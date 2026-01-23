@@ -1,10 +1,10 @@
 export interface Question {
-  id: string;
+  id?: string;
   content: string;
 }
 
 export interface Reply {
-  id: string;
+  id?: string;
   content: string;
   questionId: string;
 }
