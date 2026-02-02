@@ -1,0 +1,41 @@
+
+create table users (
+    id bigint generated always as identity primary key,
+
+    username citext unique not null,
+    email citext not null unique,
+    password_hash text not null,
+
+    is_active boolean not null default true,
+    is_verified boolean not null default false,
+
+    created_at timestamptz not null default now()
+);
+
+
+create table messages (
+    id bigint generated always as identity primary key,
+    recepient_id bigint not null
+    references users(id)
+    on delete cascade,
+
+    content text not null,
+
+    is_read boolean not null default false,
+    is_blocked boolean not null default false,
+
+    created_at timestamptz not null default now()
+);
+
+create table replies (
+    id bigint generated always as identity primary key,
+
+    message_id bigint not null unique
+    references messages(id)
+    on delete cascade,
+    author_id biginit not null
+    references users(id),
+
+    content text not null,
+    created_at timestamptz not null default now()
+);

@@ -1,0 +1,29 @@
+package main
+
+import "github.com/jackc/pgx/v5/pgxpool"
+
+type APIHandler struct {
+	DB *pgxpool.Pool
+}
+
+type SignupRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type SigninRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type Question struct {
+	ID      string `json:"id"`
+	Content string `json:"content"`
+}
+
+type Reply struct {
+	ID         string `json:"id"`
+	Content    string `json:"content"`
+	QuestionID string `json:"questionId"`
+}
