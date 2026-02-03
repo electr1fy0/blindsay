@@ -6,27 +6,17 @@ import (
 	"net/http"
 	"server/internal/service"
 	"server/internal/types"
-	"strconv"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Handler struct {
 	Service *service.Service
 }
 
-func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {
-		slog.Error("failed to parse id", "error", err)
-		writeJSON(w, 500, map[string]string{
-			"error": "failed to convert id to int",
-		})
-		return
-	}
+	username := r.PathValue("username")
 
-	u, err := h.Service.GetUser(r.Context(), int64(id))
+	u, err := h.Service.GetUserByUsername(r.Context(), username)
 	if err != nil {
 		slog.Error("failed to get user", "error", err)
 		writeJSON(w, 500, map[string]string{
@@ -39,54 +29,86 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, u)
 }
 
-func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func (h *Handler) VerifyEmail(w http.ResponseWriter, r *http.Request) {
-
-}
-
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var user types.SignupRequest
 
-	json.NewDecoder(r.Body).Decode(&user)
-	hash, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "invalid request body",
+		})
+		return
+	}
 
-	err := h.Service.Repo.CreateUser(r.Context(), user, hash)
+	err := h.Service.Signup(r.Context(), user)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{
 			"error": err.Error(),
 		})
+		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	writeJSON(w, http.StatusCreated, map[string]string{
+		"message": "user created",
+	})
 }
 
-// func (h *Handler) CreateQuestion(w http.ResponseWriter, r *http.Request) {
-// 	// TODO
-// 	// check if blocked session
-// 	username := r.PathValue("username")
+func (h *Handler) Signin(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	var user types.SigninRequest
 
-// 	var userID string
-// 	err := h.DB.QueryRow(r.Context(), "select id from unsaid_users where username = $1", username).Scan(&userID)
-// 	if err != nil {
-// 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 		return
-// 	}
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "invalid request body",
+		})
+		return
+	}
 
-// 	var q types.Question
-// 	err = json.NewDecoder(r.Body).Decode(&q)
+	err := h.Service.Signin(r.Context(), user)
+	if err != nil {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{
+			"error": "invalid credentials",
+		})
+		return
+	}
 
-// 	// _, err = h.DB.Exec(r.Context(), "insert into unsaid_questions (user_id, content) values ($1, $2)", userID, q.Content)
-// 	if err != nil {
-// 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 		return
-// 	}
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "login successful",
+	})
+}
 
-// 	w.WriteHeader(http.StatusCreated)
-// }
+func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	username := r.PathValue("username")
+
+	recipient, err := h.Service.GetUserByUsername(r.Context(), username)
+	if err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{
+			"error": "user not found",
+		})
+		return
+	}
+
+	var msg types.Message
+	if err := json.NewDecoder(r.Body).Decode(&msg); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	msg.RecipientID = recipient.ID
+	if err := h.Service.CreateMessage(r.Context(), msg); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, map[string]string{
+		"message": "message sent",
+	})
+}
 
 // func (h *Handler) ListQuestions(w http.ResponseWriter, r *http.Request) {
 // 	// username := r.PathValue("username")

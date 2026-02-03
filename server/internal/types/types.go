@@ -31,13 +31,12 @@ type SigninRequest struct {
 	Password string `json:"password"`
 }
 
-type Question struct {
-	ID      string `json:"id"`
-	Content string `json:"content"`
+type Message struct {
+	RecipientID int64  `json:"recipient_id"`
+	Content     string `json:"content"`
 }
 
 type Reply struct {
-	ID         string `json:"id"`
 	Content    string `json:"content"`
 	QuestionID string `json:"questionId"`
 }

@@ -15,7 +15,7 @@ create table users (
 
 create table messages (
     id bigint generated always as identity primary key,
-    recepient_id bigint not null
+    recipient_id bigint not null
     references users(id)
     on delete cascade,
 

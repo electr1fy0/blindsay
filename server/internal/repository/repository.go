@@ -26,16 +26,20 @@ func (r *Repository) Close() {
 	}
 }
 
-func (r *Repository) GetUser(ctx context.Context, id int64) (types.User, error) {
-	u, err := r.Q.GetUser(ctx, id)
+func (r *Repository) GetUserByUsername(ctx context.Context, username string) (types.User, error) {
+	u, err := r.Q.GetUserByUsername(ctx, username)
+	if err != nil {
+		return types.User{}, err
+	}
 
 	return types.User{
-		ID:         u.ID,
-		Username:   u.Username,
-		Email:      u.Email,
-		IsActive:   u.IsActive,
-		IsVerified: u.IsVerified,
-		CreatedAt:  u.CreatedAt.Time,
+		ID:           u.ID,
+		Username:     u.Username,
+		Email:        u.Email,
+		PasswordHash: u.PasswordHash,
+		IsActive:     u.IsActive,
+		IsVerified:   u.IsVerified,
+		CreatedAt:    u.CreatedAt.Time,
 	}, err
 }
 
@@ -46,4 +50,11 @@ func (r *Repository) CreateUser(ctx context.Context, u types.SignupRequest, hash
 		PasswordHash: string(hash),
 	})
 
+}
+
+func (r *Repository) CreateMessage(ctx context.Context, m types.Message) error {
+	return r.Q.CreateMessage(ctx, database.CreateMessageParams{
+		RecipientID: m.RecipientID,
+		Content:     m.Content,
+	})
 }

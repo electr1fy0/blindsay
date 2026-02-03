@@ -7,7 +7,24 @@ package database
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createMessage = `-- name: CreateMessage :exec
+insert into messages (recipient_id, content)
+values ($1, $2)
+`
+
+type CreateMessageParams struct {
+	RecipientID int64  `json:"recipient_id"`
+	Content     string `json:"content"`
+}
+
+func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) error {
+	_, err := q.db.Exec(ctx, createMessage, arg.RecipientID, arg.Content)
+	return err
+}
 
 const createUser = `-- name: CreateUser :exec
 insert into users (username, email, password_hash)
@@ -36,28 +53,29 @@ func (q *Queries) DeleteMessage(ctx context.Context, id int64) error {
 }
 
 const getMessages = `-- name: GetMessages :many
-select id, recepient_id, content, is_read, is_blocked, created_at from messages
-where recepient_id = $1
+select u.username, m.content from users u
+left join messages m
+on u.username = m.recipient_id
+group by u.username
+having username = $1
 limit 10
 `
 
-func (q *Queries) GetMessages(ctx context.Context, recepientID int64) ([]Message, error) {
-	rows, err := q.db.Query(ctx, getMessages, recepientID)
+type GetMessagesRow struct {
+	Username string      `json:"username"`
+	Content  pgtype.Text `json:"content"`
+}
+
+func (q *Queries) GetMessages(ctx context.Context, username string) ([]GetMessagesRow, error) {
+	rows, err := q.db.Query(ctx, getMessages, username)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Message
+	var items []GetMessagesRow
 	for rows.Next() {
-		var i Message
-		if err := rows.Scan(
-			&i.ID,
-			&i.RecepientID,
-			&i.Content,
-			&i.IsRead,
-			&i.IsBlocked,
-			&i.CreatedAt,
-		); err != nil {
+		var i GetMessagesRow
+		if err := rows.Scan(&i.Username, &i.Content); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -68,13 +86,13 @@ func (q *Queries) GetMessages(ctx context.Context, recepientID int64) ([]Message
 	return items, nil
 }
 
-const getUser = `-- name: GetUser :one
+const getUserByUsername = `-- name: GetUserByUsername :one
 select id, username, email, password_hash, is_active, is_verified, created_at from users
-where id = $1 limit 1
+where username = $1 limit 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, id)
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -86,4 +104,20 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const replyToMessage = `-- name: ReplyToMessage :exec
+insert into replies (message_id, author_id, content)
+values ($1, $2, $3)
+`
+
+type ReplyToMessageParams struct {
+	MessageID int64       `json:"message_id"`
+	AuthorID  interface{} `json:"author_id"`
+	Content   string      `json:"content"`
+}
+
+func (q *Queries) ReplyToMessage(ctx context.Context, arg ReplyToMessageParams) error {
+	_, err := q.db.Exec(ctx, replyToMessage, arg.MessageID, arg.AuthorID, arg.Content)
+	return err
 }

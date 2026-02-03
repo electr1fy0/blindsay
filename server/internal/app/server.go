@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"server/internal/handlers"
+	"server/internal/middleware"
 	"server/internal/repository"
 	"server/internal/service"
 
@@ -40,7 +41,7 @@ func New() (*Server, error) {
 func (s *Server) Run() {
 	srv := &http.Server{
 		Addr:    ":8080",
-		Handler: s.router,
+		Handler: middleware.CORS(middleware.Logger(s.router)),
 	}
 	if err := srv.ListenAndServe(); err != nil {
 		slog.Error("server error", "error", err)
@@ -51,6 +52,8 @@ func (s *Server) setupRouter() {
 	h := handlers.Handler{
 		Service: s.svc,
 	}
-	s.router.HandleFunc("GET /users/{id}", h.GetUser)
-	s.router.HandleFunc("POST /users", h.Signup)
+	s.router.HandleFunc("GET /users/{username}", h.GetUserByUsername)
+	s.router.HandleFunc("POST /auth/signup", h.Signup)
+	s.router.HandleFunc("POST /auth/signin", h.Signin)
+	s.router.HandleFunc("POST /{username}/messages", h.CreateMessage)
 }

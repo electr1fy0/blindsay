@@ -10,7 +10,7 @@ import (
 
 type Message struct {
 	ID          int64              `json:"id"`
-	RecepientID int64              `json:"recepient_id"`
+	RecipientID int64              `json:"recipient_id"`
 	Content     string             `json:"content"`
 	IsRead      bool               `json:"is_read"`
 	IsBlocked   bool               `json:"is_blocked"`
