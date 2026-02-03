@@ -1,11 +1,9 @@
 package main
 
 import (
-	"log"
 	"log/slog"
-	"net/http"
 	"os"
-	"server/internal/handlers"
+	server "server/internal/app"
 )
 
 func main() {
@@ -13,20 +11,11 @@ func main() {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	r := http.NewServeMux()
-
-	// db, _ := pgxpool.New(context.Background(), os.Getenv("POSTGRES_CONN_STR"))
-	h := handlers.Handler{}
-	r.HandleFunc("/auth/signup", h.Signup)
-	r.HandleFunc("POST /{username}/questions", h.CreateQuestion)
-	r.HandleFunc("GET /{username}/questions", h.ListQuestions)
-	r.HandleFunc("POST /{username}/questions/replies", h.ReplyToQuestion)
-	r.HandleFunc("GET /{username}/questions/replies/{qid}", h.ListReplies)
-
-	srv := http.Server{
-		Addr:    ":8080",
-		Handler: CORS(r),
+	srv, err := server.New()
+	if err != nil {
+		slog.Error("failed to start server", "error", err)
+		os.Exit(1)
 	}
 
-	log.Fatal(srv.ListenAndServe())
+	srv.Run()
 }

@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CreateUser(ctx context.Context, arg CreateUserParams) error
 	DeleteMessage(ctx context.Context, id int64) error
 	GetMessages(ctx context.Context, recepientID int64) ([]Message, error)
 	GetUser(ctx context.Context, id int64) (User, error)

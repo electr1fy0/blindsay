@@ -1,9 +1,23 @@
-package main
+package types
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
 type APIHandler struct {
 	DB *pgxpool.Pool
+}
+
+type User struct {
+	ID           int64     `json:"id"`
+	Username     string    `json:"username"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"password_hash"`
+	IsActive     bool      `json:"is_active"`
+	IsVerified   bool      `json:"is_verified"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type SignupRequest struct {

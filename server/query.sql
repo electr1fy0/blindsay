@@ -12,3 +12,9 @@ limit 10;
 -- name: DeleteMessage :exec
 delete from messages
 where id = $1;
+
+
+
+-- name: CreateUser :exec
+insert into users (username, email, password_hash)
+values ($1, $2, $3);
