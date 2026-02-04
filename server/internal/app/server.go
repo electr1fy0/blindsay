@@ -53,6 +53,8 @@ func (s *Server) setupRouter() {
 	s.router.HandleFunc("GET /{username}", h.GetUserByUsername)
 	s.router.HandleFunc("POST /auth/signup", h.Signup)
 	s.router.HandleFunc("POST /auth/signin", h.Signin)
+	s.router.HandleFunc("POST /auth/check-email", h.CheckEmail)
+	s.router.HandleFunc("POST /auth/verify-code", h.VerifyCode)
 	s.router.HandleFunc("POST /{username}/messages", h.CreateMessage)
 	s.router.HandleFunc("POST /{username}/messages/replies", h.ReplyToMessage)
 	s.router.HandleFunc("GET /{username}/messages", h.GetMessages)

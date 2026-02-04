@@ -42,3 +42,12 @@ type Reply struct {
 	Content   string `json:"content"`
 	MessageID int64  `json:"messageId"`
 }
+
+type AuthCheckRequest struct {
+	Email string `json:"email"`
+}
+
+type AuthCheckResponse struct {
+	Exists bool   `json:"exists"`
+	State  string `json:"state"`
+}

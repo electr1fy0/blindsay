@@ -41,7 +41,6 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
 	err := h.Service.Signup(r.Context(), user)
 	if err != nil {
 		slog.Error("failed to signup user", "error", err)

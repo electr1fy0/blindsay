@@ -9,12 +9,18 @@ import (
 )
 
 type Querier interface {
+	CreateAuthFlow(ctx context.Context, arg CreateAuthFlowParams) (AuthFlow, error)
 	CreateMessage(ctx context.Context, arg CreateMessageParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	DeleteMessage(ctx context.Context, id int64) error
+	GetAuthFlow(ctx context.Context, email string) (AuthFlow, error)
 	GetMessages(ctx context.Context, recipientID int64) ([]GetMessagesRow, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	GetUserByUsernameOrEmail(ctx context.Context, username string) (User, error)
 	ReplyToMessage(ctx context.Context, arg ReplyToMessageParams) error
+	UpdateAuthFlowState(ctx context.Context, arg UpdateAuthFlowStateParams) error
+	UpdateAuthFlowVerification(ctx context.Context, arg UpdateAuthFlowVerificationParams) error
 }
 
 var _ Querier = (*Queries)(nil)

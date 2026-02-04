@@ -1,4 +1,3 @@
-
 create table users (
     id bigint generated always as identity primary key,
 
@@ -11,7 +10,6 @@ create table users (
 
     created_at timestamptz not null default now()
 );
-
 
 create table messages (
     id bigint generated always as identity primary key,
@@ -26,4 +24,26 @@ create table messages (
 
     created_at timestamptz not null default now(),
     reply text
+);
+
+CREATE TYPE auth_state AS ENUM (
+    'email_entered',
+    'password_login',
+    'email_verification',
+    'password_setup',
+    'profile_setup',
+    'done'
+);
+
+CREATE TABLE auth_flows (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    email CITEXT NOT NULL,
+    state auth_state NOT NULL,
+
+    verification_code TEXT,
+    verification_expires_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at TIMESTAMPTZ NOT NULL
 );

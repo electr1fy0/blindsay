@@ -11,6 +11,39 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createAuthFlow = `-- name: CreateAuthFlow :one
+insert into auth_flows (email, state, verification_code, expires_at)
+values ($1, $2, $3, $4)
+returning id, email, state, verification_code, verification_expires_at, created_at, expires_at
+`
+
+type CreateAuthFlowParams struct {
+	Email            string             `json:"email"`
+	State            AuthState          `json:"state"`
+	VerificationCode pgtype.Text        `json:"verification_code"`
+	ExpiresAt        pgtype.Timestamptz `json:"expires_at"`
+}
+
+func (q *Queries) CreateAuthFlow(ctx context.Context, arg CreateAuthFlowParams) (AuthFlow, error) {
+	row := q.db.QueryRow(ctx, createAuthFlow,
+		arg.Email,
+		arg.State,
+		arg.VerificationCode,
+		arg.ExpiresAt,
+	)
+	var i AuthFlow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.State,
+		&i.VerificationCode,
+		&i.VerificationExpiresAt,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
+
 const createMessage = `-- name: CreateMessage :exec
 insert into messages (recipient_id, content)
 values ($1, $2)
@@ -50,6 +83,25 @@ where id = $1
 func (q *Queries) DeleteMessage(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteMessage, id)
 	return err
+}
+
+const getAuthFlow = `-- name: GetAuthFlow :one
+select id, email, state, verification_code, verification_expires_at, created_at, expires_at from auth_flows where email = $1 order by created_at desc limit 1
+`
+
+func (q *Queries) GetAuthFlow(ctx context.Context, email string) (AuthFlow, error) {
+	row := q.db.QueryRow(ctx, getAuthFlow, email)
+	var i AuthFlow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.State,
+		&i.VerificationCode,
+		&i.VerificationExpiresAt,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+	)
+	return i, err
 }
 
 const getMessages = `-- name: GetMessages :many
@@ -96,6 +148,25 @@ func (q *Queries) GetMessages(ctx context.Context, recipientID int64) ([]GetMess
 	return items, nil
 }
 
+const getUserByEmail = `-- name: GetUserByEmail :one
+select id, username, email, password_hash, is_active, is_verified, created_at from users where email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.IsActive,
+		&i.IsVerified,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
 select id, username, email, password_hash, is_active, is_verified, created_at from users
 where username = $1 limit 1
@@ -103,6 +174,26 @@ where username = $1 limit 1
 
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.IsActive,
+		&i.IsVerified,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserByUsernameOrEmail = `-- name: GetUserByUsernameOrEmail :one
+select id, username, email, password_hash, is_active, is_verified, created_at from users
+where username = $1 or email = $1 limit 1
+`
+
+func (q *Queries) GetUserByUsernameOrEmail(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsernameOrEmail, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -129,5 +220,34 @@ type ReplyToMessageParams struct {
 
 func (q *Queries) ReplyToMessage(ctx context.Context, arg ReplyToMessageParams) error {
 	_, err := q.db.Exec(ctx, replyToMessage, arg.Reply, arg.ID)
+	return err
+}
+
+const updateAuthFlowState = `-- name: UpdateAuthFlowState :exec
+update auth_flows set state = $2 where id = $1
+`
+
+type UpdateAuthFlowStateParams struct {
+	ID    pgtype.UUID `json:"id"`
+	State AuthState   `json:"state"`
+}
+
+func (q *Queries) UpdateAuthFlowState(ctx context.Context, arg UpdateAuthFlowStateParams) error {
+	_, err := q.db.Exec(ctx, updateAuthFlowState, arg.ID, arg.State)
+	return err
+}
+
+const updateAuthFlowVerification = `-- name: UpdateAuthFlowVerification :exec
+update auth_flows set verification_code = $2, expires_at = $3 where id = $1
+`
+
+type UpdateAuthFlowVerificationParams struct {
+	ID               pgtype.UUID        `json:"id"`
+	VerificationCode pgtype.Text        `json:"verification_code"`
+	ExpiresAt        pgtype.Timestamptz `json:"expires_at"`
+}
+
+func (q *Queries) UpdateAuthFlowVerification(ctx context.Context, arg UpdateAuthFlowVerificationParams) error {
+	_, err := q.db.Exec(ctx, updateAuthFlowVerification, arg.ID, arg.VerificationCode, arg.ExpiresAt)
 	return err
 }

@@ -5,8 +5,67 @@
 package database
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type AuthState string
+
+const (
+	AuthStateEmailEntered      AuthState = "email_entered"
+	AuthStatePasswordLogin     AuthState = "password_login"
+	AuthStateEmailVerification AuthState = "email_verification"
+	AuthStatePasswordSetup     AuthState = "password_setup"
+	AuthStateProfileSetup      AuthState = "profile_setup"
+	AuthStateDone              AuthState = "done"
+)
+
+func (e *AuthState) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AuthState(s)
+	case string:
+		*e = AuthState(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AuthState: %T", src)
+	}
+	return nil
+}
+
+type NullAuthState struct {
+	AuthState AuthState `json:"auth_state"`
+	Valid     bool      `json:"valid"` // Valid is true if AuthState is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAuthState) Scan(value interface{}) error {
+	if value == nil {
+		ns.AuthState, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AuthState.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAuthState) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AuthState), nil
+}
+
+type AuthFlow struct {
+	ID                    pgtype.UUID        `json:"id"`
+	Email                 string             `json:"email"`
+	State                 AuthState          `json:"state"`
+	VerificationCode      pgtype.Text        `json:"verification_code"`
+	VerificationExpiresAt pgtype.Timestamptz `json:"verification_expires_at"`
+	CreatedAt             pgtype.Timestamptz `json:"created_at"`
+	ExpiresAt             pgtype.Timestamptz `json:"expires_at"`
+}
 
 type Message struct {
 	ID          int64              `json:"id"`
