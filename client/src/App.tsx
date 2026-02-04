@@ -1,18 +1,8 @@
-import { useState } from "react";
-import { Button } from "./components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "./components/ui/card";
-import { Input } from "./components/ui/input";
-import { useGetQuestions, useReplyToQuestion } from "./hooks/questions";
+import { useGetMessages } from "./hooks/messages";
+import { MessageItem } from "./components/message-item";
 
 export function App() {
-  const { data: questions = [], isLoading } = useGetQuestions();
-  const [reply, setReply] = useState<string>("");
-  const { mutate: replyToQn } = useReplyToQuestion();
+  const { data: messages = [], isLoading } = useGetMessages();
   if (isLoading) return <div>Loading...</div>;
 
   return (
@@ -28,31 +18,14 @@ export function App() {
         <h2 className="w-full max-w-lg text-neutral-700">
           Unanswered Messages
         </h2>
-        {questions.map((q) => {
+        {messages.map((m) => {
           return (
-            <Card key={q.id} className="my-4">
-              <CardHeader>{q.content}</CardHeader>
-              <CardContent>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    replyToQn({ qid: q.id!, content: reply });
-                  }}
-                >
-                  <Input
-                    type="text"
-                    placeholder="Enter your reply..."
-                    required
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                  ></Input>
-
-                  <Button type="submit" variant="default" className="mt-4">
-                    Reply
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+            <MessageItem
+              key={m.id}
+              content={m.content}
+              id={m.id}
+              reply={m.reply}
+            ></MessageItem>
           );
         })}
       </div>

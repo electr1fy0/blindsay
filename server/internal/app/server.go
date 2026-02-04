@@ -7,7 +7,6 @@ import (
 	"os"
 	"server/internal/handlers"
 	"server/internal/middleware"
-	"server/internal/repository"
 	"server/internal/service"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -25,8 +24,7 @@ func New() (*Server, error) {
 		return nil, err
 	}
 
-	repo := repository.New(db)
-	svc := service.New(repo)
+	svc := service.New(db)
 	s := &Server{
 		svc:    svc,
 		router: http.NewServeMux(),
@@ -52,8 +50,10 @@ func (s *Server) setupRouter() {
 	h := handlers.Handler{
 		Service: s.svc,
 	}
-	s.router.HandleFunc("GET /users/{username}", h.GetUserByUsername)
+	s.router.HandleFunc("GET /{username}", h.GetUserByUsername)
 	s.router.HandleFunc("POST /auth/signup", h.Signup)
 	s.router.HandleFunc("POST /auth/signin", h.Signin)
 	s.router.HandleFunc("POST /{username}/messages", h.CreateMessage)
+	s.router.HandleFunc("POST /{username}/messages/replies", h.ReplyToMessage)
+	s.router.HandleFunc("GET /{username}/messages", h.GetMessages)
 }

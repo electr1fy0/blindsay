@@ -9,7 +9,6 @@ delete from messages
 where id = $1;
 
 
-
 -- name: CreateUser :exec
 insert into users (username, email, password_hash)
 values ($1, $2, $3);
@@ -20,13 +19,17 @@ insert into messages (recipient_id, content)
 values ($1, $2);
 
 -- name: ReplyToMessage :exec
-insert into replies (message_id, author_id, content)
-values ($1, $2, $3);
+update messages
+set reply = $1
+where id = $2;
 
 -- name: GetMessages :many
-select u.username, m.content from users u
-left join messages m
-on u.username = m.recipient_id
-group by u.username
-having username = $1
-limit 10;
+select
+    m.id,
+    m.recipient_id,
+    m.content as message_content,
+    m.reply as reply_content
+from messages m
+where recipient_id = $1
+order by m.id desc
+limit 20;

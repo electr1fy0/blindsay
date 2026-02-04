@@ -53,21 +53,26 @@ func (q *Queries) DeleteMessage(ctx context.Context, id int64) error {
 }
 
 const getMessages = `-- name: GetMessages :many
-select u.username, m.content from users u
-left join messages m
-on u.username = m.recipient_id
-group by u.username
-having username = $1
-limit 10
+select
+    m.id,
+    m.recipient_id,
+    m.content as message_content,
+    m.reply as reply_content
+from messages m
+where recipient_id = $1
+order by m.id desc
+limit 20
 `
 
 type GetMessagesRow struct {
-	Username string      `json:"username"`
-	Content  pgtype.Text `json:"content"`
+	ID             int64       `json:"id"`
+	RecipientID    int64       `json:"recipient_id"`
+	MessageContent string      `json:"message_content"`
+	ReplyContent   pgtype.Text `json:"reply_content"`
 }
 
-func (q *Queries) GetMessages(ctx context.Context, username string) ([]GetMessagesRow, error) {
-	rows, err := q.db.Query(ctx, getMessages, username)
+func (q *Queries) GetMessages(ctx context.Context, recipientID int64) ([]GetMessagesRow, error) {
+	rows, err := q.db.Query(ctx, getMessages, recipientID)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +80,12 @@ func (q *Queries) GetMessages(ctx context.Context, username string) ([]GetMessag
 	var items []GetMessagesRow
 	for rows.Next() {
 		var i GetMessagesRow
-		if err := rows.Scan(&i.Username, &i.Content); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.RecipientID,
+			&i.MessageContent,
+			&i.ReplyContent,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -107,17 +117,17 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 }
 
 const replyToMessage = `-- name: ReplyToMessage :exec
-insert into replies (message_id, author_id, content)
-values ($1, $2, $3)
+update messages
+set reply = $1
+where id = $2
 `
 
 type ReplyToMessageParams struct {
-	MessageID int64       `json:"message_id"`
-	AuthorID  interface{} `json:"author_id"`
-	Content   string      `json:"content"`
+	Reply pgtype.Text `json:"reply"`
+	ID    int64       `json:"id"`
 }
 
 func (q *Queries) ReplyToMessage(ctx context.Context, arg ReplyToMessageParams) error {
-	_, err := q.db.Exec(ctx, replyToMessage, arg.MessageID, arg.AuthorID, arg.Content)
+	_, err := q.db.Exec(ctx, replyToMessage, arg.Reply, arg.ID)
 	return err
 }

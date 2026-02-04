@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"server/internal/service"
@@ -34,6 +35,7 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	var user types.SignupRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		slog.Error("failed to decode signup body", "error", err)
 		writeJSON(w, http.StatusBadRequest, map[string]string{
 			"error": "invalid request body",
 		})
@@ -42,6 +44,7 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	err := h.Service.Signup(r.Context(), user)
 	if err != nil {
+		slog.Error("failed to signup user", "error", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{
 			"error": err.Error(),
 		})
@@ -58,6 +61,7 @@ func (h *Handler) Signin(w http.ResponseWriter, r *http.Request) {
 	var user types.SigninRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		slog.Error("failed to decode signin body", "error", err)
 		writeJSON(w, http.StatusBadRequest, map[string]string{
 			"error": "invalid request body",
 		})
@@ -66,6 +70,7 @@ func (h *Handler) Signin(w http.ResponseWriter, r *http.Request) {
 
 	err := h.Service.Signin(r.Context(), user)
 	if err != nil {
+		slog.Error("failed to signin user", "error", err)
 		writeJSON(w, http.StatusUnauthorized, map[string]string{
 			"error": "invalid credentials",
 		})
@@ -83,6 +88,7 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 	recipient, err := h.Service.GetUserByUsername(r.Context(), username)
 	if err != nil {
+		slog.Error("failed to get recipient", "error", err)
 		writeJSON(w, http.StatusNotFound, map[string]string{
 			"error": "user not found",
 		})
@@ -91,6 +97,7 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 	var msg types.Message
 	if err := json.NewDecoder(r.Body).Decode(&msg); err != nil {
+		slog.Error("failed to decode message body", "error", err)
 		writeJSON(w, http.StatusBadRequest, map[string]string{
 			"error": err.Error(),
 		})
@@ -99,6 +106,7 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 	msg.RecipientID = recipient.ID
 	if err := h.Service.CreateMessage(r.Context(), msg); err != nil {
+		slog.Error("failed to create message", "error", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{
 			"error": err.Error(),
 		})
@@ -110,42 +118,25 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// func (h *Handler) ListQuestions(w http.ResponseWriter, r *http.Request) {
-// 	// username := r.PathValue("username")
+func (h *Handler) GetMessages(w http.ResponseWriter, r *http.Request) {
+	username := r.PathValue("username")
 
-// 	var questions []types.Question
-// 	var userID string
-// 	// err := h.DB.QueryRow(r.Context(), "select id from unsaid_users where username = $1", username).Scan(&userID)
-// 	// if err != nil {
-// 	// 	writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 	// 	return
-// 	// }
+	messages, err := h.Service.GetMessages(r.Context(), username)
+	if err != nil {
+		slog.Error("failed to get messages", "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
 
-// 	rows, err := h.DB.Query(r.Context(), "select id, content from unsaid_questions where user_id = $1", userID)
-// 	if err != nil {
-// 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 		return
-// 	}
-
-// 	for rows.Next() {
-// 		var q Question
-// 		err = rows.Scan(&q.ID, &q.Content)
-// 		questions = append(questions, q)
-// 	}
-// 	if err != nil {
-// 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 		return
-// 	}
-
-// 	json.NewEncoder(w).Encode(questions)
-// }
+	writeJSON(w, http.StatusOK, messages)
+}
 
 // func (h *Handler) ListReplies(w http.ResponseWriter, r *http.Request) {
-// 	qid := r.PathValue("qid")
+// 	mid := r.PathValue("mid")
 
 // 	var replies []Reply
 
-// 	rows, err := h.DB.Query(r.Context(), "select id, content, question_ID from unsaid_replies where question_id = $1", qid)
+// 	rows, err := h.DB.Query(r.Context(), "select id, content, message_id from unsaid_replies where message_id = $1", mid)
 // 	if err != nil {
 // 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 // 		return
@@ -153,7 +144,7 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 // 	for rows.Next() {
 // 		var r Reply
-// 		err = rows.Scan(&r.ID, &r.Content, &r.QuestionID)
+// 		err = rows.Scan(&r.ID, &r.Content, &r.MessageID)
 // 		replies = append(replies, r)
 // 	}
 
@@ -165,19 +156,20 @@ func (h *Handler) CreateMessage(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(replies)
 // }
 
-// func (h *APIHandler) ReplyToQuestion(w http.ResponseWriter, r *http.Request) {
-// 	var a Reply
-// 	err := json.NewDecoder(r.Body).Decode(&a)
-// 	if err != nil {
-// 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 		return
-// 	}
-// 	fmt.Println(a)
-// 	_, err = h.DB.Exec(r.Context(), "insert into unsaid_replies (content, question_id) values ($1, $2) ", a.Content, a.QuestionID)
+func (h *Handler) ReplyToMessage(w http.ResponseWriter, r *http.Request) {
+	var reply types.Reply
+	err := json.NewDecoder(r.Body).Decode(&reply)
+	if err != nil {
+		slog.Error("failed to decode reply body", "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	fmt.Println(reply.MessageID)
+	if err = h.Service.CreateReply(r.Context(), reply); err != nil {
+		slog.Error("failed to create reply", "error", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
 
-// 	if err != nil {
-// 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
-// 		return
-// 	}
-// 	w.WriteHeader(http.StatusCreated)
-// }
+	w.WriteHeader(http.StatusCreated)
+}

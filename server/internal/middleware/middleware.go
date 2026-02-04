@@ -8,9 +8,10 @@ import (
 
 func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func(t time.Time) {
-			slog.Info("Time taken", "Elapsed", time.Since(t).String())
-		}(time.Now())
+		start := time.Now()
+		defer func() {
+			slog.Info("request", "method", r.Method, "path", r.URL.Path, "duration", time.Since(start))
+		}()
 		next.ServeHTTP(w, r)
 	})
 }

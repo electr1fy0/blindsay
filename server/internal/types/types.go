@@ -32,11 +32,13 @@ type SigninRequest struct {
 }
 
 type Message struct {
+	ID          int64  `json:"id"`
 	RecipientID int64  `json:"recipient_id"`
 	Content     string `json:"content"`
+	Reply       string `json:"reply"`
 }
 
 type Reply struct {
-	Content    string `json:"content"`
-	QuestionID string `json:"questionId"`
+	Content   string `json:"content"`
+	MessageID int64  `json:"messageId"`
 }

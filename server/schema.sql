@@ -24,18 +24,6 @@ create table messages (
     is_read boolean not null default false,
     is_blocked boolean not null default false,
 
-    created_at timestamptz not null default now()
-);
-
-create table replies (
-    id bigint generated always as identity primary key,
-
-    message_id bigint not null unique
-    references messages(id)
-    on delete cascade,
-    author_id biginit not null
-    references users(id),
-
-    content text not null,
-    created_at timestamptz not null default now()
+    created_at timestamptz not null default now(),
+    reply text
 );

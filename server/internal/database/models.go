@@ -15,14 +15,7 @@ type Message struct {
 	IsRead      bool               `json:"is_read"`
 	IsBlocked   bool               `json:"is_blocked"`
 	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-}
-
-type Reply struct {
-	ID        int64              `json:"id"`
-	MessageID int64              `json:"message_id"`
-	AuthorID  interface{}        `json:"author_id"`
-	Content   string             `json:"content"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	Reply       pgtype.Text        `json:"reply"`
 }
 
 type User struct {

@@ -1,12 +1,8 @@
-export interface Question {
-  id?: string;
+export interface Message {
+  id?: number;
+  recipientId?: number;
   content: string;
-}
-
-export interface Reply {
-  id?: string;
-  content: string;
-  questionId: string;
+  reply?: string;
 }
 
 export interface SignupRequest {
@@ -18,4 +14,9 @@ export interface SignupRequest {
 export interface SigninRequest {
   username: string;
   password: string;
+}
+
+export interface Reply {
+  messageId: number;
+  content: string;
 }
