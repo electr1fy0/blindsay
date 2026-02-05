@@ -19,7 +19,7 @@ func (h *Handler) CheckEmail(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	time.Sleep(4 * time.Second)
+	time.Sleep(1 * time.Second)
 	resp, err := h.Service.CheckEmail(r.Context(), req.Email)
 	if err != nil {
 		slog.Error("failed to check email", "error", err)

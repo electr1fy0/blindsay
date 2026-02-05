@@ -1,26 +1,27 @@
-import { signin, signup, submitEmail, verifyEmail } from "@/api/auth";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { checkEmail, signin, signup, verifyCode } from "@/api/auth";
+import type { AuthCredentials, VerifyCodeRequest } from "@/types";
+import { useMutation } from "@tanstack/react-query";
 
-export function useEmailSubmit() {
+export function useCheckEmail() {
   return useMutation({
-    mutationFn: submitEmail,
+    mutationFn: checkEmail,
   });
 }
 
-export function useVerifyEmail() {
+export function useVerifyCode() {
   return useMutation({
-    mutationFn: verifyEmail,
+    mutationFn: (request: VerifyCodeRequest) => verifyCode(request),
   });
 }
 
 export function useSignin() {
   return useMutation({
-    mutationFn: signin,
+    mutationFn: (credentials: AuthCredentials) => signin(credentials),
   });
 }
 
 export function useSignup() {
   return useMutation({
-    mutationFn: signup,
+    mutationFn: (credentials: AuthCredentials) => signup(credentials),
   });
 }

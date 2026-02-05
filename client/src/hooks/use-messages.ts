@@ -1,29 +1,25 @@
-import { getMessages, replyToMessage } from "@/api/messages";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { createReply, getMessages } from "@/api/messages";
+import type { CreateReplyRequest, Message } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useGetMessages() {
-  return useQuery({
-    queryKey: ["messages"],
-    queryFn: getMessages,
+const MESSAGES_QUERY_KEY = "messages";
+
+export function useMessages(username: string) {
+  return useQuery<Message[]>({
+    queryKey: [MESSAGES_QUERY_KEY, username],
+    queryFn: () => getMessages(username),
     retry: 2,
     staleTime: 30_000,
   });
 }
 
-export function useReplyToMessage() {
+export function useCreateReply(username: string) {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: ({
-      mid: mid,
-      content: content,
-    }: {
-      mid: number;
-      content: string;
-    }) => {
-      return replyToMessage(mid, content);
+    mutationFn: (request: CreateReplyRequest) => createReply(username, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [MESSAGES_QUERY_KEY, username] });
     },
   });
 }
-
-export function useCreateMessage() {}
-
-export function useGetReplies() {}

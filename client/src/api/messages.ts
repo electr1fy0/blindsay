@@ -1,26 +1,16 @@
-import { BASE_URL } from "@/config";
-import type { Message, Reply } from "@/types";
+import { apiRequest } from "@/lib/api-client";
+import type { CreateReplyRequest, Message } from "@/types";
 
-export async function getMessages(): Promise<Message[]> {
-  const resp = await fetch(`${BASE_URL}/ayush/messages`);
-  console.log(`${BASE_URL}/ayush/messages`);
-
-  if (!resp.ok) throw new Error("failed to fetch messages");
-  const data = await resp.json();
-
-  return data;
+export async function getMessages(username: string): Promise<Message[]> {
+  return apiRequest<Message[]>(`/${username}/messages`);
 }
 
-export async function replyToMessage(
-  mid: number,
-  replyContent: string,
+export async function createReply(
+  username: string,
+  request: CreateReplyRequest
 ): Promise<void> {
-  const reply: Reply = { content: replyContent, messageId: mid };
-  console.log(reply);
-  const resp = await fetch(`${BASE_URL}/ayush/messages/replies`, {
+  await apiRequest<void>(`/${username}/messages/replies`, {
     method: "POST",
-    body: JSON.stringify(reply),
+    body: request,
   });
-
-  if (!resp.ok) throw new Error("failed to reply to message");
 }

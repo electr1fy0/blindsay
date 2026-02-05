@@ -1,22 +1,24 @@
 import { useState } from "react";
+import { Navigate } from "react-router";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AnimatePresence, motion } from "motion/react";
+import { Field } from "@/components/ui/field";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
-import {
-  useEmailSubmit,
+  useCheckEmail,
   useSignin,
   useSignup,
-  useVerifyEmail,
+  useVerifyCode,
 } from "@/hooks/use-auth";
 import { Spinner } from "./ui/spinner";
+import {
+  LockPasswordIcon,
+  Mail02Icon,
+  PulseRectangle01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
+import HelpText from "./help-text";
+import { AuthLayout } from "./auth-layout";
 
 type AuthState =
   | "email"
@@ -27,279 +29,265 @@ type AuthState =
   | "profile-setup"
   | "done";
 
+const STEP_CONFIG = {
+  email: {
+    title: "Welcome to Unsaid",
+    subtitle: "Login or Signup to get started.",
+    icon: PulseRectangle01Icon,
+  },
+  login: {
+    title: "Enter Password",
+    subtitle: "Please enter your custom account password.",
+    icon: LockPasswordIcon,
+  },
+  verify: {
+    title: "Verify Email",
+    subtitle: "Enter the code sent to your email",
+    icon: Mail02Icon,
+  },
+  "password-setup": {
+    title: "Set Password",
+    subtitle: "Create a secure password",
+    icon: LockPasswordIcon,
+  },
+  "password-confirm": {
+    title: "Confirm Password",
+    subtitle: "Re-enter your password to confirm",
+    icon: LockPasswordIcon,
+  },
+  "profile-setup": {
+    title: "Profile Setup",
+    subtitle: "Choose a username",
+    icon: UserIcon,
+  },
+} as const;
+
 export function AuthFlow() {
   const [step, setStep] = useState<AuthState>("email");
+  const [apiError, setApiError] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [code, setCode] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { mutate: verifyEmail, isPending: isEmailVerifyPending } =
-    useVerifyEmail();
-  const { mutate: submitEmail, isPending: isEmailSubmitPending } =
-    useEmailSubmit();
+
+  const { mutate: verifyCode, isPending: isVerifyPending } = useVerifyCode();
+  const { mutate: checkEmail, isPending: isCheckEmailPending } =
+    useCheckEmail();
   const { mutate: signin, isPending: isSigninPending } = useSignin();
   const { mutate: signup, isPending: isSignupPending } = useSignup();
 
-  const handleSubmit = (e: React.SubmitEvent) => {
-    switch (step) {
-      case "email":
-        handleEmailSubmit(e);
-        break;
-      case "verify":
-        handleVerifyEmail(e);
-        break;
-      case "login":
-        handleLoginSubmit(e);
-        break;
-      case "password-setup":
-        handlePasswordSetupSubmit(e);
-        break;
-      case "password-confirm":
-        handlePasswordConfirmSubmit(e);
-        break;
-    }
-  };
+  const isLoading =
+    isVerifyPending ||
+    isCheckEmailPending ||
+    isSigninPending ||
+    isSignupPending;
 
-  const handleEmailSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError("");
-    submitEmail(email, {
-      onSuccess: () => {
-        setStep("verify");
-      },
-      onError: (err) => {
-        setError(err.message);
-      },
-    });
-  };
+    setApiError("");
 
-  const handleVerifyEmail = (e: React.SubmitEvent) => {
-    e.preventDefault();
-    verifyEmail({ email: email, code: code });
-    setError("");
-    setStep("password-setup");
-  };
-
-  const handlePasswordSetupSubmit = (e: React.SubmitEvent) => {
-    e.preventDefault();
-    setError("");
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-    setStep("password-confirm");
-  };
-
-  const handlePasswordConfirmSubmit = (e: React.SubmitEvent) => {
-    e.preventDefault();
-    setError("");
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    // setStep("profile-setup");
-    handleSignupSubmit(e);
-  };
-
-  const handleSignupSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
-    signup(
-      { email, password },
-      {
-        onSuccess: () => setStep("done"),
-        onError: (err) => setError(err.message),
-      },
-    );
-
-    setIsLoading(false);
-  };
-
-  const handleLoginSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
-
-    setError("");
-    try {
-      const res = await fetch("http://localhost:8080/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email, password }),
+    if (step === "email") {
+      if (!email) return;
+      checkEmail(email, {
+        onSuccess: (exists) => {
+          setStep(exists ? "login" : "verify");
+          setPassword("");
+          setCode("");
+        },
+        onError: (err) => setApiError(err.message),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to sign in");
-
-      setStep("done");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+    } else if (step === "verify") {
+      if (!code) return;
+      verifyCode(
+        { email, code },
+        {
+          onSuccess: () => {
+            setStep("password-setup");
+            setPassword("");
+          },
+          onError: () => setApiError("Invalid code"),
+        },
+      );
+    } else if (step === "login") {
+      if (!password) return;
+      signin(
+        { email, password },
+        {
+          onSuccess: () => setStep("done"),
+          onError: (err) => setApiError(err.message),
+        },
+      );
+    } else if (step === "password-setup") {
+      if (password.length < 8) return;
+      setStep("password-confirm");
+      setConfirmPassword("");
+    } else if (step === "password-confirm") {
+      if (!confirmPassword) return;
+      if (password !== confirmPassword) {
+        setApiError("Passwords do not match");
+        return;
+      }
+      setStep("profile-setup");
+      setUsername("");
+    } else if (step === "profile-setup") {
+      if (!username || username.length < 3) return;
+      signup(
+        { email, password, username },
+        {
+          onSuccess: () => setStep("done"),
+          onError: (err) => setApiError(err.message),
+        },
+      );
     }
   };
 
-  if (step === "done") {
-    return (
-      <Card className="w-full max-w-md mx-auto mt-10">
-        <CardContent className="pt-6 text-center">
-          <h2 className="text-2xl font-bold mb-4">Welcome!</h2>
-          <p>You have successfully authenticated.</p>
-        </CardContent>
-      </Card>
-    );
-  }
+  const isStepValid = () => {
+    if (step === "email") return !!email;
+    if (step === "login") return !!password;
+    if (step === "verify") return !!code;
+    if (step === "password-setup") return password.length >= 8;
+    if (step === "password-confirm") return !!confirmPassword;
+    if (step === "profile-setup") return username.length >= 3;
+    return true;
+  };
+
+  if (step === "done") return <Navigate to="/ayush" />;
+
+  const config = STEP_CONFIG[step as keyof typeof STEP_CONFIG];
+  const { title, subtitle, icon } = config || STEP_CONFIG.email;
 
   return (
-    <motion.div className="w-full max-w-md mx-auto mt-10 ">
-      <img src="/unsaid.png" className="size-14 mx-auto my-4"></img>
-      <h2 className="text-center text-lg">
-        {step === "email" && "Welcome to Unsaid"}
-        {step === "login" && "Welcome Back"}
-        {step === "verify" && "Verify Email"}
-        {step === "password-setup" && "Set Password"}
-        {step === "password-confirm" && "Confirm Password"}
-        {step === "profile-setup" && "Profile Setup"}
-      </h2>
-      <h3 className="text-neutral-500 text-center">
-        {step === "email" && "Login or Signup to get started."}
-        {step === "login" && `Enter password for ${email}`}
-        {step === "verify" && `Enter the code sent to ${email} (Mock: 123456)`}
-        {step === "password-setup" && "Create a secure password"}
-        {step === "password-confirm" && "Re-enter your password to confirm"}
-        {step === "profile-setup" && "Choose a username"}
-      </h3>
+    <AuthLayout title={title} subtitle={subtitle} icon={icon}>
       <form onSubmit={handleSubmit}>
-        <motion.div className="space-y-4">
-          {step === "email" && (
-            <Field className="mt-10 ">
+        {step === "email" && (
+          <>
+            <Field className="mt-10">
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className=" shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
+                className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
                 autoFocus
               />
             </Field>
-          )}
-          {email == "" && (
-            <motion.div
-              key="help-text"
-              className="text-sm text-neutral-400 text-center mx-auto overflow-hidden"
-              initial={{ opacity: 0, height: 0, marginTop: 0, y: -10 }}
-              animate={{
-                opacity: 1,
-                height: "auto",
-                marginTop: 16,
-                y: 0,
-              }}
-              exit={{ opacity: 0, height: 0, marginTop: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              We’ll create an account if you don’t have one yet.
-            </motion.div>
-          )}
-          {step === "login" && (
-            <Field>
-              <FieldLabel>Password</FieldLabel>
+            {!email && (
+              <HelpText
+                type="info"
+                content="We'll create an account if you don't have one yet."
+              />
+            )}
+          </>
+        )}
+
+        {step === "login" && (
+          <>
+            <Field className="mt-10">
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
                 autoFocus
               />
             </Field>
-          )}
-
-          {step === "verify" && (
-            <Field>
-              <FieldLabel>Verification Code</FieldLabel>
-              <Input
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="123456"
-                autoFocus
+            {!password && (
+              <HelpText
+                type="info"
+                content="Forgot your password?"
+                linkStr=" Use a Recovery Code"
+                linkUrl="/recovery"
               />
-            </Field>
-          )}
+            )}
+          </>
+        )}
 
-          {step === "password-setup" && (
-            <Field>
-              <FieldLabel>Password</FieldLabel>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoFocus
-              />
-            </Field>
-          )}
+        {step === "verify" && (
+          <Field className="mt-10">
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="123456"
+              autoFocus
+              className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
+            />
+          </Field>
+        )}
 
-          {step === "password-confirm" && (
+        {step === "password-setup" && (
+          <Field className="mt-10">
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
+              autoFocus
+              placeholder="Password"
+            />
+          </Field>
+        )}
+
+        {step === "password-confirm" && (
+          <div className="space-y-4 mt-10">
+            {apiError === "Passwords do not match" && (
+              <Field>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
+                  placeholder="Password"
+                />
+              </Field>
+            )}
             <Field>
-              <FieldLabel>Confirm Password</FieldLabel>
               <Input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
                 autoFocus
+                placeholder="Confirm Password"
               />
             </Field>
-          )}
+          </div>
+        )}
 
-          {step === "profile-setup" && (
-            <Field>
-              <FieldLabel>Username</FieldLabel>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="username"
-                autoFocus
-              />
-            </Field>
-          )}
+        {step === "profile-setup" && (
+          <Field className="mt-10">
+            <Input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="username"
+              className="shadow-none border-none bg-neutral-100 h-11 rounded-xl text-base"
+              autoFocus
+            />
+          </Field>
+        )}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-        </motion.div>
+        {apiError && <HelpText type="error" content={apiError} />}
 
-        {(() => {
-          let showButton = false;
-          if (step === "email") showButton = email.length > 0;
-          if (step === "login") showButton = password.length > 0;
-          if (step === "verify") showButton = code.length > 0;
-          if (step === "password-setup") showButton = password.length > 0;
-          if (step === "password-confirm")
-            showButton = confirmPassword.length > 0;
-          if (step === "profile-setup") showButton = username.length > 0;
-
-          return (
-            showButton && (
-              <motion.div
-                key="continue-btn"
-                className="mt-6"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
-                <Button
-                  type="submit"
-                  className="w-full h-12 rounded-xl"
-                  disabled={isLoading}
-                >
-                  {isEmailVerifyPending || isEmailSubmitPending ? (
-                    <Spinner className="size-5"></Spinner>
-                  ) : (
-                    "Continue"
-                  )}
-                </Button>
-              </motion.div>
-            )
-          );
-        })()}
+        {isStepValid() && (
+          <motion.div
+            key="continue-btn"
+            className="mt-6"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            <Button
+              type="submit"
+              className="w-full h-12 rounded-xl"
+              disabled={isLoading}
+            >
+              {isLoading ? <Spinner className="size-5" /> : "Continue"}
+            </Button>
+          </motion.div>
+        )}
       </form>
-    </motion.div>
+    </AuthLayout>
   );
 }

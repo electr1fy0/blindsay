@@ -1,49 +1,37 @@
-export async function submitEmail(email: string): Promise<boolean> {
-  const res = await fetch("http://localhost:8080/auth/check-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Failed to check email");
+import { apiRequest } from "@/lib/api-client";
+import type {
+  AuthCredentials,
+  CheckEmailRequest,
+  CheckEmailResponse,
+  VerifyCodeRequest,
+} from "@/types";
 
-  return data.exists;
+export async function checkEmail(email: string): Promise<boolean> {
+  const payload: CheckEmailRequest = { email };
+  const response = await apiRequest<CheckEmailResponse>(
+    "/auth/check-email",
+    { method: "POST", body: payload }
+  );
+  return response.exists;
 }
 
-type VerifyPayload = {
-  email: string;
-  code: string;
-};
-
-export async function verifyEmail({ email, code }: VerifyPayload) {
-  const res = await fetch("http://localhost:8080/auth/verify-code", {
+export async function verifyCode(request: VerifyCodeRequest): Promise<void> {
+  await apiRequest<void>("/auth/verify-code", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, code }),
+    body: request,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Failed to verify code");
-
-  return res.ok;
 }
 
-type AuthPayload = {
-  email: string;
-  password: string;
-};
-
-export async function signup({ email, password }: AuthPayload) {
-  const res = await fetch("http://localhost:8080/auth/signup", {
+export async function signup(credentials: AuthCredentials): Promise<void> {
+  await apiRequest<void>("/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: credentials,
   });
-  if (!res.ok) throw new Error("failed to signup", await res.json());
 }
 
-export async function signin({ email, password }: AuthPayload) {
-  const res = await fetch("http://localhost:8080/auth/signin", {
+export async function signin(credentials: AuthCredentials): Promise<void> {
+  await apiRequest<void>("/auth/signin", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: credentials,
   });
-  if (!res.ok) throw new Error("failed to signin", await res.json());
 }
