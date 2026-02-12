@@ -22,7 +22,7 @@ export default async function OnboardingPage() {
                 height={24}
                 className="rounded-md border border-foreground/15"
               />
-              <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground">
+              <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
                 Unsaid
               </p>
             </div>
@@ -60,7 +60,7 @@ export default async function OnboardingPage() {
               height={24}
               className="rounded-md border border-foreground/15"
             />
-            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">
+            <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
               Unsaid
             </p>
           </div>

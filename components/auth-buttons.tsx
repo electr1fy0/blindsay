@@ -12,9 +12,10 @@ type AuthButtonsProps = {
     image?: string | null;
   } | null;
   className?: string;
+  size?: "xs" | "sm" | "default" | "lg";
 };
 
-export function AuthButtons({ user, className }: AuthButtonsProps) {
+export function AuthButtons({ user, className, size = "default" }: AuthButtonsProps) {
   const [imageOk, setImageOk] = useState(true);
 
   if (user) {
@@ -50,7 +51,7 @@ export function AuthButtons({ user, className }: AuthButtonsProps) {
             </div>
           </div>
         </div>
-        <Button type="button" variant="outline" size="sm" className="self-start" onClick={() => signOut()}>
+        <Button type="button" variant="outline" size={size} className="self-start" onClick={() => signOut()}>
           Sign out
         </Button>
       </div>
@@ -62,6 +63,7 @@ export function AuthButtons({ user, className }: AuthButtonsProps) {
       <Button
         type="button"
         variant="outline"
+        size={size}
         onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
       >
         Sign in with Google

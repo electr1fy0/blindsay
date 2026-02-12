@@ -9,6 +9,9 @@ const geistMono = Geist_Mono({
 
 const siteTitle = "Unsaid";
 const siteDescription = "Anonymous inboxes for the words people never said out loud.";
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 export const metadata: Metadata = {
   title: {
@@ -16,7 +19,10 @@ export const metadata: Metadata = {
     template: "%s · Unsaid",
   },
   description: siteDescription,
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: siteUrl,
+  },
   icons: {
     icon: "/unsaid.png",
     apple: "/unsaid.png",
@@ -25,6 +31,7 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDescription,
     type: "website",
+    url: siteUrl,
     images: ["/unsaid.png"],
   },
   twitter: {

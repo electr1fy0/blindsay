@@ -31,6 +31,7 @@ model User {
   emailVerified DateTime?
   image         String?
   username      String?   @unique
+  publicReplyLimit Int     @default(10)
   accounts      Account[]
   sessions      Session[]
   messages      Message[]

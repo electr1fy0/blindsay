@@ -14,7 +14,7 @@ export function MessageCard({ message }: MessageCardProps) {
   const now = new Date();
   return (
     <Card className="w-full rounded-2xl border-foreground/10 bg-card/80">
-      <CardHeader className="pb-1.5">
+      <CardHeader className="pb-1.5 ">
         <p className="text-[0.6rem] uppercase tracking-[0.25em] text-muted-foreground">
           {message.createdAtLabel ?? formatRelativeTime(message.createdAt, now)}
         </p>

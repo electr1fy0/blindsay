@@ -85,3 +85,55 @@ export async function setUsername(username: string) {
 
   redirect(`/${user.username}`);
 }
+
+export async function updatePublicReplyLimit(limit: number) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    throw new Error("You must be signed in.");
+  }
+
+  const safeLimit = Math.max(1, Math.min(50, Math.floor(limit)));
+
+  await prisma.user.update({
+    where: { email: session.user.email },
+    data: { publicReplyLimit: safeLimit },
+  });
+
+  redirect("/account");
+}
+
+export async function deleteMessage(messageId: string, recipientUsername: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    throw new Error("You must be signed in.");
+  }
+
+  const owner = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!owner) {
+    throw new Error("You must be signed in.");
+  }
+
+  const message = await prisma.message.findUnique({
+    where: { id: messageId },
+    select: { recipientId: true, parentId: true },
+  });
+
+  if (!message || message.recipientId !== owner.id) {
+    throw new Error("You cannot delete this message.");
+  }
+
+  if (!message.parentId) {
+    await prisma.$transaction([
+      prisma.message.deleteMany({ where: { parentId: messageId } }),
+      prisma.message.delete({ where: { id: messageId } }),
+    ]);
+  } else {
+    await prisma.message.delete({ where: { id: messageId } });
+  }
+
+  revalidatePath(`/${recipientUsername}`);
+}
