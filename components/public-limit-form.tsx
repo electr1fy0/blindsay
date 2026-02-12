@@ -29,7 +29,7 @@ export function PublicLimitForm({ initialValue }: PublicLimitFormProps) {
       }}
       className="flex flex-wrap items-center gap-2"
     >
-      <Select value={value} onValueChange={setValue}>
+      <Select value={value} onValueChange={(next) => setValue(next ?? value)}>
         <SelectTrigger className="h-8 w-[120px] rounded-2xl">
           <SelectValue />
         </SelectTrigger>
