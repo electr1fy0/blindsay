@@ -23,6 +23,7 @@
     "next-auth": "4.24.13",
     "pg": "^8.18.0",
     "prisma": "^7.4.0",
+    "qrcode": "^1.5.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "shadcn": "^3.8.4",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^25.2.3",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

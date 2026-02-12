@@ -5,6 +5,22 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import { headers } from "next/headers";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+const blockedWords = ["slur1", "slur2", "hateword"];
+
+async function getClientIp() {
+  const headerList = await headers();
+  const forwarded = headerList.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return headerList.get("x-real-ip") ?? "unknown";
+}
+
+function containsBlockedWords(content: string) {
+  const normalized = content.toLowerCase();
+  return blockedWords.some((word) => normalized.includes(word));
+}
 
 export async function createAnonymousMessage(
   recipientId: string,
@@ -13,6 +29,16 @@ export async function createAnonymousMessage(
 ) {
   if (!content || content.trim() === "") {
     throw new Error("Content cannot be empty");
+  }
+
+  if (containsBlockedWords(content)) {
+    throw new Error("Please remove abusive language.");
+  }
+
+  const ip = await getClientIp();
+  const limit = checkRateLimit(`msg:${ip}:${recipientId}`, 5, 10 * 60 * 1000);
+  if (!limit.ok) {
+    throw new Error("Too many messages. Please try again later.");
   }
 
   await prisma.message.create({
@@ -54,10 +80,64 @@ export async function createReplyMessage(
       content,
       recipientId,
       parentId,
+      isPublic: true,
     },
   });
 
   revalidatePath(`/${recipientUsername}`);
+}
+
+export async function toggleReplyVisibility(replyId: string, recipientUsername: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    throw new Error("You must be signed in.");
+  }
+
+  const owner = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!owner) {
+    throw new Error("You must be signed in.");
+  }
+
+  const reply = await prisma.message.findUnique({
+    where: { id: replyId },
+    select: { recipientId: true, isPublic: true, parentId: true },
+  });
+
+  if (!reply || !reply.parentId || reply.recipientId !== owner.id) {
+    throw new Error("You cannot update this reply.");
+  }
+
+  await prisma.message.update({
+    where: { id: replyId },
+    data: { isPublic: !reply.isPublic },
+  });
+
+  revalidatePath(`/${recipientUsername}`);
+}
+
+export async function reportMessage(messageId: string, reason: string) {
+  const safeReason = reason.trim().slice(0, 200);
+  if (!safeReason) {
+    throw new Error("Please include a reason.");
+  }
+  const ip = await getClientIp();
+
+  const limit = checkRateLimit(`report:${ip}`, 3, 10 * 60 * 1000);
+  if (!limit.ok) {
+    throw new Error("Too many reports. Please try again later.");
+  }
+
+  await prisma.messageReport.create({
+    data: {
+      messageId,
+      reason: safeReason,
+      ip,
+    },
+  });
 }
 
 export async function setUsername(username: string) {
@@ -136,4 +216,27 @@ export async function deleteMessage(messageId: string, recipientUsername: string
   }
 
   revalidatePath(`/${recipientUsername}`);
+}
+
+export async function toggleInboxOpen() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    throw new Error("You must be signed in.");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { inboxOpen: true },
+  });
+
+  if (!user) {
+    throw new Error("You must be signed in.");
+  }
+
+  await prisma.user.update({
+    where: { email: session.user.email },
+    data: { inboxOpen: !user.inboxOpen },
+  });
+
+  redirect("/account");
 }

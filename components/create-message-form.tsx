@@ -19,6 +19,7 @@ export function CreateMessageForm({
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +28,10 @@ export function CreateMessageForm({
     startTransition(async () => {
       try {
         setError(null);
+        setSuccess(false);
         await createAnonymousMessage(recipientId, recipientUsername, content);
         setContent("");
+        setSuccess(true);
         if (onSuccess) onSuccess();
       } catch (error) {
         setError(error instanceof Error ? error.message : "Failed to send message.");
@@ -46,6 +49,7 @@ export function CreateMessageForm({
         className="min-h-[90px] bg-background/70"
       />
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {success ? <p className="text-sm text-muted-foreground">Sent.</p> : null}
       <div className="flex justify-end">
         <Button type="submit" disabled={isPending || !content.trim()}>
           {isPending ? "Sending..." : "Send anonymously"}

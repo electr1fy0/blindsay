@@ -32,7 +32,14 @@ export const metadata: Metadata = {
     description: siteDescription,
     type: "website",
     url: siteUrl,
-    images: ["/unsaid.png"],
+    images: [
+      {
+        url: "/unsaid.png",
+        width: 512,
+        height: 512,
+        alt: siteTitle,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

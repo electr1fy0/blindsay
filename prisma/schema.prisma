@@ -20,8 +20,22 @@ model Message {
   parentId  String?
   parent    Message?  @relation("MessageToMessage", fields: [parentId], references: [id])
   replies   Message[] @relation("MessageToMessage")
+  isPublic  Boolean   @default(false)
   recipientId String?
   recipient   User?   @relation(fields: [recipientId], references: [id])
+  reports   MessageReport[]
+}
+
+model MessageReport {
+  id        String   @id @default(cuid())
+  messageId String
+  reason    String
+  ip        String?
+  createdAt DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@index([createdAt])
 }
 
 model User {
@@ -32,6 +46,7 @@ model User {
   image         String?
   username      String?   @unique
   publicReplyLimit Int     @default(10)
+  inboxOpen     Boolean   @default(true)
   accounts      Account[]
   sessions      Session[]
   messages      Message[]
