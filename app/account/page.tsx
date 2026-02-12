@@ -9,6 +9,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PublicLimitForm } from "@/components/public-limit-form";
 import { toggleInboxOpen } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ToggleOffIcon, ToggleOnIcon } from "@hugeicons/core-free-icons";
+import { formatRelativeTime } from "@/lib/relative-time";
 
 export default async function AccountPage() {
   const session = await getServerSession(authOptions);
@@ -52,6 +55,8 @@ export default async function AccountPage() {
     where: { recipientId: user.id, parentId: { not: null } },
     orderBy: { createdAt: "desc" },
   });
+
+  const now = new Date();
 
   return (
     <AppShell username={user.username} isOwner>
@@ -108,7 +113,7 @@ export default async function AccountPage() {
               <span className="text-muted-foreground">Latest message</span>
               <span>
                 {latestMessage
-                  ? latestMessage.createdAt.toISOString().slice(0, 10)
+                  ? formatRelativeTime(latestMessage.createdAt, now)
                   : "—"}
               </span>
             </div>
@@ -116,7 +121,7 @@ export default async function AccountPage() {
               <span className="text-muted-foreground">Latest reply</span>
               <span>
                 {latestReply
-                  ? latestReply.createdAt.toISOString().slice(0, 10)
+                  ? formatRelativeTime(latestReply.createdAt, now)
                   : "—"}
               </span>
             </div>
@@ -190,7 +195,17 @@ export default async function AccountPage() {
                 await toggleInboxOpen();
               }}
             >
-              <Button type="submit" size="sm">
+              <Button
+                type="submit"
+                size="sm"
+                variant={user.inboxOpen ? "destructive" : "default"}
+              >
+                <HugeiconsIcon
+                  icon={user.inboxOpen ? ToggleOffIcon : ToggleOnIcon}
+                  size={18}
+                  color="currentColor"
+                  strokeWidth={1.5}
+                />
                 {user.inboxOpen ? "Close inbox" : "Open inbox"}
               </Button>
             </form>

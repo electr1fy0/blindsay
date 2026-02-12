@@ -93,6 +93,7 @@ function InputGroupButton({
   return (
     <Button
       type={type}
+      size="xs"
       data-size={size}
       variant={variant}
       className={cn(inputGroupButtonVariants({ size }), className)}

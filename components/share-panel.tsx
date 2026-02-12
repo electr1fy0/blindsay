@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Link01Icon, QrCode01Icon } from "@hugeicons/core-free-icons";
 
 type SharePanelProps = {
   url: string;
@@ -34,11 +36,16 @@ export function SharePanel({ url }: SharePanelProps) {
               setTimeout(() => setCopied(false), 1200);
             }}
           >
+            <HugeiconsIcon icon={Link01Icon} size={18} color="currentColor" strokeWidth={1.5} />
             {copied ? "Copied" : "Copy"}
           </Button>
         </div>
         {qr ? (
           <div className="rounded-2xl border border-foreground/10 bg-background/80 p-3">
+            <div className="mb-2 flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
+              <HugeiconsIcon icon={QrCode01Icon} size={18} color="currentColor" strokeWidth={1.5} />
+              QR
+            </div>
             <img src={qr} alt="QR code" className="h-40 w-40" />
           </div>
         ) : null}

@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { deleteMessage, toggleReplyVisibility } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete01Icon, ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
 
 type DeleteMessageButtonProps = {
   messageId: string;
@@ -21,6 +23,7 @@ export function DeleteMessageButton({
       variant="ghost"
       size="xs"
       disabled={isPending || done}
+      title={done ? "Deleted" : "Delete"}
       onClick={() => {
         if (!window.confirm("Delete this message?")) return;
         startTransition(async () => {
@@ -29,7 +32,10 @@ export function DeleteMessageButton({
         });
       }}
     >
-      {done ? "Deleted" : isPending ? "Deleting..." : "Delete"}
+      {done ? "Deleted" : (
+        <HugeiconsIcon icon={Delete01Icon} size={18} color="currentColor" strokeWidth={1.5} />
+      )}
+      <span className="sr-only">Delete</span>
     </Button>
   );
 }
@@ -53,6 +59,7 @@ export function ToggleReplyVisibilityButton({
       variant="ghost"
       size="xs"
       disabled={isPending}
+      title={value ? "Hide" : "Publish"}
       onClick={() => {
         startTransition(async () => {
           await toggleReplyVisibility(replyId, recipientUsername);
@@ -60,7 +67,12 @@ export function ToggleReplyVisibilityButton({
         });
       }}
     >
-      {isPending ? "Saving..." : value ? "Hide" : "Publish"}
+      {isPending ? "Saving..." : value ? (
+        <HugeiconsIcon icon={ViewOffIcon} size={18} color="currentColor" strokeWidth={1.5} />
+      ) : (
+        <HugeiconsIcon icon={ViewIcon} size={18} color="currentColor" strokeWidth={1.5} />
+      )}
+      <span className="sr-only">{value ? "Hide" : "Publish"}</span>
     </Button>
   );
 }

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   icons: {
-    icon: "/unsaid.png",
+    icon: "/favicon.ico",
     apple: "/unsaid.png",
   },
   openGraph: {
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/unsaid.png",
-        width: 512,
-        height: 512,
+        url: "/thumb.png",
+        width: 1200,
+        height: 630,
         alt: siteTitle,
       },
     ],
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/unsaid.png"],
+    images: ["/thumb.png"],
   },
 };
 

@@ -30,16 +30,16 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
           <div className="text-sm font-semibold">Unsaid</div>
         </div>
         <nav className="flex flex-col gap-2 text-sm">
-          {username ? (
-            <Link
-              href={`/${username}`}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "rounded-2xl justify-start gap-2",
-              )}
-            >
-              <HugeiconsIcon
-                icon={Notification03Icon}
+            {username ? (
+              <Link
+                href={`/${username}`}
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "rounded-2xl justify-start gap-2",
+                )}
+              >
+                <HugeiconsIcon
+                  icon={Notification03Icon}
                 size={18}
                 color="currentColor"
                 strokeWidth={1.5}
@@ -47,16 +47,16 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
               Inbox
             </Link>
           ) : null}
-          {isOwner ? (
-            <Link
-              href="/account"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "rounded-2xl justify-start gap-2",
-              )}
-            >
-              <HugeiconsIcon
-                icon={UserSettings01Icon}
+            {isOwner ? (
+              <Link
+                href="/account"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "rounded-2xl justify-start gap-2",
+                )}
+              >
+                <HugeiconsIcon
+                  icon={UserSettings01Icon}
                 size={18}
                 color="currentColor"
                 strokeWidth={1.5}
