@@ -77,7 +77,7 @@ export default async function UserInboxPage({ params }: PageProps) {
           <section className="rounded-3xl border border-foreground/10 bg-card/80 p-5">
             <CreateMessageForm
               recipientId={profile.id}
-              recipientUsername={profile.username}
+              recipientUsername={profile.username ?? username}
             />
           </section>
         )}
@@ -133,7 +133,7 @@ export default async function UserInboxPage({ params }: PageProps) {
                       <div className="rounded-2xl border border-foreground/10 bg-muted/10 px-3 py-2">
                         <ReplyForm
                           recipientId={profile.id}
-                          recipientUsername={profile.username}
+                          recipientUsername={profile.username ?? username}
                           parentId={message.id}
                         />
                       </div>
