@@ -1,0 +1,48 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { setUsername } from "@/app/actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+export function UsernameForm() {
+  const [value, setValue] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    startTransition(async () => {
+      try {
+        setError(null);
+        await setUsername(value);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to save username.");
+      }
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="space-y-2">
+        <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+          Choose a username
+        </label>
+        <Input
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder="lowercase_letters"
+          className="h-10 rounded-2xl bg-background/80"
+          disabled={isPending}
+        />
+        <p className="text-xs text-muted-foreground">
+          3-20 characters. Use letters, numbers, or underscores.
+        </p>
+      </div>
+      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      <Button type="submit" disabled={isPending || !value.trim()}>
+        {isPending ? "Saving..." : "Claim username"}
+      </Button>
+    </form>
+  );
+}
