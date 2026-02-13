@@ -15,6 +15,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/sign-out-button";
+import { usePathname } from "next/navigation";
 
 type MobileNavProps = {
   username?: string | null;
@@ -23,10 +24,13 @@ type MobileNavProps = {
 
 export function MobileNav({ username, isOwner }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) => pathname === href;
 
   return (
     <div className="md:hidden">
-      <div className="flex items-center justify-between rounded-3xl border border-foreground/10 bg-card/90 px-4 py-3">
+      <div className="flex items-center justify-between panel-card px-4 py-3">
         <div className="flex items-center gap-2">
           <Image
             src="/unsaid.png"
@@ -51,7 +55,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
             className="absolute inset-0 bg-foreground/10"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-4 top-4 w-[260px] rounded-3xl border border-foreground/10 bg-card/95 p-4">
+          <div className="absolute right-4 top-4 w-[260px] panel-card p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 Navigation
@@ -66,7 +70,11 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                   href={`/${username}`}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
+                    buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    }),
+                    isActive(`/${username}`) ? "nav-pill-active" : "nav-pill",
                     "rounded-2xl justify-start gap-2"
                   )}
                 >
@@ -84,7 +92,11 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                   href="/published"
                   onClick={() => setOpen(false)}
                   className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
+                    buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    }),
+                    isActive("/published") ? "nav-pill-active" : "nav-pill",
                     "rounded-2xl justify-start gap-2"
                   )}
                 >
@@ -102,7 +114,11 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                   href="/analytics"
                   onClick={() => setOpen(false)}
                   className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
+                    buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    }),
+                    isActive("/analytics") ? "nav-pill-active" : "nav-pill",
                     "rounded-2xl justify-start gap-2"
                   )}
                 >
@@ -120,7 +136,11 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                   href="/account"
                   onClick={() => setOpen(false)}
                   className={cn(
-                    buttonVariants({ variant: "outline", size: "sm" }),
+                    buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    }),
+                    isActive("/account") ? "nav-pill-active" : "nav-pill",
                     "rounded-2xl justify-start gap-2"
                   )}
                 >

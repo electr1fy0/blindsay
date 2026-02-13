@@ -48,7 +48,7 @@ export function CreateMessageForm({
         value={content}
         onChange={(e) => setContent(e.target.value)}
         disabled={isPending}
-        className="min-h-[90px] bg-background/70"
+        className="min-h-[90px]"
       />
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <div className="flex justify-end">

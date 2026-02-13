@@ -2,15 +2,15 @@
 
 **Anonymous inbox, precise publishing.**
 
-Unsaid is a platform that allows you to receive honest, anonymous notes through a shared link. You have full control over your inbox: read everything privately, and only publish the replies you choose.
+Unsaid is a platform that allows you to receive honest, anonymous notes through a shared link. You have full control over your inbox: read everything privately, and only publish the messages you reply to.
 
 ## Features
 
 - **Anonymous Inbox:** Receive notes in a private stream.
-- **Curated Public Feed:** Only the messages you reply to are published. Everything else stays private.
-- **Inbox Controls:** Open or close your inbox at any time.
-- **Visibility Limits:** Control how many public replies are visible at once.
-- **Safety:** Built-in reporting, rate limiting, and basic abuse filtering.
+- **Curated Public Feed:** Reply to publish. Everything else stays private.
+- **Inbox Controls:** Open, close, or pause your inbox link.
+- **Moderation Tools:** Hidden-words filter, sender blocking, and inbox pause.
+- **Safety:** Built-in reporting and rate limiting.
 - **Easy Sharing:** Generate unique links and QR codes instantly.
 - **Mobile Optimized:** Fully responsive design for on-the-go management.
 
@@ -41,8 +41,6 @@ Unsaid is a platform that allows you to receive honest, anonymous notes through 
 
 2. **Install dependencies:**
    ```bash
-   npm install
-   # or
    bun install
    ```
 
@@ -66,7 +64,7 @@ Unsaid is a platform that allows you to receive honest, anonymous notes through 
    Run the Prisma migrations to set up your database schema.
 
    ```bash
-   npx prisma migrate dev
+   bunx prisma migrate dev
    ```
 
 5. **Run the development server:**
@@ -76,14 +74,6 @@ Unsaid is a platform that allows you to receive honest, anonymous notes through 
    ```
 
    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Project Structure
-
-- `/app`: Next.js App Router pages and API routes.
-- `/components`: Reusable UI components (Shadcn UI, custom forms).
-- `/lib`: Utility functions and Prisma client instance.
-- `/prisma`: Database schema and migrations.
-- `/public`: Static assets.
 
 ## License
 

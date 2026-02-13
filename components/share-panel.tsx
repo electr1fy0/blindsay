@@ -23,7 +23,7 @@ export function SharePanel({ url }: SharePanelProps) {
   }, [url]);
 
   return (
-    <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4">
+    <div className="panel-card p-4">
       <div className="flex items-center justify-between gap-3 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
         <span>Share your link</span>
         <span className="hidden text-[0.55rem] text-muted-foreground/80 md:inline">
@@ -32,7 +32,7 @@ export function SharePanel({ url }: SharePanelProps) {
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_200px]">
         <div className="flex flex-col gap-3">
-          <div className="rounded-2xl border border-foreground/10 bg-background/80 px-3 py-2 text-sm text-foreground/80">
+          <div className="panel-card-muted px-3 py-2 text-sm text-foreground/80">
             <span className="break-all">{url}</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -55,7 +55,7 @@ export function SharePanel({ url }: SharePanelProps) {
             </Button>
           </div>
         </div>
-        <div className="flex items-center justify-center rounded-2xl border border-foreground/10 bg-background/80 p-3">
+        <div className="panel-card-muted flex items-center justify-center p-3">
           {qr ? (
             <div className="flex flex-col items-center gap-2">
               <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">

@@ -29,9 +29,9 @@ export default async function Page() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto flex max-w-5xl flex-col gap-12 px-5 py-10">
-        <header className="grid gap-6 rounded-3xl border border-foreground/10 bg-card/90 p-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
-          <div className="space-y-3">
+      <div className="mx-auto flex max-w-5xl flex-col gap-10 px-5 py-10">
+        <header className="panel-card grid gap-6 p-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+          <div className="section-header">
             <div className="flex items-center gap-3">
               <Image
                 src="/unsaid.png"
@@ -49,7 +49,7 @@ export default async function Page() {
             </h1>
             <p className="text-sm text-muted-foreground">
               Share one link. Receive honest notes. Publish only the replies you
-              choose, with limits and controls.
+              send, with limits and moderation controls.
             </p>
             <div className="flex flex-wrap gap-2">
               {!session ? (
@@ -78,32 +78,32 @@ export default async function Page() {
             </div>
           </div>
           <div className="rounded-3xl border border-foreground/10 bg-background/90 p-4">
-            <div className="rounded-2xl border border-foreground/15 border-dashed bg-card/80 p-4 text-sm">
+            <div className="panel-card-subtle border-dashed p-4 text-sm">
               <div className="flex items-center justify-between text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
                 <span>Share link</span>
                 <span>/you</span>
               </div>
               <div className="mt-3 grid gap-2">
-                <div className="rounded-2xl border border-foreground/10 bg-muted/30 p-3">
+                <div className="panel-card-muted bg-muted/30 p-3">
                   “I never said this, but…”
                 </div>
-                <div className="rounded-2xl border border-foreground/10 bg-muted/30 p-3">
+                <div className="panel-card-muted bg-muted/30 p-3">
                   “Thanks for showing up.”
                 </div>
               </div>
             </div>
             <div className="mt-3 grid gap-2 text-xs text-muted-foreground">
-              <div className="rounded-2xl border border-foreground/10 bg-card/80 p-3">
-                Replies can be published or hidden.
+              <div className="panel-card-subtle p-3">
+                Replies publish automatically.
               </div>
-              <div className="rounded-2xl border border-foreground/10 bg-card/80 p-3">
-                Inbox can be opened or closed anytime.
+              <div className="panel-card-subtle p-3">
+                Pause your link or close the inbox anytime.
               </div>
             </div>
           </div>
         </header>
 
-        <section className="grid gap-3 md:grid-cols-3">
+        <section className="section-grid md:grid-cols-3">
           {[
             {
               icon: Notification03Icon,
@@ -113,7 +113,7 @@ export default async function Page() {
             {
               icon: Message01Icon,
               title: "Replies",
-              text: "Reply to publish, hide when you want.",
+              text: "Reply to publish, always public.",
             },
             {
               icon: Link01Icon,
@@ -128,17 +128,17 @@ export default async function Page() {
             {
               icon: Shield01Icon,
               title: "Safety",
-              text: "Rate limits, reports, and basic filtering.",
+              text: "Rate limits, reports, and hidden-word filters.",
             },
             {
               icon: Settings01Icon,
               title: "Controls",
-              text: "Limit public replies and close your inbox.",
+              text: "Pause links and close your inbox.",
             },
           ].map((item) => (
             <div
               key={item.title}
-              className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm"
+              className="panel-card p-4 text-sm"
             >
               <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
                 <HugeiconsIcon
@@ -154,37 +154,37 @@ export default async function Page() {
           ))}
         </section>
 
-        <section className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
+        <section className="panel-card p-6">
           <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
-            <div className="space-y-2">
+            <div className="section-header">
               <h2 className="text-xl font-semibold">Visibility engine</h2>
               <p className="text-sm text-muted-foreground">
                 Replies become the public record. Everything else stays private.
               </p>
             </div>
-            <div className="rounded-3xl border border-foreground/15 border-dashed bg-background/90 p-4">
+            <div className="panel-card-subtle border-dashed p-4">
               <div className="grid gap-3 text-xs text-muted-foreground">
-                <div className="rounded-2xl border border-foreground/10 bg-card/90 p-3">
+                <div className="panel-card p-3">
                   Anonymous message arrives
                 </div>
                 <div className="grid gap-2 md:grid-cols-2">
-                  <div className="rounded-2xl border border-foreground/10 bg-card/90 p-3">
+                  <div className="panel-card p-3">
                     Reply published
                   </div>
-                  <div className="rounded-2xl border border-foreground/10 bg-card/90 p-3">
-                    Reply hidden
+                  <div className="panel-card p-3">
+                    Unreplied stays private
                   </div>
                 </div>
-                <div className="rounded-2xl border border-foreground/10 bg-card/90 p-3">
-                  Public feed shows last N replies
+                <div className="panel-card p-3">
+                  Public feed shows replied messages
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm">
+        <section className="section-grid md:grid-cols-3">
+          <div className="panel-card p-4 text-sm">
             <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
               <HugeiconsIcon
                 icon={ToggleOnIcon}
@@ -192,11 +192,11 @@ export default async function Page() {
                 color="currentColor"
                 strokeWidth={1.5}
               />
-              Inbox switch
+              Inbox controls
             </div>
-            <p className="mt-3">Open or close your inbox in one tap.</p>
+            <p className="mt-3">Pause or close your inbox in one tap.</p>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm">
+          <div className="panel-card p-4 text-sm">
             <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
               <HugeiconsIcon
                 icon={ViewOffIcon}
@@ -208,7 +208,7 @@ export default async function Page() {
             </div>
             <p className="mt-3">Unreplied notes never show publicly.</p>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm">
+          <div className="panel-card p-4 text-sm">
             <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
               <HugeiconsIcon
                 icon={Shield01Icon}
@@ -218,44 +218,35 @@ export default async function Page() {
               />
               Safety
             </div>
-            <p className="mt-3">Reports and rate limits reduce abuse.</p>
+            <p className="mt-3">
+              Reports, blocks, and filters keep things calm.
+            </p>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
-          <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold">Visibility limits</h2>
-              <p className="text-sm text-muted-foreground">
-                Decide how many replied messages are public at a time.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-foreground/10 bg-background/80 p-4 text-sm">
-              Example: show only the last 10 replied notes.
-            </div>
-          </div>
-        </section>
-
-        <section className="grid gap-3 md:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
+        <section className="section-grid md:grid-cols-[1.1fr_0.9fr]">
+          <div className="panel-card p-6">
             <h2 className="text-xl font-semibold">Safety & moderation</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Abuse controls are lightweight by default and grow with your
               inbox.
             </p>
             <div className="mt-4 grid gap-2 text-sm">
-              <div className="rounded-2xl border border-foreground/10 bg-background/90 p-3">
+              <div className="panel-card-muted p-3">
                 Rate-limited anonymous sends.
               </div>
-              <div className="rounded-2xl border border-foreground/10 bg-background/90 p-3">
+              <div className="panel-card-muted p-3">
                 Report buttons on public messages.
               </div>
-              <div className="rounded-2xl border border-foreground/10 bg-background/90 p-3">
-                Basic abusive language filter.
+              <div className="panel-card-muted p-3">
+                Hidden words filter and block list.
+              </div>
+              <div className="panel-card-muted p-3">
+                Pause your inbox without disabling the link.
               </div>
             </div>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
+          <div className="panel-card p-6">
             <h2 className="text-xl font-semibold">Mobile ready</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               The inbox, account, and share tools are all accessible on mobile.
@@ -266,7 +257,7 @@ export default async function Page() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
+        <section className="panel-card p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-2xl font-semibold">

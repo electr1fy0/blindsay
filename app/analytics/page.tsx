@@ -27,10 +27,6 @@ export default async function AnalyticsPage() {
     where: { recipientId: user.id, parentId: { not: null } },
     _count: { id: true },
   });
-  const publicReplies = await prisma.message.aggregate({
-    where: { recipientId: user.id, parentId: { not: null }, isPublic: true },
-    _count: { id: true },
-  });
 
   const days = 14;
   const start = new Date();
@@ -39,7 +35,7 @@ export default async function AnalyticsPage() {
 
   const recent = await prisma.message.findMany({
     where: { recipientId: user.id, createdAt: { gte: start } },
-    select: { createdAt: true, parentId: true, isPublic: true },
+    select: { createdAt: true, parentId: true },
   });
 
   const buckets = Array.from({ length: days }, (_, index) => {
@@ -50,7 +46,6 @@ export default async function AnalyticsPage() {
       label: `${days - index - 1}d`,
       messages: 0,
       replies: 0,
-      publicReplies: 0,
     };
   });
 
@@ -62,7 +57,6 @@ export default async function AnalyticsPage() {
     if (dayIndex < 0 || dayIndex >= days) continue;
     if (item.parentId) {
       buckets[dayIndex].replies += 1;
-      if (item.isPublic) buckets[dayIndex].publicReplies += 1;
     } else {
       buckets[dayIndex].messages += 1;
     }
@@ -70,111 +64,128 @@ export default async function AnalyticsPage() {
 
   const maxMessages = Math.max(1, ...buckets.map((b) => b.messages));
   const maxReplies = Math.max(1, ...buckets.map((b) => b.replies));
-  const maxPublic = Math.max(1, ...buckets.map((b) => b.publicReplies));
 
   return (
     <AppShell username={user.username} isOwner>
-      <div className="flex flex-col gap-4">
-        <div className="space-y-1">
+      <div className="page-stack">
+        <div className="section-header">
           <h1 className="text-2xl font-semibold">Analytics</h1>
           <p className="text-sm text-muted-foreground">
             Activity overview for your inbox.
           </p>
         </div>
-        <div className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4">
-            <div className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              Messages
+        <div className="section-grid md:grid-cols-2">
+          <div className="panel-card p-5">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Messages received</div>
+              <div className="kicker">Total</div>
             </div>
-            <div className="mt-2 text-2xl font-semibold">
+            <div className="mt-3 text-3xl font-semibold">
               {messages._count.id}
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Notes sent to your inbox.
+            </p>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4">
-            <div className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              Replies
+          <div className="panel-card p-5">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Replies published</div>
+              <div className="kicker">Total</div>
             </div>
-            <div className="mt-2 text-2xl font-semibold">
+            <div className="mt-3 text-3xl font-semibold">
               {replies._count.id}
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Replies posted in your inbox.
+            </p>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4">
-            <div className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              Public
+        </div>
+
+        <div className="panel-card p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="text-sm font-semibold">Last 14 days</div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Compare message volume and replies over time.
+              </p>
             </div>
-            <div className="mt-2 text-2xl font-semibold">
-              {publicReplies._count.id}
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-primary/80" />
+                Messages
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-foreground/60" />
+                Replies
+              </span>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+            <div className="panel-card-muted p-4">
+              <div className="kicker">Messages</div>
+              <div className="mt-4 flex items-end gap-2">
+                {buckets.map((bucket) => (
+                  <div key={bucket.label} className="flex flex-col items-center gap-2">
+                    <div
+                      className="w-4 rounded-2xl bg-primary/80"
+                      style={{ height: `${Math.max(8, (bucket.messages / maxMessages) * 96)}px` }}
+                      title={`${bucket.messages} messages`}
+                    />
+                    <div className="text-[0.55rem] text-muted-foreground">
+                      {bucket.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="panel-card-muted p-4">
+              <div className="kicker">Replies</div>
+              <div className="mt-4 flex items-end gap-2">
+                {buckets.map((bucket) => (
+                  <div key={bucket.label} className="flex flex-col items-center gap-2">
+                    <div
+                      className="w-4 rounded-2xl bg-foreground/60"
+                      style={{ height: `${Math.max(8, (bucket.replies / maxReplies) * 96)}px` }}
+                      title={`${bucket.replies} replies`}
+                    />
+                    <div className="text-[0.55rem] text-muted-foreground">
+                      {bucket.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-foreground/10 bg-card/90 p-5">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">Last 14 days</div>
-            <div className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              Messages
-            </div>
-          </div>
-          <div className="mt-4 flex items-end gap-2">
-            {buckets.map((bucket) => (
-              <div key={bucket.label} className="flex flex-col items-center gap-2">
-                <div
-                  className="w-4 rounded-2xl bg-primary/80"
-                  style={{ height: `${Math.max(8, (bucket.messages / maxMessages) * 72)}px` }}
-                  title={`${bucket.messages} messages`}
-                />
-                <div className="text-[0.55rem] text-muted-foreground">
-                  {bucket.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-5">
+        <div className="section-grid md:grid-cols-2">
+          <div className="panel-card p-5">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Replies</div>
-              <div className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                Total
-              </div>
+              <div className="text-sm font-semibold">Replies total</div>
+              <div className="kicker">All time</div>
             </div>
-            <div className="mt-4 flex items-end gap-2">
-              {buckets.map((bucket) => (
-                <div key={bucket.label} className="flex flex-col items-center gap-2">
-                  <div
-                    className="w-4 rounded-2xl bg-foreground/60"
-                    style={{ height: `${Math.max(8, (bucket.replies / maxReplies) * 72)}px` }}
-                    title={`${bucket.replies} replies`}
-                  />
-                  <div className="text-[0.55rem] text-muted-foreground">
-                    {bucket.label}
-                  </div>
-                </div>
-              ))}
+            <div className="mt-3 text-3xl font-semibold">
+              {replies._count.id}
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Total replies created in your inbox.
+            </p>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-5">
+          <div className="panel-card p-5">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Public replies</div>
-              <div className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                Visible
-              </div>
+              <div className="text-sm font-semibold">Response ratio</div>
+              <div className="kicker">Replies</div>
             </div>
-            <div className="mt-4 flex items-end gap-2">
-              {buckets.map((bucket) => (
-                <div key={bucket.label} className="flex flex-col items-center gap-2">
-                  <div
-                    className="w-4 rounded-2xl bg-muted-foreground/60"
-                    style={{ height: `${Math.max(8, (bucket.publicReplies / maxPublic) * 72)}px` }}
-                    title={`${bucket.publicReplies} public replies`}
-                  />
-                  <div className="text-[0.55rem] text-muted-foreground">
-                    {bucket.label}
-                  </div>
-                </div>
-              ))}
+            <div className="mt-3 text-3xl font-semibold">
+              {messages._count.id === 0
+                ? "—"
+                : `${Math.round(
+                    (replies._count.id / messages._count.id) * 100
+                  )}%`}
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Replies as a share of total messages.
+            </p>
           </div>
         </div>
       </div>

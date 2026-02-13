@@ -68,7 +68,7 @@ export function ReplyForm({
         value={content}
         onChange={(event) => setContent(event.target.value)}
         disabled={isPending}
-        className="h-11 rounded-2xl bg-background/70"
+        className="h-11 rounded-2xl"
       />
       <div className="flex justify-end">
         <Button type="submit" size="sm" disabled={isPending || !content.trim()}>

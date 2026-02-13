@@ -3,13 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CreateMessageForm } from "@/components/create-message-form";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ReplyForm } from "@/components/reply-form";
 import { formatRelativeTime } from "@/lib/relative-time";
 import { AppShell } from "@/components/app-shell";
 import { DeleteMessageButton } from "@/components/message-actions";
 import { EditReplyButton } from "@/components/edit-reply-button";
 import { SharePanel } from "@/components/share-panel";
+import { MessageCard } from "@/components/message-card";
+import { ReportButton } from "@/components/report-button";
 
 type PageProps = {
   params: Promise<{ username?: string }>;
@@ -38,8 +39,8 @@ export default async function UserInboxPage({
       username: true,
       name: true,
       email: true,
-      publicReplyLimit: true,
       inboxOpen: true,
+      inboxPausedUntil: true,
     },
   });
 
@@ -50,6 +51,10 @@ export default async function UserInboxPage({
   const isOwner = Boolean(
     session?.user?.email && session.user.email === profile.email,
   );
+  const now = new Date();
+  const isPaused = Boolean(
+    profile.inboxPausedUntil && profile.inboxPausedUntil > now,
+  );
 
   const baseQuery = {
     where: { recipientId: profile.id, parentId: null },
@@ -58,33 +63,19 @@ export default async function UserInboxPage({
       replies: {
         orderBy: { createdAt: "asc" as const },
         take: 1,
-        ...(isOwner ? {} : { where: { isPublic: true } }),
       },
     },
   };
-  const total = isOwner
-    ? await prisma.message.count({
-        where: { recipientId: profile.id, parentId: null },
-      })
-    : 0;
-  const totalPages = isOwner ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+  const total = await prisma.message.count({
+    where: { recipientId: profile.id, parentId: null },
+  });
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  const messages = isOwner
-    ? await prisma.message.findMany({
-        ...baseQuery,
-        skip,
-        take: pageSize,
-      })
-    : await prisma.message.findMany({
-        ...baseQuery,
-        where: {
-          recipientId: profile.id,
-          parentId: null,
-          replies: { some: { isPublic: true } },
-        },
-        take: Math.min(profile.publicReplyLimit ?? 10, pageSize),
-      });
-  const now = new Date();
+  const messages = await prisma.message.findMany({
+    ...baseQuery,
+    skip: isOwner ? skip : 0,
+    take: isOwner ? pageSize : pageSize,
+  });
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ??
     (process.env.VERCEL_URL
@@ -94,8 +85,8 @@ export default async function UserInboxPage({
 
   return (
     <AppShell username={profile.username} isOwner={isOwner}>
-      <div className="flex flex-col gap-4">
-        <div className="space-y-1">
+      <div className="page-stack">
+        <div className="section-header">
           <h1 className="text-2xl font-semibold">
             {isOwner ? "Your inbox" : `Leave a note for ${profile.username}`}
           </h1>
@@ -108,101 +99,75 @@ export default async function UserInboxPage({
 
         {isOwner ? (
           <SharePanel url={shareUrl} />
-        ) : profile.inboxOpen ? (
-          <section className="rounded-3xl border border-foreground/10 bg-card/90 p-4">
+        ) : profile.inboxOpen && !isPaused ? (
+          <section className="panel-card p-4">
             <CreateMessageForm
               recipientId={profile.id}
               recipientUsername={profile.username ?? username}
             />
           </section>
         ) : (
-          <section className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm text-muted-foreground">
-            This inbox is currently closed.
+          <section className="panel-card p-4 text-sm text-muted-foreground">
+            {profile.inboxOpen && isPaused
+              ? `This inbox is paused ${profile.inboxPausedUntil ? formatRelativeTime(profile.inboxPausedUntil, now) : ""}.`
+              : "This inbox is currently closed."}
           </section>
         )}
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-4">
           {messages.length === 0 ? (
-            <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm text-muted-foreground">
-              {isOwner ? "No messages yet." : "No public replies yet."}
+            <div className="panel-card p-4 text-sm text-muted-foreground">
+              {isOwner ? "No messages yet." : "No replies yet."}
             </div>
           ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className="rounded-2xl border border-foreground/10 bg-card/90 px-5 py-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                    {formatRelativeTime(message.createdAt, now)}
-                  </p>
-                  {isOwner ? (
-                    <DeleteMessageButton
-                      messageId={message.id}
-                      recipientUsername={profile.username ?? username}
-                    />
-                  ) : null}
-                </div>
-                <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed pl-1">
-                  {message.content}
-                </p>
-
-                {message.replies[0] ? (
-                  <div className="mt-2 space-y-1">
-                    {(() => {
-                      const reply = message.replies[0];
-                      if (!reply) return null;
-                      return (
-                        <div className="rounded-xl border border-foreground/10 bg-muted/20 px-4 pb-3 pt-2 mt-4">
-                          <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                            <div className="flex items-center gap-2 ">
-                              <span>Reply</span>
-                              <span>·</span>
-                              <span>
-                                {formatRelativeTime(reply.createdAt, now)}
-                              </span>
-                            </div>
-                            {isOwner ? (
-                              <div className="flex items-center gap-2">
-                                <EditReplyButton
-                                  replyId={reply.id}
-                                  recipientUsername={
-                                    profile.username ?? username
-                                  }
-                                  initialContent={reply.content}
-                                />
-                                <DeleteMessageButton
-                                  messageId={reply.id}
-                                  recipientUsername={
-                                    profile.username ?? username
-                                  }
-                                />
-                              </div>
-                            ) : null}
-                          </div>
-                          <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed pl-1">
-                            {reply.content}
-                          </p>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                ) : null}
-
-                {isOwner ? (
-                  <div className="mt-2">
-                    <ReplyForm
-                      recipientId={profile.id}
-                      recipientUsername={profile.username ?? username}
-                      parentId={message.id}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ))
+            messages.map((message) => {
+              const reply = message.replies[0] ?? null;
+              return (
+                <MessageCard
+                  key={message.id}
+                  message={message}
+                  reply={reply}
+                  now={now}
+                  messageActions={
+                    isOwner ? (
+                      <DeleteMessageButton
+                        messageId={message.id}
+                        recipientUsername={profile.username ?? username}
+                      />
+                    ) : null
+                  }
+                  replyActions={
+                    isOwner && reply ? (
+                      <>
+                        <EditReplyButton
+                          replyId={reply.id}
+                          recipientUsername={profile.username ?? username}
+                          initialContent={reply.content}
+                        />
+                        <DeleteMessageButton
+                          messageId={reply.id}
+                          recipientUsername={profile.username ?? username}
+                        />
+                      </>
+                    ) : !isOwner && reply ? (
+                      <ReportButton messageId={reply.id} />
+                    ) : null
+                  }
+                  replyForm={
+                    isOwner ? (
+                      <ReplyForm
+                        recipientId={profile.id}
+                        recipientUsername={profile.username ?? username}
+                        parentId={message.id}
+                      />
+                    ) : null
+                  }
+                />
+              );
+            })
           )}
           {isOwner ? (
-            <div className="inline-flex items-center gap-3 rounded-2xl border border-foreground/10 bg-card/90 px-3 py-2 text-xs text-muted-foreground">
+            <div className="panel-card-subtle inline-flex items-center gap-3 px-3 py-2 text-xs text-muted-foreground">
               <span className="lowercase">
                 page {page} of {totalPages}
               </span>
@@ -210,7 +175,7 @@ export default async function UserInboxPage({
                 {page > 1 ? (
                   <a
                     href={`/${profile.username ?? username}?page=${page - 1}`}
-                    className="rounded-2xl border border-foreground/10 bg-background/80 px-3 py-1 text-xs"
+                    className="panel-card-muted px-3 py-1 text-xs"
                   >
                     Previous
                   </a>
@@ -218,7 +183,7 @@ export default async function UserInboxPage({
                 {page < totalPages ? (
                   <a
                     href={`/${profile.username ?? username}?page=${page + 1}`}
-                    className="rounded-2xl border border-foreground/10 bg-background/80 px-3 py-1 text-xs"
+                    className="panel-card-muted px-3 py-1 text-xs"
                   >
                     Next
                   </a>

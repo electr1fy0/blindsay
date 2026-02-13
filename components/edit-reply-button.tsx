@@ -36,7 +36,7 @@ export function EditReplyButton({
       <Input
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="h-8 w-44 rounded-2xl bg-background/80"
+        className="h-8 w-44 rounded-2xl"
         disabled={isPending}
       />
       <Button

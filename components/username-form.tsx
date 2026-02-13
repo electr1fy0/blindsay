@@ -40,7 +40,7 @@ export function UsernameForm({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="lowercase_letters"
-          className="h-10 rounded-2xl bg-background/80"
+          className="h-10 rounded-2xl"
           disabled={isPending}
         />
         <p className="text-xs text-muted-foreground">

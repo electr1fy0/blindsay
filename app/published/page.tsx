@@ -3,9 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
-import { formatRelativeTime } from "@/lib/relative-time";
 import { DeleteMessageButton } from "@/components/message-actions";
 import { EditReplyButton } from "@/components/edit-reply-button";
+import { MessageCard } from "@/components/message-card";
 
 export default async function PublishedPage() {
   const session = await getServerSession(authOptions);
@@ -22,51 +22,59 @@ export default async function PublishedPage() {
     redirect("/");
   }
 
-  const replies = await prisma.message.findMany({
-    where: { recipientId: user.id, parentId: { not: null } },
+  const messages = await prisma.message.findMany({
+    where: {
+      recipientId: user.id,
+      parentId: null,
+      replies: { some: {} },
+    },
     orderBy: { createdAt: "desc" },
+    include: {
+      replies: { orderBy: { createdAt: "asc" }, take: 1 },
+    },
   });
   const now = new Date();
 
   return (
     <AppShell username={user.username} isOwner>
-      <div className="flex flex-col gap-4">
-        <div className="space-y-1">
+      <div className="page-stack">
+        <div className="section-header">
           <h1 className="text-2xl font-semibold">Published</h1>
           <p className="text-sm text-muted-foreground">
-            Toggle which replies are visible on your public page.
+            Replies are public by default.
           </p>
         </div>
-        {replies.length === 0 ? (
-          <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm text-muted-foreground">
+        {messages.length === 0 ? (
+          <div className="panel-card p-4 text-sm text-muted-foreground">
             No replies yet.
           </div>
         ) : (
-          <div className="space-y-3">
-            {replies.map((reply) => (
-              <div
-                key={reply.id}
-                className="rounded-2xl border border-foreground/10 bg-card/90 px-5 py-4"
-              >
-                <div className="flex items-center justify-between gap-3 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                  <span>{formatRelativeTime(reply.createdAt, now)}</span>
-                  <div className="flex items-center gap-2">
-                    <EditReplyButton
-                      replyId={reply.id}
-                      recipientUsername={user.username ?? ""}
-                      initialContent={reply.content}
-                    />
-                    <DeleteMessageButton
-                      messageId={reply.id}
-                      recipientUsername={user.username ?? ""}
-                    />
-                  </div>
-                </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed">
-                  {reply.content}
-                </p>
-              </div>
-            ))}
+          <div className="space-y-4">
+            {messages.map((message) => {
+              const reply = message.replies[0];
+              if (!reply) return null;
+              return (
+                <MessageCard
+                  key={message.id}
+                  message={message}
+                  reply={reply}
+                  now={now}
+                  replyActions={
+                    <>
+                      <EditReplyButton
+                        replyId={reply.id}
+                        recipientUsername={user.username ?? ""}
+                        initialContent={reply.content}
+                      />
+                      <DeleteMessageButton
+                        messageId={reply.id}
+                        recipientUsername={user.username ?? ""}
+                      />
+                    </>
+                  }
+                />
+              );
+            })}
           </div>
         )}
       </div>

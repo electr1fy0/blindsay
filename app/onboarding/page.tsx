@@ -13,7 +13,7 @@ export default async function OnboardingPage() {
     return (
       <div className="min-h-screen">
         <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
-          <div className="space-y-3">
+          <div className="section-header">
             <div className="flex items-center gap-3">
               <Image
                 src="/unsaid.png"
@@ -31,7 +31,7 @@ export default async function OnboardingPage() {
               We need an account before you can claim a username.
             </p>
           </div>
-          <div className="rounded-3xl border border-foreground/10 bg-card/80 p-6">
+          <div className="panel-card-subtle p-6">
             <AuthButtons user={null} />
           </div>
         </div>
@@ -50,8 +50,8 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-16">
-        <div className="space-y-2">
+      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
+        <div className="section-header">
           <div className="flex items-center gap-3">
             <Image
               src="/unsaid.png"
@@ -69,7 +69,7 @@ export default async function OnboardingPage() {
             This becomes your inbox link and can be shared with anyone.
           </p>
         </div>
-        <div className="rounded-3xl border border-foreground/10 bg-card/80 p-6">
+        <div className="panel-card-subtle p-6">
           <UsernameForm submitLabel="Claim username" />
         </div>
       </div>
