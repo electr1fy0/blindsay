@@ -33,14 +33,14 @@ export function UsernameForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="space-y-2">
-        <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+        <label className="kicker block">
           Username
         </label>
         <Input
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder="lowercase_letters"
-          className="h-10 rounded-2xl"
+          className="rounded-2xl"
           disabled={isPending}
         />
         <p className="text-xs text-muted-foreground">

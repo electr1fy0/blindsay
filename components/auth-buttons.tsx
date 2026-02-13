@@ -5,6 +5,8 @@ import Image from "next/image";
 import { signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
+import { cn } from "@/lib/utils";
+
 type AuthButtonsProps = {
   user?: {
     name?: string | null;
@@ -22,12 +24,10 @@ export function AuthButtons({ user, className, size = "default" }: AuthButtonsPr
     const initials = (user.name ?? "U").slice(0, 1).toUpperCase();
     return (
       <div
-        className={[
-          "flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-muted/40 p-3",
-          className,
-        ]
-          .filter(Boolean)
-          .join(" ")}
+        className={cn(
+          "panel-card-subtle flex flex-col gap-2 p-3 border-foreground/10",
+          className
+        )}
       >
         <div className="flex items-start gap-3 min-w-0">
           {user.image && imageOk ? (
@@ -44,9 +44,9 @@ export function AuthButtons({ user, className, size = "default" }: AuthButtonsPr
               {initials}
             </div>
           )}
-          <div className="text-sm min-w-0">
+          <div className="text-xs min-w-0">
             <div className="font-medium">{user.name ?? "Signed in"}</div>
-            <div className="text-xs text-muted-foreground break-all">
+            <div className="text-muted-foreground break-all">
               {user.email}
             </div>
           </div>

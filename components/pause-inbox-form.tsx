@@ -15,9 +15,9 @@ const pauseOptions = [
   { label: "1 hour", hours: 1 },
   { label: "6 hours", hours: 6 },
   { label: "12 hours", hours: 12 },
-  { label: "1 day", hours: 24 },
-  { label: "3 days", hours: 72 },
-  { label: "7 days", hours: 168 },
+  { label: "24 hours", hours: 24 },
+  { label: "72 hours", hours: 72 },
+  { label: "168 hours", hours: 168 },
 ];
 
 type PauseInboxFormProps = {
@@ -29,8 +29,25 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
   const [isPending, startTransition] = useTransition();
   const [isClearing, startClearing] = useTransition();
 
+  if (isPaused) {
+    return (
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          startClearing(async () => {
+            await clearInboxPause();
+          });
+        }}
+      >
+        <Button type="submit" size="sm" variant="outline" disabled={isClearing}>
+          {isClearing ? "Resuming..." : "Resume"}
+        </Button>
+      </form>
+    );
+  }
+
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-nowrap items-center gap-2">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -38,10 +55,10 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
             await pauseInbox(Number(value));
           });
         }}
-        className="flex flex-wrap items-center gap-2"
+        className="flex flex-nowrap items-center gap-2"
       >
         <Select value={value} onValueChange={(next) => setValue(next ?? value)}>
-          <SelectTrigger className="h-8 w-[140px] rounded-2xl">
+          <SelectTrigger className="h-8 w-[110px] rounded-2xl">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -53,23 +70,9 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
           </SelectContent>
         </Select>
         <Button type="submit" size="sm" disabled={isPending}>
-          {isPending ? "Pausing..." : "Pause inbox"}
+          {isPending ? "Pausing..." : "Pause"}
         </Button>
       </form>
-      {isPaused ? (
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            startClearing(async () => {
-              await clearInboxPause();
-            });
-          }}
-        >
-          <Button type="submit" size="sm" variant="ghost" disabled={isClearing}>
-            {isClearing ? "Clearing..." : "Clear pause"}
-          </Button>
-        </form>
-      ) : null}
     </div>
   );
 }

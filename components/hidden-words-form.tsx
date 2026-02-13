@@ -41,7 +41,7 @@ export function HiddenWordsForm({ initialValue }: HiddenWordsFormProps) {
       }}
     >
       <div className="space-y-4">
-        <label className="block text-[0.65rem] uppercase tracking-[0.32em] text-muted-foreground">
+        <label className="kicker block">
           Hidden words
         </label>
         <Textarea

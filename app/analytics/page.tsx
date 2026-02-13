@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
+import { formatRelativeTime } from "@/lib/relative-time";
 
 export default async function AnalyticsPage() {
   const session = await getServerSession(authOptions);
@@ -27,6 +28,22 @@ export default async function AnalyticsPage() {
     where: { recipientId: user.id, parentId: { not: null } },
     _count: { id: true },
   });
+  const latestMessage = await prisma.message.findFirst({
+    where: { recipientId: user.id, parentId: null },
+    orderBy: { createdAt: "desc" },
+  });
+  const latestReply = await prisma.message.findFirst({
+    where: { recipientId: user.id, parentId: { not: null } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const now = new Date();
+  const latestMessageLabel = latestMessage
+    ? formatRelativeTime(latestMessage.createdAt, now)
+    : "—";
+  const latestReplyLabel = latestReply
+    ? formatRelativeTime(latestReply.createdAt, now)
+    : "—";
 
   const days = 14;
   const start = new Date();
@@ -74,29 +91,29 @@ export default async function AnalyticsPage() {
             Activity overview for your inbox.
           </p>
         </div>
-        <div className="section-grid md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           <div className="panel-card p-5">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Messages received</div>
+              <div className="text-sm font-semibold">Messages</div>
               <div className="kicker">Total</div>
             </div>
             <div className="mt-3 text-3xl font-semibold">
               {messages._count.id}
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Notes sent to your inbox.
+              All time received.
             </p>
           </div>
           <div className="panel-card p-5">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Replies published</div>
-              <div className="kicker">Total</div>
+              <div className="text-sm font-semibold">Latest message</div>
+              <div className="kicker">Recency</div>
             </div>
-            <div className="mt-3 text-3xl font-semibold">
-              {replies._count.id}
+            <div className="mt-3 text-xl font-semibold">
+              {latestMessageLabel}
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Replies posted in your inbox.
+              Received
             </p>
           </div>
         </div>
@@ -158,7 +175,7 @@ export default async function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="section-grid md:grid-cols-2">
+        <div className="section-grid md:grid-cols-3">
           <div className="panel-card p-5">
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">Replies total</div>
@@ -169,6 +186,18 @@ export default async function AnalyticsPage() {
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
               Total replies created in your inbox.
+            </p>
+          </div>
+          <div className="panel-card p-5">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Latest reply</div>
+              <div className="kicker">Recency</div>
+            </div>
+            <div className="mt-3 text-xl font-semibold">
+              {latestReplyLabel}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Published
             </p>
           </div>
           <div className="panel-card p-5">

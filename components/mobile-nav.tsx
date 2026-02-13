@@ -10,6 +10,7 @@ import {
   UserSettings01Icon,
   ViewIcon,
   Analytics01Icon,
+  HelpCircleIcon,
 } from "@hugeicons/core-free-icons";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -156,6 +157,28 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                     strokeWidth={1.5}
                   />
                   Account
+                </Link>
+              ) : null}
+              {isOwner ? (
+                <Link
+                  href="/help"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    }),
+                    isActive("/help") ? "nav-pill-active" : "nav-pill",
+                    "rounded-2xl justify-start gap-2",
+                  )}
+                >
+                  <HugeiconsIcon
+                    icon={HelpCircleIcon}
+                    size={18}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                  Help
                 </Link>
               ) : null}
               {isOwner ? (

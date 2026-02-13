@@ -10,6 +10,7 @@ import {
   UserSettings01Icon,
   ViewIcon,
   Analytics01Icon,
+  HelpCircleIcon,
 } from "@hugeicons/core-free-icons";
 import { MobileNav } from "@/components/mobile-nav";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -123,6 +124,27 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
                   strokeWidth={1.5}
                 />
                 Account
+              </Link>
+            ) : null}
+            {isOwner ? (
+              <Link
+              href="/help"
+              className={cn(
+                buttonVariants({
+                  variant: "ghost",
+                  size: "sm",
+                }),
+                isActive("/help") ? "nav-pill-active" : "nav-pill",
+                "rounded-2xl justify-start gap-2",
+                )}
+              >
+                <HugeiconsIcon
+                  icon={HelpCircleIcon}
+                  size={18}
+                  color="currentColor"
+                  strokeWidth={1.5}
+                />
+                Help
               </Link>
             ) : null}
           </nav>

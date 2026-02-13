@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Link01Icon, QrCode01Icon } from "@hugeicons/core-free-icons";
 
+import { cn } from "@/lib/utils";
+
 type SharePanelProps = {
   url: string;
+  className?: string;
 };
 
-export function SharePanel({ url }: SharePanelProps) {
+export function SharePanel({ url, className }: SharePanelProps) {
   const [copied, setCopied] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
 
@@ -23,14 +26,14 @@ export function SharePanel({ url }: SharePanelProps) {
   }, [url]);
 
   return (
-    <div className="panel-card p-4">
+    <div className={cn("panel-card p-4", className)}>
       <div className="flex items-center justify-between gap-3 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
         <span>Share your link</span>
         <span className="hidden text-[0.55rem] text-muted-foreground/80 md:inline">
           Scan or copy
         </span>
       </div>
-      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1fr)_200px]">
+      <div className="mt-4 flex flex-col gap-4">
         <div className="flex flex-col gap-3">
           <div className="panel-card-muted px-3 py-2 text-sm text-foreground/80">
             <span className="break-all">{url}</span>
