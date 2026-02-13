@@ -41,11 +41,11 @@ export async function createAnonymousMessage(
   content: string
 ) {
   if (!content || content.trim() === "") {
-    throw new Error("Content cannot be empty");
+    return { error: "Content cannot be empty", success: false };
   }
 
   if (containsBlockedWords(content)) {
-    throw new Error("Please remove abusive language.");
+    return { error: "Please remove abusive language.", success: false };
   }
 
   const recipient = await prisma.user.findUnique({
@@ -54,27 +54,27 @@ export async function createAnonymousMessage(
   });
 
   if (!recipient) {
-    throw new Error("Recipient not found.");
+    return { error: "Recipient not found.", success: false };
   }
 
   const now = new Date();
   if (!recipient.inboxOpen) {
-    throw new Error("This inbox is currently closed.");
+    return { error: "This inbox is currently closed.", success: false };
   }
 
   if (recipient.inboxPausedUntil && recipient.inboxPausedUntil > now) {
-    throw new Error("This inbox is temporarily paused. Please try again later.");
+    return { error: "This inbox is temporarily paused. Please try again later.", success: false };
   }
 
   const hiddenWords = normalizeHiddenWords(recipient.hiddenWords ?? []);
   if (containsHiddenWords(content, hiddenWords)) {
-    throw new Error("Your message contains a blocked word.");
+    return { error: "Your message contains a blocked word.", success: false };
   }
 
   const ip = await getClientIp();
   const limit = checkRateLimit(`msg:${ip}:${recipientId}`, 5, 10 * 60 * 1000);
   if (!limit.ok) {
-    throw new Error("Too many messages. Please try again later.");
+    return { error: "Too many messages. Please try again later.", success: false };
   }
 
   await prisma.message.create({
@@ -85,6 +85,7 @@ export async function createAnonymousMessage(
   });
 
   revalidatePath(`/${recipientUsername}`);
+  return { success: true };
 }
 
 export async function createReplyMessage(
@@ -250,7 +251,7 @@ export async function updateHiddenWords(words: string[]) {
     data: { hiddenWords: normalized.slice(0, 50) },
   });
 
-  redirect("/account");
+  revalidatePath("/account");
 }
 
 export async function pauseInbox(hours: number) {
@@ -267,7 +268,7 @@ export async function pauseInbox(hours: number) {
     data: { inboxPausedUntil: pauseUntil },
   });
 
-  redirect("/account");
+  revalidatePath("/account");
 }
 
 export async function clearInboxPause() {
@@ -281,7 +282,7 @@ export async function clearInboxPause() {
     data: { inboxPausedUntil: null },
   });
 
-  redirect("/account");
+  revalidatePath("/account");
 }
 
 export async function toggleInboxOpen() {
@@ -304,5 +305,5 @@ export async function toggleInboxOpen() {
     data: { inboxOpen: !user.inboxOpen },
   });
 
-  redirect("/account");
+  revalidatePath("/account");
 }

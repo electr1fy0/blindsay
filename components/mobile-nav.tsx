@@ -44,7 +44,12 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
           </span>
         </div>
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-          <HugeiconsIcon icon={Menu01Icon} size={18} color="currentColor" strokeWidth={1.5} />
+          <HugeiconsIcon
+            icon={Menu01Icon}
+            size={18}
+            color="currentColor"
+            strokeWidth={1.5}
+          />
         </Button>
       </div>
 
@@ -55,7 +60,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
             className="absolute inset-0 bg-foreground/10"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-4 top-4 w-[260px] panel-card p-4">
+          <div className="absolute left-4 top-6 w-56 max-w-[calc(100vw-1.5rem)] panel-card p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 Navigation
@@ -75,7 +80,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive(`/${username}`) ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2"
+                    "rounded-2xl justify-start gap-2",
                   )}
                 >
                   <HugeiconsIcon
@@ -97,7 +102,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive("/published") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2"
+                    "rounded-2xl justify-start gap-2",
                   )}
                 >
                   <HugeiconsIcon
@@ -119,7 +124,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive("/analytics") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2"
+                    "rounded-2xl justify-start gap-2",
                   )}
                 >
                   <HugeiconsIcon
@@ -141,7 +146,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive("/account") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2"
+                    "rounded-2xl justify-start gap-2",
                   )}
                 >
                   <HugeiconsIcon
@@ -154,10 +159,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                 </Link>
               ) : null}
               {isOwner ? (
-                <SignOutButton
-                  size="sm"
-                  className="w-full justify-center"
-                />
+                <SignOutButton size="sm" className="w-full justify-center" />
               ) : null}
             </div>
           </div>

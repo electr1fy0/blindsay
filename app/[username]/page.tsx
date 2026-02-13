@@ -56,7 +56,11 @@ export default async function UserInboxPage({
   );
 
   const baseQuery = {
-    where: { recipientId: profile.id, parentId: null },
+    where: {
+      recipientId: profile.id,
+      parentId: null,
+      ...(isOwner ? {} : { replies: { some: {} } }),
+    },
     orderBy: { createdAt: "desc" as const },
     include: {
       replies: {

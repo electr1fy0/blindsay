@@ -28,7 +28,14 @@ export function CreateMessageForm({
     startTransition(async () => {
       try {
         setError(null);
-        await createAnonymousMessage(recipientId, recipientUsername, content);
+        const result = await createAnonymousMessage(recipientId, recipientUsername, content);
+        
+        if (!result.success && result.error) {
+          setError(result.error);
+          toast.error(result.error);
+          return;
+        }
+
         setContent("");
         toast("Sent.");
         if (onSuccess) onSuccess();
