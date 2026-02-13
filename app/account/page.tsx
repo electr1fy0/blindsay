@@ -135,14 +135,6 @@ export default async function AccountPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <div className="flex flex-col gap-1">
-              <span className="text-muted-foreground">Name</span>
-              <span>{user.name ?? "—"}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-muted-foreground">Email</span>
-              <span className="break-all">{user.email}</span>
-            </div>
             <AuthButtons user={session.user} className="self-start pt-2" />
           </CardContent>
         </Card>
@@ -187,7 +179,9 @@ export default async function AccountPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap items-center gap-3 text-sm">
             <div className="text-muted-foreground">
-              {user.inboxOpen ? "Inbox is open to new messages." : "Inbox is closed."}
+              {user.inboxOpen
+                ? "Inbox is open to new messages."
+                : "Inbox is closed."}
             </div>
             <form
               action={async () => {

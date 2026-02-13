@@ -8,6 +8,8 @@ import {
   Menu01Icon,
   Notification03Icon,
   UserSettings01Icon,
+  ViewIcon,
+  Analytics01Icon,
 } from "@hugeicons/core-free-icons";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -28,11 +30,13 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
           <Image
             src="/unsaid.png"
             alt="Unsaid logo"
-            width={22}
-            height={22}
-            className="rounded-md border border-foreground/15"
+            width={26}
+            height={26}
+            className="border border-foreground/15"
           />
-          <span className="text-sm font-semibold">Unsaid</span>
+          <span className="text-sm font-semibold tracking-[0.06em]">
+            Unsaid
+          </span>
         </div>
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
           <HugeiconsIcon icon={Menu01Icon} size={18} color="currentColor" strokeWidth={1.5} />
@@ -72,6 +76,42 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                     strokeWidth={1.5}
                   />
                   Inbox
+                </Link>
+              ) : null}
+              {isOwner ? (
+                <Link
+                  href="/published"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "rounded-2xl justify-start gap-2"
+                  )}
+                >
+                  <HugeiconsIcon
+                    icon={ViewIcon}
+                    size={18}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                  Published
+                </Link>
+              ) : null}
+              {isOwner ? (
+                <Link
+                  href="/analytics"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "rounded-2xl justify-start gap-2"
+                  )}
+                >
+                  <HugeiconsIcon
+                    icon={Analytics01Icon}
+                    size={18}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                  Analytics
                 </Link>
               ) : null}
               {isOwner ? (

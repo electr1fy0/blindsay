@@ -6,6 +6,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Notification03Icon,
   UserSettings01Icon,
+  ViewIcon,
+  Analytics01Icon,
 } from "@hugeicons/core-free-icons";
 import { MobileNav } from "@/components/mobile-nav";
 
@@ -23,11 +25,13 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
           <Image
             src="/unsaid.png"
             alt="Unsaid logo"
-            width={28}
-            height={28}
-            className="rounded-md border border-foreground/15"
+            width={40}
+            height={40}
+            className="border border-foreground/15"
           />
-          <div className="text-sm font-semibold">Unsaid</div>
+          <div className="text-base font-semibold tracking-[0.06em]">
+            Unsaid
+          </div>
         </div>
         <nav className="flex flex-col gap-2 text-sm">
             {username ? (
@@ -47,16 +51,50 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
               Inbox
             </Link>
           ) : null}
-            {isOwner ? (
-              <Link
-                href="/account"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "rounded-2xl justify-start gap-2",
-                )}
-              >
-                <HugeiconsIcon
-                  icon={UserSettings01Icon}
+          {isOwner ? (
+            <Link
+              href="/published"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "rounded-2xl justify-start gap-2",
+              )}
+            >
+              <HugeiconsIcon
+                icon={ViewIcon}
+                size={18}
+                color="currentColor"
+                strokeWidth={1.5}
+              />
+              Published
+            </Link>
+          ) : null}
+          {isOwner ? (
+            <Link
+              href="/analytics"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "rounded-2xl justify-start gap-2",
+              )}
+            >
+              <HugeiconsIcon
+                icon={Analytics01Icon}
+                size={18}
+                color="currentColor"
+                strokeWidth={1.5}
+              />
+              Analytics
+            </Link>
+          ) : null}
+          {isOwner ? (
+            <Link
+              href="/account"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "rounded-2xl justify-start gap-2",
+              )}
+            >
+              <HugeiconsIcon
+                icon={UserSettings01Icon}
                 size={18}
                 color="currentColor"
                 strokeWidth={1.5}

@@ -71,6 +71,14 @@ export async function createReplyMessage(
     throw new Error("You cannot reply to this message.");
   }
 
+  const existingReply = await prisma.message.findFirst({
+    where: { recipientId, parentId },
+    select: { id: true },
+  });
+  if (existingReply) {
+    throw new Error("Only one reply is allowed.");
+  }
+
   if (!content || content.trim() === "") {
     throw new Error("Content cannot be empty");
   }
@@ -87,7 +95,11 @@ export async function createReplyMessage(
   revalidatePath(`/${recipientUsername}`);
 }
 
-export async function toggleReplyVisibility(replyId: string, recipientUsername: string) {
+export async function updateReplyMessage(
+  replyId: string,
+  recipientUsername: string,
+  content: string
+) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     throw new Error("You must be signed in.");
@@ -102,18 +114,22 @@ export async function toggleReplyVisibility(replyId: string, recipientUsername: 
     throw new Error("You must be signed in.");
   }
 
+  if (!content || content.trim() === "") {
+    throw new Error("Content cannot be empty");
+  }
+
   const reply = await prisma.message.findUnique({
     where: { id: replyId },
-    select: { recipientId: true, isPublic: true, parentId: true },
+    select: { recipientId: true, parentId: true },
   });
 
   if (!reply || !reply.parentId || reply.recipientId !== owner.id) {
-    throw new Error("You cannot update this reply.");
+    throw new Error("You cannot edit this reply.");
   }
 
   await prisma.message.update({
     where: { id: replyId },
-    data: { isPublic: !reply.isPublic },
+    data: { content },
   });
 
   revalidatePath(`/${recipientUsername}`);

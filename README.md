@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Unsaid
+
+**Anonymous inbox, precise publishing, no noise.**
+
+Unsaid is a platform that allows you to receive honest, anonymous notes through a shared link. You have full control over your inbox: read everything privately, and only publish the replies you choose.
+
+## Features
+
+- **Anonymous Inbox:** Receive notes in a private stream.
+- **Curated Public Feed:** Only the messages you reply to are published. Everything else stays private.
+- **Inbox Controls:** Open or close your inbox at any time.
+- **Visibility Limits:** Control how many public replies are visible at once.
+- **Safety:** Built-in reporting, rate limiting, and basic abuse filtering.
+- **Easy Sharing:** Generate unique links and QR codes instantly.
+- **Mobile Optimized:** Fully responsive design for on-the-go management.
+
+## Tech Stack
+
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Language:** TypeScript
+- **Database:** PostgreSQL
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Authentication:** [NextAuth.js](https://next-auth.js.org/) (Google Provider)
+- **Styling:** Tailwind CSS, Shadcn UI
+- **Icons:** Hugeicons
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Bun
+- PostgreSQL database
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/electr1fy0/unsaid.git
+   cd unsaid
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or
+   bun install
+   ```
 
-## Learn More
+3. **Environment Variables:**
+   Create a `.env` file in the root directory and add the following:
 
-To learn more about Next.js, take a look at the following resources:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/unsaid"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   # NextAuth
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXTAUTH_SECRET="your-secret-key"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   # Google OAuth
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   ```
 
-## Deploy on Vercel
+4. **Database Setup:**
+   Run the Prisma migrations to set up your database schema.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npx prisma migrate dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Run the development server:**
+
+   ```bash
+   bun dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Project Structure
+
+- `/app`: Next.js App Router pages and API routes.
+- `/components`: Reusable UI components (Shadcn UI, custom forms).
+- `/lib`: Utility functions and Prisma client instance.
+- `/prisma`: Database schema and migrations.
+- `/public`: Static assets.
+
+## License
+
+[MIT](LICENSE)

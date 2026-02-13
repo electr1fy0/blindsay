@@ -8,7 +8,8 @@ import { ReplyForm } from "@/components/reply-form";
 import { formatRelativeTime } from "@/lib/relative-time";
 import { AppShell } from "@/components/app-shell";
 import { ReportButton } from "@/components/report-button";
-import { DeleteMessageButton, ToggleReplyVisibilityButton } from "@/components/message-actions";
+import { DeleteMessageButton } from "@/components/message-actions";
+import { EditReplyButton } from "@/components/edit-reply-button";
 import { SharePanel } from "@/components/share-panel";
 
 type PageProps = {
@@ -16,7 +17,10 @@ type PageProps = {
   searchParams?: Promise<{ page?: string }>;
 };
 
-export default async function UserInboxPage({ params, searchParams }: PageProps) {
+export default async function UserInboxPage({
+  params,
+  searchParams,
+}: PageProps) {
   const resolvedParams = await params;
   if (!resolvedParams?.username) {
     notFound();
@@ -45,7 +49,7 @@ export default async function UserInboxPage({ params, searchParams }: PageProps)
   }
 
   const isOwner = Boolean(
-    session?.user?.email && session.user.email === profile.email
+    session?.user?.email && session.user.email === profile.email,
   );
 
   const baseQuery = {
@@ -58,6 +62,13 @@ export default async function UserInboxPage({ params, searchParams }: PageProps)
       },
     },
   };
+  const total = isOwner
+    ? await prisma.message.count({
+        where: { recipientId: profile.id, parentId: null },
+      })
+    : 0;
+  const totalPages = isOwner ? Math.max(1, Math.ceil(total / pageSize)) : 1;
+
   const messages = isOwner
     ? await prisma.message.findMany({
         ...baseQuery,
@@ -76,7 +87,9 @@ export default async function UserInboxPage({ params, searchParams }: PageProps)
   const now = new Date();
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000");
   const shareUrl = `${baseUrl}/${profile.username ?? username}`;
 
   return (
@@ -117,7 +130,7 @@ export default async function UserInboxPage({ params, searchParams }: PageProps)
             messages.map((message) => (
               <div
                 key={message.id}
-                className="rounded-2xl border border-foreground/10 bg-card/90 px-5 py-5"
+                className="rounded-2xl border border-foreground/10 bg-card/90 px-5 py-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <p className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
@@ -132,66 +145,67 @@ export default async function UserInboxPage({ params, searchParams }: PageProps)
                     <ReportButton messageId={message.id} />
                   )}
                 </div>
-                <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">
+                <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed pl-1">
                   {message.content}
                 </p>
 
                 {message.replies.length > 0 ? (
-                  <div className="mt-2 space-y-2">
-                    {message.replies.map((reply) => (
-                      <div
-                        key={reply.id}
-                        className="rounded-2xl border border-foreground/10 bg-muted/20 px-3 py-2"
-                      >
-                        <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <span>Reply</span>
-                            <span>·</span>
-                            <span>
-                              {formatRelativeTime(reply.createdAt, now)}
-                            </span>
-                          </div>
-                          {isOwner ? (
+                  <div className="mt-2 space-y-1">
+                    {(() => {
+                      const reply = message.replies[0];
+                      if (!reply) return null;
+                      return (
+                        <div className="rounded-2xl border border-foreground/10 bg-muted/20 px-4 pb-3 pt-2">
+                          <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
                             <div className="flex items-center gap-2">
-                              <ToggleReplyVisibilityButton
-                                replyId={reply.id}
-                                recipientUsername={profile.username ?? username}
-                                isPublic={reply.isPublic}
-                              />
-                              <DeleteMessageButton
-                                messageId={reply.id}
-                                recipientUsername={profile.username ?? username}
-                              />
+                              <span>Reply</span>
+                              <span>·</span>
+                              <span>
+                                {formatRelativeTime(reply.createdAt, now)}
+                              </span>
                             </div>
-                          ) : (
-                            <ReportButton messageId={reply.id} />
-                          )}
+                            {isOwner ? (
+                              <div className="flex items-center gap-2">
+                                <EditReplyButton
+                                  replyId={reply.id}
+                                  recipientUsername={profile.username ?? username}
+                                  initialContent={reply.content}
+                                />
+                                <DeleteMessageButton
+                                  messageId={reply.id}
+                                  recipientUsername={profile.username ?? username}
+                                />
+                              </div>
+                            ) : (
+                              <ReportButton messageId={reply.id} />
+                            )}
+                          </div>
+                          <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed pl-1">
+                            {reply.content}
+                          </p>
                         </div>
-                        <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">
-                          {reply.content}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })()}
                   </div>
                 ) : null}
 
                 {isOwner ? (
                   <div className="mt-2">
-                    <div className="rounded-2xl border border-foreground/10 bg-muted/10 px-3 py-2">
-                      <ReplyForm
-                        recipientId={profile.id}
-                        recipientUsername={profile.username ?? username}
-                        parentId={message.id}
-                      />
-                    </div>
+                    <ReplyForm
+                      recipientId={profile.id}
+                      recipientUsername={profile.username ?? username}
+                      parentId={message.id}
+                    />
                   </div>
                 ) : null}
               </div>
             ))
           )}
           {isOwner ? (
-            <div className="flex items-center justify-between rounded-2xl border border-foreground/10 bg-card/90 px-4 py-2 text-xs text-muted-foreground">
-              <span>Page {page}</span>
+            <div className="inline-flex items-center gap-3 rounded-2xl border border-foreground/10 bg-card/90 px-3 py-2 text-xs text-muted-foreground">
+              <span className="lowercase">
+                page {page} of {totalPages}
+              </span>
               <div className="flex items-center gap-2">
                 {page > 1 ? (
                   <a
@@ -201,7 +215,7 @@ export default async function UserInboxPage({ params, searchParams }: PageProps)
                     Previous
                   </a>
                 ) : null}
-                {messages.length === pageSize ? (
+                {page < totalPages ? (
                   <a
                     href={`/${profile.username ?? username}?page=${page + 1}`}
                     className="rounded-2xl border border-foreground/10 bg-background/80 px-3 py-1 text-xs"
