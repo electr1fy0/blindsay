@@ -11,9 +11,10 @@ import { cn } from "@/lib/utils";
 type SharePanelProps = {
   url: string;
   className?: string;
+  orientation?: "horizontal" | "vertical";
 };
 
-export function SharePanel({ url, className }: SharePanelProps) {
+export function SharePanel({ url, className, orientation = "horizontal" }: SharePanelProps) {
   const [copied, setCopied] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
 
@@ -33,7 +34,10 @@ export function SharePanel({ url, className }: SharePanelProps) {
           Scan or copy
         </span>
       </div>
-      <div className="mt-4 flex flex-col gap-4">
+      <div className={cn(
+        "mt-4 gap-4",
+        orientation === "horizontal" ? "grid md:grid-cols-[1fr_auto]" : "flex flex-col"
+      )}>
         <div className="flex flex-col gap-3">
           <div className="panel-card-muted px-3 py-2 text-sm text-foreground/80">
             <span className="break-all">{url}</span>
@@ -58,7 +62,10 @@ export function SharePanel({ url, className }: SharePanelProps) {
             </Button>
           </div>
         </div>
-        <div className="panel-card-muted flex items-center justify-center p-3">
+        <div className={cn(
+          "panel-card-muted flex items-center justify-center p-3",
+          orientation === "vertical" && "w-fit self-center px-6"
+        )}>
           {qr ? (
             <div className="flex flex-col items-center gap-2">
               <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">

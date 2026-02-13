@@ -68,6 +68,7 @@ export default async function AccountPage() {
                   <div className="panel-card-muted overflow-hidden">
                     <SharePanel
                       url={shareUrl}
+                      orientation="vertical"
                       className="border-0 bg-transparent shadow-none"
                     />
                   </div>
