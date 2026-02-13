@@ -10,7 +10,6 @@ import { DeleteMessageButton } from "@/components/message-actions";
 import { EditReplyButton } from "@/components/edit-reply-button";
 import { SharePanel } from "@/components/share-panel";
 import { MessageCard } from "@/components/message-card";
-import { ReportButton } from "@/components/report-button";
 
 type PageProps = {
   params: Promise<{ username?: string }>;
@@ -149,8 +148,6 @@ export default async function UserInboxPage({
                           recipientUsername={profile.username ?? username}
                         />
                       </>
-                    ) : !isOwner && reply ? (
-                      <ReportButton messageId={reply.id} />
                     ) : null
                   }
                   replyForm={

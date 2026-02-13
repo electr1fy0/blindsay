@@ -7,7 +7,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { createHash } from "crypto";
 
 const blockedWords = ["slur1", "slur2", "hateword"];
 
@@ -35,10 +34,6 @@ function containsHiddenWords(content: string, words: string[]) {
   return words.some((word) => normalized.includes(word));
 }
 
-function getSenderHash(ip: string) {
-  const salt = process.env.SENDER_HASH_SALT ?? "unsaid-dev-salt";
-  return createHash("sha256").update(`${ip}:${salt}`).digest("hex");
-}
 
 export async function createAnonymousMessage(
   recipientId: string,
@@ -82,25 +77,10 @@ export async function createAnonymousMessage(
     throw new Error("Too many messages. Please try again later.");
   }
 
-  const senderHash = getSenderHash(ip);
-  const blocked = await prisma.blockedSender.findUnique({
-    where: {
-      userId_senderHash: {
-        userId: recipientId,
-        senderHash,
-      },
-    },
-    select: { id: true },
-  });
-  if (blocked) {
-    throw new Error("You cannot send messages to this inbox.");
-  }
-
   await prisma.message.create({
     data: {
       content,
       recipientId,
-      senderHash,
     },
   });
 
@@ -190,26 +170,6 @@ export async function updateReplyMessage(
   revalidatePath(`/${recipientUsername}`);
 }
 
-export async function reportMessage(messageId: string, reason: string) {
-  const safeReason = reason.trim().slice(0, 200);
-  if (!safeReason) {
-    throw new Error("Please include a reason.");
-  }
-  const ip = await getClientIp();
-
-  const limit = checkRateLimit(`report:${ip}`, 3, 10 * 60 * 1000);
-  if (!limit.ok) {
-    throw new Error("Too many reports. Please try again later.");
-  }
-
-  await prisma.messageReport.create({
-    data: {
-      messageId,
-      reason: safeReason,
-      ip,
-    },
-  });
-}
 
 export async function setUsername(username: string) {
   const session = await getServerSession(authOptions);
@@ -274,6 +234,7 @@ export async function deleteMessage(messageId: string, recipientUsername: string
   }
 
   revalidatePath(`/${recipientUsername}`);
+  revalidatePath("/published");
 }
 
 export async function updateHiddenWords(words: string[]) {
@@ -319,81 +280,6 @@ export async function clearInboxPause() {
     where: { email: session.user.email },
     data: { inboxPausedUntil: null },
   });
-
-  redirect("/account");
-}
-
-export async function blockSender(messageId: string, recipientUsername: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
-  }
-
-  const owner = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!owner) {
-    throw new Error("You must be signed in.");
-  }
-
-  const message = await prisma.message.findUnique({
-    where: { id: messageId },
-    select: { recipientId: true, senderHash: true },
-  });
-
-  if (!message || message.recipientId !== owner.id) {
-    throw new Error("You cannot block this sender.");
-  }
-
-  if (!message.senderHash) {
-    throw new Error("This sender cannot be blocked.");
-  }
-
-  await prisma.blockedSender.upsert({
-    where: {
-      userId_senderHash: {
-        userId: owner.id,
-        senderHash: message.senderHash,
-      },
-    },
-    create: {
-      userId: owner.id,
-      senderHash: message.senderHash,
-    },
-    update: {},
-  });
-
-  revalidatePath("/account");
-  revalidatePath(`/${recipientUsername}`);
-}
-
-export async function unblockSender(blockId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
-  }
-
-  const owner = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!owner) {
-    throw new Error("You must be signed in.");
-  }
-
-  const blocked = await prisma.blockedSender.findUnique({
-    where: { id: blockId },
-    select: { userId: true },
-  });
-
-  if (!blocked || blocked.userId !== owner.id) {
-    throw new Error("You cannot unblock this sender.");
-  }
-
-  await prisma.blockedSender.delete({ where: { id: blockId } });
 
   redirect("/account");
 }

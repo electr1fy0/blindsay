@@ -20,24 +20,8 @@ model Message {
   parentId  String?
   parent    Message?  @relation("MessageToMessage", fields: [parentId], references: [id])
   replies   Message[] @relation("MessageToMessage")
-  senderHash String?
   recipientId String?
   recipient   User?   @relation(fields: [recipientId], references: [id])
-  reports   MessageReport[]
-
-  @@index([recipientId, senderHash])
-}
-
-model MessageReport {
-  id        String   @id @default(cuid())
-  messageId String
-  reason    String
-  ip        String?
-  createdAt DateTime @default(now())
-  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-
-  @@index([messageId])
-  @@index([createdAt])
 }
 
 model User {
@@ -53,18 +37,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   messages      Message[]
-  blockedSenders BlockedSender[]
-}
-
-model BlockedSender {
-  id         String   @id @default(cuid())
-  userId     String
-  senderHash String
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, senderHash])
-  @@index([userId])
 }
 
 model Account {

@@ -45,7 +45,7 @@ export default async function Page() {
               </p>
             </div>
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
-              Anonymous inbox, precise publishing.
+              Anonymous messages, without fear.
             </h1>
             <p className="text-sm text-muted-foreground">
               Share one link. Receive honest notes. Publish only the replies you
@@ -128,7 +128,7 @@ export default async function Page() {
             {
               icon: Shield01Icon,
               title: "Safety",
-              text: "Rate limits, reports, and hidden-word filters.",
+              text: "Rate limits and hidden-word filters.",
             },
             {
               icon: Settings01Icon,
@@ -136,10 +136,7 @@ export default async function Page() {
               text: "Pause links and close your inbox.",
             },
           ].map((item) => (
-            <div
-              key={item.title}
-              className="panel-card p-4 text-sm"
-            >
+            <div key={item.title} className="panel-card p-4 text-sm">
               <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
                 <HugeiconsIcon
                   icon={item.icon}
@@ -164,16 +161,10 @@ export default async function Page() {
             </div>
             <div className="panel-card-subtle border-dashed p-4">
               <div className="grid gap-3 text-xs text-muted-foreground">
-                <div className="panel-card p-3">
-                  Anonymous message arrives
-                </div>
+                <div className="panel-card p-3">Anonymous message arrives</div>
                 <div className="grid gap-2 md:grid-cols-2">
-                  <div className="panel-card p-3">
-                    Reply published
-                  </div>
-                  <div className="panel-card p-3">
-                    Unreplied stays private
-                  </div>
+                  <div className="panel-card p-3">Reply published</div>
+                  <div className="panel-card p-3">Unreplied stays private</div>
                 </div>
                 <div className="panel-card p-3">
                   Public feed shows replied messages
@@ -218,9 +209,7 @@ export default async function Page() {
               />
               Safety
             </div>
-            <p className="mt-3">
-              Reports, blocks, and filters keep things calm.
-            </p>
+            <p className="mt-3">Rate limits and filters keep things calm.</p>
           </div>
         </section>
 
@@ -236,10 +225,7 @@ export default async function Page() {
                 Rate-limited anonymous sends.
               </div>
               <div className="panel-card-muted p-3">
-                Report buttons on public messages.
-              </div>
-              <div className="panel-card-muted p-3">
-                Hidden words filter and block list.
+                Hidden words filter for toxic phrases.
               </div>
               <div className="panel-card-muted p-3">
                 Pause your inbox without disabling the link.
@@ -251,7 +237,7 @@ export default async function Page() {
             <p className="mt-2 text-sm text-muted-foreground">
               The inbox, account, and share tools are all accessible on mobile.
             </p>
-            <div className="mt-4 rounded-2xl border border-foreground/15 border-dashed bg-background/90 p-4 text-sm">
+            <div className="mt-4 panel-card-subtle border-dashed p-4 text-sm">
               Sidebar collapses into a menu. Share link and QR are one tap away.
             </div>
           </div>

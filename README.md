@@ -9,8 +9,8 @@ Unsaid is a platform that allows you to receive honest, anonymous notes through 
 - **Anonymous Inbox:** Receive notes in a private stream.
 - **Curated Public Feed:** Reply to publish. Everything else stays private.
 - **Inbox Controls:** Open, close, or pause your inbox link.
-- **Moderation Tools:** Hidden-words filter, sender blocking, and inbox pause.
-- **Safety:** Built-in reporting and rate limiting.
+- **Moderation Tools:** Hidden-words filter and inbox pause.
+- **Safety:** Built-in rate limiting.
 - **Easy Sharing:** Generate unique links and QR codes instantly.
 - **Mobile Optimized:** Fully responsive design for on-the-go management.
 
