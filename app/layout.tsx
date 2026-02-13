@@ -24,10 +24,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
-  icons: {
-    icon: "/unsaid.png",
-    apple: "/unsaid.png",
-  },
   openGraph: {
     title: siteTitle,
     description: siteDescription,
