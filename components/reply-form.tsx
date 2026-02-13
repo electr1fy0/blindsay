@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { createReplyMessage } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,16 +37,18 @@ export function ReplyForm({
         );
         setContent("");
         setSent(true);
+        toast("Sent.");
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to send reply.");
+        const message =
+          err instanceof Error ? err.message : "Failed to send reply.";
+        setError(message);
+        toast.error(message);
       }
     });
   };
 
   if (sent) {
-    return (
-      <p className="text-xs text-muted-foreground">Reply sent.</p>
-    );
+    return null;
   }
 
   if (!open) {

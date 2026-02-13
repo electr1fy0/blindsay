@@ -57,6 +57,7 @@ export default async function UserInboxPage({
     include: {
       replies: {
         orderBy: { createdAt: "asc" as const },
+        take: 1,
         ...(isOwner ? {} : { where: { isPublic: true } }),
       },
     },
@@ -146,7 +147,7 @@ export default async function UserInboxPage({
                   {message.content}
                 </p>
 
-                {message.replies.length > 0 ? (
+                {message.replies[0] ? (
                   <div className="mt-2 space-y-1">
                     {(() => {
                       const reply = message.replies[0];
