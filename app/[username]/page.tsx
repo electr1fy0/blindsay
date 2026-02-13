@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ReplyForm } from "@/components/reply-form";
 import { formatRelativeTime } from "@/lib/relative-time";
 import { AppShell } from "@/components/app-shell";
-import { ReportButton } from "@/components/report-button";
 import { DeleteMessageButton } from "@/components/message-actions";
 import { EditReplyButton } from "@/components/edit-reply-button";
 import { SharePanel } from "@/components/share-panel";
@@ -141,9 +140,7 @@ export default async function UserInboxPage({
                       messageId={message.id}
                       recipientUsername={profile.username ?? username}
                     />
-                  ) : (
-                    <ReportButton messageId={message.id} />
-                  )}
+                  ) : null}
                 </div>
                 <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed pl-1">
                   {message.content}
@@ -155,9 +152,9 @@ export default async function UserInboxPage({
                       const reply = message.replies[0];
                       if (!reply) return null;
                       return (
-                        <div className="rounded-2xl border border-foreground/10 bg-muted/20 px-4 pb-3 pt-2">
+                        <div className="rounded-xl border border-foreground/10 bg-muted/20 px-4 pb-3 pt-2 mt-4">
                           <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 ">
                               <span>Reply</span>
                               <span>·</span>
                               <span>
@@ -168,17 +165,19 @@ export default async function UserInboxPage({
                               <div className="flex items-center gap-2">
                                 <EditReplyButton
                                   replyId={reply.id}
-                                  recipientUsername={profile.username ?? username}
+                                  recipientUsername={
+                                    profile.username ?? username
+                                  }
                                   initialContent={reply.content}
                                 />
                                 <DeleteMessageButton
                                   messageId={reply.id}
-                                  recipientUsername={profile.username ?? username}
+                                  recipientUsername={
+                                    profile.username ?? username
+                                  }
                                 />
                               </div>
-                            ) : (
-                              <ReportButton messageId={reply.id} />
-                            )}
+                            ) : null}
                           </div>
                           <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed pl-1">
                             {reply.content}

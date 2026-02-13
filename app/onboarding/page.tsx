@@ -20,10 +20,10 @@ export default async function OnboardingPage() {
                 alt="Unsaid logo"
                 width={24}
                 height={24}
-                className="rounded-md border border-foreground/15"
+                className="rounded-md"
               />
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                Unsaid
+                UNSAID
               </p>
             </div>
             <h1 className="text-3xl font-semibold">Sign in to continue</h1>
@@ -58,7 +58,7 @@ export default async function OnboardingPage() {
               alt="Unsaid logo"
               width={24}
               height={24}
-              className="rounded-md border border-foreground/15"
+              className="rounded-md"
             />
             <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
               Unsaid
@@ -70,7 +70,7 @@ export default async function OnboardingPage() {
           </p>
         </div>
         <div className="rounded-3xl border border-foreground/10 bg-card/80 p-6">
-          <UsernameForm />
+          <UsernameForm submitLabel="Claim username" />
         </div>
       </div>
     </div>

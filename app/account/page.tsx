@@ -146,14 +146,18 @@ export default async function AccountPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {user.username ? (
-              <div className="text-sm">
-                Your inbox link is{" "}
-                <span className="font-semibold">/{user.username}</span>.
-              </div>
-            ) : (
-              <UsernameForm />
-            )}
+            <div className="space-y-3">
+              {user.username ? (
+                <div className="text-sm">
+                  Your inbox link is{" "}
+                  <span className="font-semibold">/{user.username}</span>.
+                </div>
+              ) : null}
+              <UsernameForm
+                initialValue={user.username ?? ""}
+                submitLabel={user.username ? "Update username" : "Claim username"}
+              />
+            </div>
           </CardContent>
         </Card>
 

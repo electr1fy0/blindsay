@@ -14,6 +14,7 @@ import {
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/components/sign-out-button";
 
 type MobileNavProps = {
   username?: string | null;
@@ -32,7 +33,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
             alt="Unsaid logo"
             width={26}
             height={26}
-            className="border border-foreground/15"
+            className="rounded-md"
           />
           <span className="text-sm font-semibold tracking-[0.06em]">
             Unsaid
@@ -131,6 +132,12 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                   />
                   Account
                 </Link>
+              ) : null}
+              {isOwner ? (
+                <SignOutButton
+                  size="sm"
+                  className="w-full justify-center"
+                />
               ) : null}
             </div>
           </div>

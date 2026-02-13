@@ -38,14 +38,14 @@ export default async function Page() {
                 alt="Unsaid logo"
                 width={40}
                 height={40}
-                className="rounded-lg border border-foreground/15"
+                className="rounded-lg"
               />
               <p className="text-sm uppercase tracking-[0.12em] text-muted-foreground">
                 Unsaid
               </p>
             </div>
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
-              Anonymous inbox, precise publishing, no noise.
+              Anonymous inbox, precise publishing.
             </h1>
             <p className="text-sm text-muted-foreground">
               Share one link. Receive honest notes. Publish only the replies you
@@ -186,21 +186,36 @@ export default async function Page() {
         <section className="grid gap-3 md:grid-cols-3">
           <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm">
             <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              <HugeiconsIcon icon={ToggleOnIcon} size={18} color="currentColor" strokeWidth={1.5} />
+              <HugeiconsIcon
+                icon={ToggleOnIcon}
+                size={18}
+                color="currentColor"
+                strokeWidth={1.5}
+              />
               Inbox switch
             </div>
             <p className="mt-3">Open or close your inbox in one tap.</p>
           </div>
           <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm">
             <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              <HugeiconsIcon icon={ViewOffIcon} size={18} color="currentColor" strokeWidth={1.5} />
+              <HugeiconsIcon
+                icon={ViewOffIcon}
+                size={18}
+                color="currentColor"
+                strokeWidth={1.5}
+              />
               Privacy
             </div>
             <p className="mt-3">Unreplied notes never show publicly.</p>
           </div>
           <div className="rounded-3xl border border-foreground/10 bg-card/90 p-4 text-sm">
             <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              <HugeiconsIcon icon={Shield01Icon} size={18} color="currentColor" strokeWidth={1.5} />
+              <HugeiconsIcon
+                icon={Shield01Icon}
+                size={18}
+                color="currentColor"
+                strokeWidth={1.5}
+              />
               Safety
             </div>
             <p className="mt-3">Reports and rate limits reduce abuse.</p>
@@ -225,7 +240,8 @@ export default async function Page() {
           <div className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
             <h2 className="text-xl font-semibold">Safety & moderation</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Abuse controls are lightweight by default and grow with your inbox.
+              Abuse controls are lightweight by default and grow with your
+              inbox.
             </p>
             <div className="mt-4 grid gap-2 text-sm">
               <div className="rounded-2xl border border-foreground/10 bg-background/90 p-3">
@@ -253,7 +269,9 @@ export default async function Page() {
         <section className="rounded-3xl border border-foreground/10 bg-card/90 p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold">Start your inbox today.</h2>
+              <h2 className="text-2xl font-semibold">
+                Start your inbox today.
+              </h2>
               <p className="text-sm text-muted-foreground">
                 It takes a minute to claim your username.
               </p>

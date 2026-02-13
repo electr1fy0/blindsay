@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     canonical: siteUrl,
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/unsaid.png",
     apple: "/unsaid.png",
   },
   openGraph: {

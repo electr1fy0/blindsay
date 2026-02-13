@@ -1,6 +1,6 @@
 # Unsaid
 
-**Anonymous inbox, precise publishing, no noise.**
+**Anonymous inbox, precise publishing.**
 
 Unsaid is a platform that allows you to receive honest, anonymous notes through a shared link. You have full control over your inbox: read everything privately, and only publish the replies you choose.
 

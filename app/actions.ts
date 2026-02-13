@@ -163,14 +163,17 @@ export async function setUsername(username: string) {
   }
 
   const normalized = username.trim().toLowerCase();
-  if (!/^[a-z0-9_]{3,20}$/.test(normalized)) {
-    throw new Error("Username must be 3-20 characters and use letters, numbers, or underscores.");
+  if (!/^[a-z0-9_]{3,15}$/.test(normalized)) {
+    throw new Error(
+      "Username must be 3-15 characters and use letters, numbers, or underscores."
+    );
   }
 
   const existing = await prisma.user.findUnique({
     where: { username: normalized },
+    select: { email: true },
   });
-  if (existing) {
+  if (existing && existing.email !== session.user.email) {
     throw new Error("That username is already taken.");
   }
 

@@ -10,6 +10,7 @@ import {
   Analytics01Icon,
 } from "@hugeicons/core-free-icons";
 import { MobileNav } from "@/components/mobile-nav";
+import { SignOutButton } from "@/components/sign-out-button";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -20,20 +21,20 @@ type AppShellProps = {
 export function AppShell({ children, username, isOwner }: AppShellProps) {
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed left-0 top-0 hidden h-screen w-60 flex-col gap-4 border-r border-foreground/10 bg-card/90 px-4 py-6 md:flex">
+      <aside className="fixed left-4 top-4 hidden h-[calc(100vh-2rem)] w-60 flex-col gap-4 rounded-3xl border border-foreground/10 bg-card/90 px-4 py-6 md:flex">
         <div className="flex items-center gap-3">
           <Image
             src="/unsaid.png"
             alt="Unsaid logo"
             width={40}
             height={40}
-            className="border border-foreground/15"
+            className="rounded-md"
           />
           <div className="text-base font-semibold tracking-[0.06em]">
             Unsaid
           </div>
         </div>
-        <nav className="flex flex-col gap-2 text-sm">
+        <nav className="flex flex-1 flex-col gap-2 text-sm">
             {username ? (
               <Link
                 href={`/${username}`}
@@ -103,8 +104,13 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
             </Link>
           ) : null}
         </nav>
+        {isOwner ? (
+          <div className="pt-2">
+            <SignOutButton size="sm" className="w-full justify-center" />
+          </div>
+        ) : null}
       </aside>
-      <div className="mx-auto flex max-w-5xl gap-6 px-5 py-8 md:pl-64">
+      <div className="mx-auto flex max-w-5xl gap-6 px-5 py-8 md:pl-[18rem]">
         <main className="min-w-0 flex-1">
           <MobileNav username={username} isOwner={isOwner} />
           <div className="mt-4 md:mt-0">{children}</div>

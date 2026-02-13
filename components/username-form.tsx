@@ -5,8 +5,16 @@ import { setUsername } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export function UsernameForm() {
-  const [value, setValue] = useState("");
+type UsernameFormProps = {
+  initialValue?: string | null;
+  submitLabel?: string;
+};
+
+export function UsernameForm({
+  initialValue,
+  submitLabel = "Save username",
+}: UsernameFormProps) {
+  const [value, setValue] = useState(initialValue ?? "");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +34,7 @@ export function UsernameForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="space-y-2">
         <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-          Choose a username
+          Username
         </label>
         <Input
           value={value}
@@ -36,12 +44,12 @@ export function UsernameForm() {
           disabled={isPending}
         />
         <p className="text-xs text-muted-foreground">
-          3-20 characters. Use letters, numbers, or underscores.
+          3-15 characters. Use letters, numbers, or underscores.
         </p>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <Button type="submit" disabled={isPending || !value.trim()}>
-        {isPending ? "Saving..." : "Claim username"}
+        {isPending ? "Saving..." : submitLabel}
       </Button>
     </form>
   );
