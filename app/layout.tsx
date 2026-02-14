@@ -2,17 +2,20 @@ import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-
+import { Analytics } from "@vercel/analytics/next";
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
 const siteTitle = "Unsaid";
-const siteDescription = "Anonymous inboxes for the words people never said out loud.";
+const siteDescription =
+  "Anonymous inboxes for the words people never said out loud.";
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000");
 
 export const metadata: Metadata = {
   title: {
@@ -56,6 +59,7 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );

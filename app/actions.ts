@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 
+// TODO: think of such words someday
 const blockedWords = ["slur1", "slur2", "hateword"];
 
 function containsBlockedWords(content: string) {
@@ -34,7 +35,7 @@ export type ActionResponse = {
 export async function createAnonymousMessage(
   recipientId: string,
   recipientUsername: string,
-  content: string
+  content: string,
 ): Promise<ActionResponse> {
   if (!content || content.trim() === "") {
     return { success: false, message: "Content cannot be empty" };
@@ -85,7 +86,7 @@ export async function createReplyMessage(
   recipientId: string,
   recipientUsername: string,
   parentId: string,
-  content: string
+  content: string,
 ): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -128,7 +129,7 @@ export async function createReplyMessage(
 export async function updateReplyMessage(
   replyId: string,
   recipientUsername: string,
-  content: string
+  content: string,
 ): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -203,7 +204,7 @@ export async function setUsername(username: string): Promise<ActionResponse> {
 
 export async function deleteMessage(
   messageId: string,
-  recipientUsername: string
+  recipientUsername: string,
 ): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -242,7 +243,9 @@ export async function deleteMessage(
   return { success: true };
 }
 
-export async function updateHiddenWords(words: string[]): Promise<ActionResponse> {
+export async function updateHiddenWords(
+  words: string[],
+): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return { success: false, message: "You must be signed in." };
