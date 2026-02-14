@@ -163,7 +163,9 @@ export default async function Page() {
               <div className="grid gap-3 text-xs text-muted-foreground">
                 <div className="panel-card p-3">Anonymous message arrives</div>
                 <div className="grid gap-2 md:grid-cols-2">
-                  <div className="panel-card p-3">Reply published</div>
+                  <div className="panel-card p-3">
+                    Repled messages published
+                  </div>
                   <div className="panel-card p-3">Unreplied stays private</div>
                 </div>
                 <div className="panel-card p-3">
