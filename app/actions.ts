@@ -1,5 +1,6 @@
 "use server";
 
+import { RESERVED_USERNAMES } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -179,6 +180,10 @@ export async function setUsername(username: string) {
   }
 
   const normalized = username.trim().toLowerCase();
+  if (RESERVED_USERNAMES.includes(normalized)) {
+    throw new Error("That username is reserved.");
+  }
+
   if (!/^[a-z0-9_]{3,15}$/.test(normalized)) {
     throw new Error(
       "Username must be 3-15 characters and use letters, numbers, or underscores."

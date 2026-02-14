@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import { RESERVED_USERNAMES } from "@/lib/constants";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Notification03Icon,
@@ -31,7 +32,7 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
     <div className="min-h-screen">
       <aside className="fixed left-4 top-4 hidden h-[calc(100vh-2rem)] w-60 md:flex">
         <div className="panel-card flex h-full w-full flex-col gap-4 px-4 py-6">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/unsaid.png"
               alt="Unsaid logo"
@@ -40,7 +41,7 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
               className="rounded-md"
             />
             <div className="text-base font-normal tracking-[0.06em]">UNSAID</div>
-          </div>
+          </Link>
           <nav className="flex flex-1 flex-col gap-2 text-sm">
             {username ? (
               <Link
@@ -158,7 +159,29 @@ export function AppShell({ children, username, isOwner }: AppShellProps) {
       <div className="mx-auto flex max-w-6xl gap-6 px-5 py-8 md:pl-[18rem]">
         <main className="min-w-0 flex-1">
           <MobileNav username={username} isOwner={isOwner} />
-          <div className="mt-4 md:mt-0">{children}</div>
+          <div className="mt-4 md:mt-0">
+            {isOwner &&
+            username &&
+            RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
+              <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+                <div className="flex items-center gap-3">
+                  <HugeiconsIcon
+                    icon={Notification03Icon}
+                    size={20}
+                    className="shrink-0"
+                  />
+                  <p className="text-sm font-medium">
+                    Your username is reserved. Please{" "}
+                    <Link href="/account" className="underline hover:no-underline">
+                      change it
+                    </Link>{" "}
+                    to continue using the app properly.
+                  </p>
+                </div>
+              </div>
+            ) : null}
+            {children}
+          </div>
         </main>
       </div>
     </div>

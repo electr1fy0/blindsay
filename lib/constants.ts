@@ -1,0 +1,18 @@
+export const RESERVED_USERNAMES = [
+  "account",
+  "analytics",
+  "api",
+  "help",
+  "onboarding",
+  "published",
+  "settings",
+  "admin",
+  "login",
+  "register",
+  "logout",
+  "signin",
+  "signout",
+  "about",
+  "terms",
+  "privacy",
+];

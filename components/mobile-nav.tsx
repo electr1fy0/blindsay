@@ -32,7 +32,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
   return (
     <div className="md:hidden">
       <div className="flex items-center justify-between panel-card px-4 py-3">
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src="/unsaid.png"
             alt="Unsaid logo"
@@ -43,7 +43,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
           <span className="text-sm font-semibold tracking-[0.06em]">
             Unsaid
           </span>
-        </div>
+        </Link>
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
           <HugeiconsIcon
             icon={Menu01Icon}
