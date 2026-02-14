@@ -23,9 +23,12 @@ export function UsernameForm({
     startTransition(async () => {
       try {
         setError(null);
-        await setUsername(value);
+        const result = await setUsername(value);
+        if (result?.error) {
+          setError(result.error);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to save username.");
+        setError("Unable to save username.");
       }
     });
   };

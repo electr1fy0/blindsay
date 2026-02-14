@@ -176,18 +176,19 @@ export async function updateReplyMessage(
 export async function setUsername(username: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { error: "You must be signed in." };
   }
 
   const normalized = username.trim().toLowerCase();
   if (RESERVED_USERNAMES.includes(normalized)) {
-    throw new Error("That username is reserved.");
+    return { error: "That username is reserved." };
   }
 
   if (!/^[a-z0-9_]{3,15}$/.test(normalized)) {
-    throw new Error(
-      "Username must be 3-15 characters and use letters, numbers, or underscores."
-    );
+    return {
+      error:
+        "Username must be 3-15 characters and use letters, numbers, or underscores.",
+    };
   }
 
   const existing = await prisma.user.findUnique({
@@ -195,7 +196,7 @@ export async function setUsername(username: string) {
     select: { email: true },
   });
   if (existing && existing.email !== session.user.email) {
-    throw new Error("That username is already taken.");
+    return { error: "That username is already taken." };
   }
 
   const user = await prisma.user.update({
