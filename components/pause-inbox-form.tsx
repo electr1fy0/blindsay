@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 const pauseOptions = [
   { label: "1 hour", hours: 1 },
@@ -35,7 +36,12 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
         onSubmit={(event) => {
           event.preventDefault();
           startClearing(async () => {
-            await clearInboxPause();
+            const result = await clearInboxPause();
+            if (result.success) {
+              toast("Inbox resumed.");
+            } else {
+              toast.error(result.message || "Failed to resume inbox.");
+            }
           });
         }}
       >
@@ -52,7 +58,12 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
         onSubmit={(event) => {
           event.preventDefault();
           startTransition(async () => {
-            await pauseInbox(Number(value));
+            const result = await pauseInbox(Number(value));
+            if (result.success) {
+              toast("Inbox paused.");
+            } else {
+              toast.error(result.message || "Failed to pause inbox.");
+            }
           });
         }}
         className="flex flex-nowrap items-center gap-2"

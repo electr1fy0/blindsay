@@ -128,7 +128,7 @@ export default async function Page() {
             {
               icon: Shield01Icon,
               title: "Safety",
-              text: "Rate limits and hidden-word filters.",
+              text: "Built-in hidden-word filters.",
             },
             {
               icon: Settings01Icon,
@@ -209,7 +209,7 @@ export default async function Page() {
               />
               Safety
             </div>
-            <p className="mt-3">Rate limits and filters keep things calm.</p>
+            <p className="mt-3">Built-in filters keep things calm.</p>
           </div>
         </section>
 
@@ -221,9 +221,6 @@ export default async function Page() {
               inbox.
             </p>
             <div className="mt-4 grid gap-2 text-sm">
-              <div className="panel-card-muted p-3">
-                Rate-limited anonymous sends.
-              </div>
               <div className="panel-card-muted p-3">
                 Hidden words filter for toxic phrases.
               </div>

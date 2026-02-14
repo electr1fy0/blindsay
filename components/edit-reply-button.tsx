@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Edit01Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
 
 type EditReplyButtonProps = {
   replyId: string;
@@ -45,8 +46,13 @@ export function EditReplyButton({
         disabled={isPending || !value.trim()}
         onClick={() => {
           startTransition(async () => {
-            await updateReplyMessage(replyId, recipientUsername, value);
-            setEditing(false);
+            const result = await updateReplyMessage(replyId, recipientUsername, value);
+            if (result.success) {
+              setEditing(false);
+              toast("Updated.");
+            } else {
+              toast.error(result.message || "Failed to update reply.");
+            }
           });
         }}
       >

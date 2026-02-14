@@ -30,9 +30,10 @@ export function CreateMessageForm({
         setError(null);
         const result = await createAnonymousMessage(recipientId, recipientUsername, content);
         
-        if (!result.success && result.error) {
-          setError(result.error);
-          toast.error(result.error);
+        if (!result.success) {
+          const message = result.message || "Failed to send message.";
+          setError(message);
+          toast.error(message);
           return;
         }
 

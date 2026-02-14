@@ -101,7 +101,7 @@ export default async function HelpPage() {
               Unsaid allows unauthenticated users to send messages to your inbox. This lowers the barrier for honest feedback and thoughts.
             </p>
             <p>
-              While we do not track sender identities for anonymous messages, we employ rate limiting and abuse filters to protect your inbox.
+              While we do not track sender identities for anonymous messages, we employ abuse filters to protect your inbox.
             </p>
           </CardContent>
         </Card>

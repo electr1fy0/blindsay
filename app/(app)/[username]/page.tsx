@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
@@ -172,20 +173,20 @@ export default async function UserInboxPage({
             </span>
             <div className="flex items-center gap-2">
               {page > 1 ? (
-                <a
+                <Link
                   href={`/${profile.username ?? username}?page=${page - 1}`}
                   className="panel-card-muted px-3 py-1 text-xs"
                 >
                   Previous
-                </a>
+                </Link>
               ) : null}
               {page < totalPages ? (
-                <a
+                <Link
                   href={`/${profile.username ?? username}?page=${page + 1}`}
                   className="panel-card-muted px-3 py-1 text-xs"
                 >
                   Next
-                </a>
+                </Link>
               ) : null}
             </div>
           </div>

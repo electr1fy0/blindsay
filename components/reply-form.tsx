@@ -29,18 +29,23 @@ export function ReplyForm({
     startTransition(async () => {
       try {
         setError(null);
-        await createReplyMessage(
+        const result = await createReplyMessage(
           recipientId,
           recipientUsername,
           parentId,
           content,
         );
-        setContent("");
-        setSent(true);
-        toast("Sent.");
+        if (result.success) {
+          setContent("");
+          setSent(true);
+          toast("Sent.");
+        } else {
+          const message = result.message ?? "Failed to send reply.";
+          setError(message);
+          toast.error(message);
+        }
       } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to send reply.";
+        const message = "Failed to send reply.";
         setError(message);
         toast.error(message);
       }

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete01Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
 
 type DeleteMessageButtonProps = {
   messageId: string;
@@ -66,8 +67,13 @@ export function DeleteMessageButton({
             disabled={isPending || done}
             onClick={() => {
               startTransition(async () => {
-                await deleteMessage(messageId, recipientUsername);
-                setDone(true);
+                const result = await deleteMessage(messageId, recipientUsername);
+                if (result.success) {
+                  setDone(true);
+                  toast("Deleted.");
+                } else {
+                  toast.error(result.message || "Failed to delete message.");
+                }
               });
             }}
           >

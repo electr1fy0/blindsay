@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { setUsername } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type UsernameFormProps = {
   initialValue?: string | null;
@@ -24,8 +25,8 @@ export function UsernameForm({
       try {
         setError(null);
         const result = await setUsername(value);
-        if (result?.error) {
-          setError(result.error);
+        if (!result.success) {
+          setError(result.message || "Unable to save username.");
         }
       } catch (err) {
         setError("Unable to save username.");

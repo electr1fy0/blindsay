@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { updateHiddenWords } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type HiddenWordsFormProps = {
   initialValue: string[];
@@ -29,13 +30,14 @@ export function HiddenWordsForm({ initialValue }: HiddenWordsFormProps) {
         startTransition(async () => {
           try {
             setError(null);
-            await updateHiddenWords(parseHiddenWords(value));
+            const result = await updateHiddenWords(parseHiddenWords(value));
+            if (result.success) {
+              toast("Saved.");
+            } else {
+              setError(result.message || "Unable to save hidden words.");
+            }
           } catch (err) {
-            setError(
-              err instanceof Error
-                ? err.message
-                : "Unable to save hidden words."
-            );
+            setError("Unable to save hidden words.");
           }
         });
       }}

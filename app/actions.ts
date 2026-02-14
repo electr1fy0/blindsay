@@ -6,17 +6,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { headers } from "next/headers";
-import { checkRateLimit } from "@/lib/rate-limit";
 
 const blockedWords = ["slur1", "slur2", "hateword"];
-
-async function getClientIp() {
-  const headerList = await headers();
-  const forwarded = headerList.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return headerList.get("x-real-ip") ?? "unknown";
-}
 
 function containsBlockedWords(content: string) {
   const normalized = content.toLowerCase();
@@ -35,18 +26,22 @@ function containsHiddenWords(content: string, words: string[]) {
   return words.some((word) => normalized.includes(word));
 }
 
+export type ActionResponse = {
+  success: boolean;
+  message?: string;
+};
 
 export async function createAnonymousMessage(
   recipientId: string,
   recipientUsername: string,
   content: string
-) {
+): Promise<ActionResponse> {
   if (!content || content.trim() === "") {
-    return { error: "Content cannot be empty", success: false };
+    return { success: false, message: "Content cannot be empty" };
   }
 
   if (containsBlockedWords(content)) {
-    return { error: "Please remove abusive language.", success: false };
+    return { success: false, message: "Please remove abusive language." };
   }
 
   const recipient = await prisma.user.findUnique({
@@ -55,27 +50,24 @@ export async function createAnonymousMessage(
   });
 
   if (!recipient) {
-    return { error: "Recipient not found.", success: false };
+    return { success: false, message: "Recipient not found." };
   }
 
   const now = new Date();
   if (!recipient.inboxOpen) {
-    return { error: "This inbox is currently closed.", success: false };
+    return { success: false, message: "This inbox is currently closed." };
   }
 
   if (recipient.inboxPausedUntil && recipient.inboxPausedUntil > now) {
-    return { error: "This inbox is temporarily paused. Please try again later.", success: false };
+    return {
+      success: false,
+      message: "This inbox is temporarily paused. Please try again later.",
+    };
   }
 
   const hiddenWords = normalizeHiddenWords(recipient.hiddenWords ?? []);
   if (containsHiddenWords(content, hiddenWords)) {
-    return { error: "Your message contains a blocked word.", success: false };
-  }
-
-  const ip = await getClientIp();
-  const limit = checkRateLimit(`msg:${ip}:${recipientId}`, 5, 10 * 60 * 1000);
-  if (!limit.ok) {
-    return { error: "Too many messages. Please try again later.", success: false };
+    return { success: false, message: "Your message contains a blocked word." };
   }
 
   await prisma.message.create({
@@ -94,10 +86,10 @@ export async function createReplyMessage(
   recipientUsername: string,
   parentId: string,
   content: string
-) {
+): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const owner = await prisma.user.findUnique({
@@ -106,7 +98,7 @@ export async function createReplyMessage(
   });
 
   if (!owner || owner.id !== recipientId) {
-    throw new Error("You cannot reply to this message.");
+    return { success: false, message: "You cannot reply to this message." };
   }
 
   const existingReply = await prisma.message.findFirst({
@@ -114,11 +106,11 @@ export async function createReplyMessage(
     select: { id: true },
   });
   if (existingReply) {
-    throw new Error("Only one reply is allowed.");
+    return { success: false, message: "Only one reply is allowed." };
   }
 
   if (!content || content.trim() === "") {
-    throw new Error("Content cannot be empty");
+    return { success: false, message: "Content cannot be empty" };
   }
 
   await prisma.message.create({
@@ -130,16 +122,17 @@ export async function createReplyMessage(
   });
 
   revalidatePath(`/${recipientUsername}`);
+  return { success: true };
 }
 
 export async function updateReplyMessage(
   replyId: string,
   recipientUsername: string,
   content: string
-) {
+): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const owner = await prisma.user.findUnique({
@@ -148,11 +141,11 @@ export async function updateReplyMessage(
   });
 
   if (!owner) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   if (!content || content.trim() === "") {
-    throw new Error("Content cannot be empty");
+    return { success: false, message: "Content cannot be empty" };
   }
 
   const reply = await prisma.message.findUnique({
@@ -161,7 +154,7 @@ export async function updateReplyMessage(
   });
 
   if (!reply || !reply.parentId || reply.recipientId !== owner.id) {
-    throw new Error("You cannot edit this reply.");
+    return { success: false, message: "You cannot edit this reply." };
   }
 
   await prisma.message.update({
@@ -170,23 +163,24 @@ export async function updateReplyMessage(
   });
 
   revalidatePath(`/${recipientUsername}`);
+  return { success: true };
 }
 
-
-export async function setUsername(username: string) {
+export async function setUsername(username: string): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return { error: "You must be signed in." };
+    return { success: false, message: "You must be signed in." };
   }
 
   const normalized = username.trim().toLowerCase();
   if (RESERVED_USERNAMES.includes(normalized)) {
-    return { error: "That username is reserved." };
+    return { success: false, message: "That username is reserved." };
   }
 
   if (!/^[a-z0-9_]{3,15}$/.test(normalized)) {
     return {
-      error:
+      success: false,
+      message:
         "Username must be 3-15 characters and use letters, numbers, or underscores.",
     };
   }
@@ -196,7 +190,7 @@ export async function setUsername(username: string) {
     select: { email: true },
   });
   if (existing && existing.email !== session.user.email) {
-    return { error: "That username is already taken." };
+    return { success: false, message: "That username is already taken." };
   }
 
   const user = await prisma.user.update({
@@ -207,10 +201,13 @@ export async function setUsername(username: string) {
   redirect(`/${user.username}`);
 }
 
-export async function deleteMessage(messageId: string, recipientUsername: string) {
+export async function deleteMessage(
+  messageId: string,
+  recipientUsername: string
+): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const owner = await prisma.user.findUnique({
@@ -219,7 +216,7 @@ export async function deleteMessage(messageId: string, recipientUsername: string
   });
 
   if (!owner) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const message = await prisma.message.findUnique({
@@ -228,7 +225,7 @@ export async function deleteMessage(messageId: string, recipientUsername: string
   });
 
   if (!message || message.recipientId !== owner.id) {
-    throw new Error("You cannot delete this message.");
+    return { success: false, message: "You cannot delete this message." };
   }
 
   if (!message.parentId) {
@@ -242,12 +239,13 @@ export async function deleteMessage(messageId: string, recipientUsername: string
 
   revalidatePath(`/${recipientUsername}`);
   revalidatePath("/published");
+  return { success: true };
 }
 
-export async function updateHiddenWords(words: string[]) {
+export async function updateHiddenWords(words: string[]): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const normalized = normalizeHiddenWords(words);
@@ -258,12 +256,13 @@ export async function updateHiddenWords(words: string[]) {
   });
 
   revalidatePath("/account");
+  return { success: true };
 }
 
-export async function pauseInbox(hours: number) {
+export async function pauseInbox(hours: number): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const safeHours = Math.max(1, Math.min(720, Math.floor(hours)));
@@ -275,12 +274,13 @@ export async function pauseInbox(hours: number) {
   });
 
   revalidatePath("/account");
+  return { success: true };
 }
 
-export async function clearInboxPause() {
+export async function clearInboxPause(): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   await prisma.user.update({
@@ -289,12 +289,13 @@ export async function clearInboxPause() {
   });
 
   revalidatePath("/account");
+  return { success: true };
 }
 
-export async function toggleInboxOpen() {
+export async function toggleInboxOpen(): Promise<ActionResponse> {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   const user = await prisma.user.findUnique({
@@ -303,7 +304,7 @@ export async function toggleInboxOpen() {
   });
 
   if (!user) {
-    throw new Error("You must be signed in.");
+    return { success: false, message: "You must be signed in." };
   }
 
   await prisma.user.update({
@@ -312,4 +313,5 @@ export async function toggleInboxOpen() {
   });
 
   revalidatePath("/account");
+  return { success: true };
 }
