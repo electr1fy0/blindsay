@@ -15,16 +15,27 @@ import {
 } from "@hugeicons/core-free-icons";
 import { MobileNav } from "@/components/mobile-nav";
 import { SignOutButton } from "@/components/sign-out-button";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 
 type AppShellProps = {
   children: React.ReactNode;
-  username?: string | null;
-  isOwner?: boolean;
+  user?: {
+    username?: string | null;
+    email?: string | null;
+  } | null;
 };
 
-export function AppShell({ children, username, isOwner }: AppShellProps) {
+export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
+  const params = useParams();
+
+  const viewedUsername = typeof params?.username === "string" ? params.username : undefined;
+  
+  const isOwner = 
+    (!viewedUsername && !!user?.username) || 
+    (!!viewedUsername && !!user?.username && viewedUsername.toLowerCase() === user.username.toLowerCase());
+
+  const username = viewedUsername ?? user?.username;
 
   const isActive = (href: string) => pathname === href;
 

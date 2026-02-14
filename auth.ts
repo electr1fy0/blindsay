@@ -11,4 +11,14 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
   ],
+  callbacks: {
+    session: async ({ session, user }) => {
+      if (session.user) {
+        session.user.id = user.id;
+        // @ts-expect-error - username is added to User model via Prisma
+        session.user.username = user.username;
+      }
+      return session;
+    },
+  },
 };

@@ -59,7 +59,7 @@ export default async function Page() {
                   href={`/${viewer.username}`}
                   className={cn(
                     buttonVariants({ variant: "default", size: "lg" }),
-                    "rounded-2xl",
+                    "rounded-2xl md:mt-4 mt-2",
                   )}
                 >
                   Open inbox
