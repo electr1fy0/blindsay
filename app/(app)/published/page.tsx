@@ -4,6 +4,7 @@ import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { DeleteMessageButton } from "@/components/message-actions";
 import { EditReplyButton } from "@/components/edit-reply-button";
+import { ShareMessageButton } from "@/components/share-message-button";
 import { MessageCard } from "@/components/message-card";
 
 export default async function PublishedPage() {
@@ -59,6 +60,11 @@ export default async function PublishedPage() {
                 now={now}
                 replyActions={
                   <>
+                    <ShareMessageButton
+                      messageContent={message.content}
+                      replyContent={reply.content}
+                      username={user.username ?? ""}
+                    />
                     <EditReplyButton
                       replyId={reply.id}
                       recipientUsername={user.username ?? ""}

@@ -25,7 +25,9 @@ export function MessageCard({
         <p className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
           {formatRelativeTime(message.createdAt, now)}
         </p>
-        {messageActions ? <div className="flex items-center gap-2">{messageActions}</div> : null}
+        {messageActions ? (
+          <div className="flex items-center gap-2">{messageActions}</div>
+        ) : null}
       </div>
       <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed pl-1">
         {message.content}
@@ -40,7 +42,9 @@ export function MessageCard({
                 <span>·</span>
                 <span>{formatRelativeTime(reply.createdAt, now)}</span>
               </div>
-              {replyActions ? <div className="flex items-center gap-2">{replyActions}</div> : null}
+              {replyActions ? (
+                <div className="flex items-center gap-2">{replyActions}</div>
+              ) : null}
             </div>
             <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed pl-1">
               {reply.content}

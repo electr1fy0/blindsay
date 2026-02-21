@@ -10,6 +10,7 @@ import { formatRelativeTime } from "@/lib/relative-time";
 import { DeleteMessageButton } from "@/components/message-actions";
 import { EditReplyButton } from "@/components/edit-reply-button";
 import { SharePanel } from "@/components/share-panel";
+import { ShareMessageButton } from "@/components/share-message-button";
 import { MessageCard } from "@/components/message-card";
 
 type PageProps = {
@@ -175,9 +176,24 @@ export default async function UserInboxPage({
                 now={now}
                 messageActions={
                   isOwner ? (
-                    <DeleteMessageButton
-                      messageId={message.id}
-                      recipientUsername={profile.username ?? username}
+                    <>
+                      {reply ? (
+                        <ShareMessageButton
+                          messageContent={message.content}
+                          replyContent={reply.content}
+                          username={profile.username ?? username}
+                        />
+                      ) : null}
+                      <DeleteMessageButton
+                        messageId={message.id}
+                        recipientUsername={profile.username ?? username}
+                      />
+                    </>
+                  ) : reply ? (
+                    <ShareMessageButton
+                      messageContent={message.content}
+                      replyContent={reply.content}
+                      username={profile.username ?? username}
                     />
                   ) : null
                 }
@@ -197,7 +213,7 @@ export default async function UserInboxPage({
                   ) : null
                 }
                 replyForm={
-                  isOwner ? (
+                  isOwner && !reply ? (
                     <ReplyForm
                       recipientId={profile.id}
                       recipientUsername={profile.username ?? username}
