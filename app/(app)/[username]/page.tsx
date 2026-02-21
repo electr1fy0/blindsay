@@ -56,9 +56,9 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: `Leave a note for @${username}`,
-      description: "Anonymous inboxes for the words people never said out loud.",
+      description:
+        "Anonymous inboxes for the words people never said out loud.",
       images: [`${baseUrl}/blindsay_thumb.jpg`],
-    },
     },
   };
 }
