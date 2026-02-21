@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -15,6 +16,52 @@ type PageProps = {
   params: Promise<{ username?: string }>;
   searchParams?: Promise<{ page?: string }>;
 };
+
+function getBaseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000")
+  );
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const username = resolvedParams?.username?.toLowerCase();
+  if (!username) return {};
+
+  const baseUrl = getBaseUrl();
+  const pageUrl = `${baseUrl}/${username}`;
+
+  return {
+    title: `Leave a note for @${username}`,
+    alternates: { canonical: pageUrl },
+    openGraph: {
+      url: pageUrl,
+      title: `Leave a note for @${username}`,
+      description:
+        "Anonymous inboxes for the words people never said out loud.",
+      images: [
+        {
+          url: `${baseUrl}/blindsay_thumb.jpg`,
+          width: 1200,
+          height: 630,
+          alt: "Blindsay",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Leave a note for @${username}`,
+      description: "Anonymous inboxes for the words people never said out loud.",
+      images: [`${baseUrl}/blindsay_thumb.jpg`],
+    },
+    },
+  };
+}
 
 export default async function UserInboxPage({
   params,
@@ -79,11 +126,7 @@ export default async function UserInboxPage({
     skip: isOwner ? skip : 0,
     take: isOwner ? pageSize : pageSize,
   });
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000");
+  const baseUrl = getBaseUrl();
   const shareUrl = `${baseUrl}/${profile.username ?? username}`;
 
   return (

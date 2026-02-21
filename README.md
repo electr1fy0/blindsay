@@ -1,4 +1,4 @@
-# BLINDSAY
+# Blindsay
 
 **Anonymous inbox, precise publishing.**
 

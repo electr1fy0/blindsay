@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteTitle = "BLINDSAY";
+const siteTitle = "Blindsay";
 const siteDescription =
   "Anonymous inboxes for the words people never said out loud.";
 const siteUrl =
@@ -35,10 +35,11 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/blindsay_thumb.png",
+        url: `${siteUrl}/blindsay_thumb.jpg`,
         width: 1200,
         height: 630,
         alt: siteTitle,
+        type: "image/jpeg",
       },
     ],
   },
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
-    images: ["/blindsay_thumb.png"],
+    images: [`${siteUrl}/blindsay_thumb.jpg`],
   },
 };
 
