@@ -16,14 +16,14 @@ export default async function OnboardingPage() {
           <div className="section-header">
             <div className="flex items-center gap-3">
               <Image
-                src="/unsaid.png"
-                alt="Unsaid logo"
+                src="/blindsay.png"
+                alt="BLINDSAY logo"
                 width={24}
                 height={24}
                 className="rounded-md"
               />
               <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                UNSAID
+                BLINDSAY
               </p>
             </div>
             <h1 className="text-3xl font-semibold">Sign in to continue</h1>
@@ -54,14 +54,14 @@ export default async function OnboardingPage() {
         <div className="section-header">
           <div className="flex items-center gap-3">
             <Image
-              src="/unsaid.png"
-              alt="Unsaid logo"
+              src="/blindsay.png"
+              alt="BLINDSAY logo"
               width={24}
               height={24}
               className="rounded-md"
             />
             <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
-              Unsaid
+              BLINDSAY
             </p>
           </div>
           <h1 className="text-3xl font-semibold">Claim your username</h1>

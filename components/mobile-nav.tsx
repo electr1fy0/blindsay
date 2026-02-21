@@ -34,14 +34,14 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
       <div className="flex items-center justify-between panel-card px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/unsaid.png"
-            alt="Unsaid logo"
+            src="/blindsay.png"
+            alt="BLINDSAY logo"
             width={26}
             height={26}
             className="rounded-md"
           />
           <span className="text-sm font-semibold tracking-[0.06em]">
-            Unsaid
+            BLINDSAY
           </span>
         </Link>
         <Button variant="outline" size="sm" onClick={() => setOpen(true)}>

@@ -29,11 +29,14 @@ export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const params = useParams();
 
-  const viewedUsername = typeof params?.username === "string" ? params.username : undefined;
-  
-  const isOwner = 
-    (!viewedUsername && !!user?.username) || 
-    (!!viewedUsername && !!user?.username && viewedUsername.toLowerCase() === user.username.toLowerCase());
+  const viewedUsername =
+    typeof params?.username === "string" ? params.username : undefined;
+
+  const isOwner =
+    (!viewedUsername && !!user?.username) ||
+    (!!viewedUsername &&
+      !!user?.username &&
+      viewedUsername.toLowerCase() === user.username.toLowerCase());
 
   const username = viewedUsername ?? user?.username;
 
@@ -45,13 +48,15 @@ export function AppShell({ children, user }: AppShellProps) {
         <div className="panel-card flex h-full w-full flex-col gap-4 px-4 py-6">
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/unsaid.png"
-              alt="Unsaid logo"
+              src="/blindsay.png"
+              alt="BLINDSAY logo"
               width={40}
               height={40}
               className="rounded-md"
             />
-            <div className="text-base font-normal tracking-[0.06em]">UNSAID</div>
+            <div className="text-base font-normal tracking-[0.06em]">
+              BLINDSAY
+            </div>
           </Link>
           <nav className="flex flex-1 flex-col gap-2 text-sm">
             {username ? (
@@ -77,14 +82,14 @@ export function AppShell({ children, user }: AppShellProps) {
             ) : null}
             {isOwner ? (
               <Link
-              href="/published"
-              className={cn(
-                buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                }),
-                isActive("/published") ? "nav-pill-active" : "nav-pill",
-                "rounded-2xl justify-start gap-2",
+                href="/published"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  }),
+                  isActive("/published") ? "nav-pill-active" : "nav-pill",
+                  "rounded-2xl justify-start gap-2",
                 )}
               >
                 <HugeiconsIcon
@@ -98,14 +103,14 @@ export function AppShell({ children, user }: AppShellProps) {
             ) : null}
             {isOwner ? (
               <Link
-              href="/analytics"
-              className={cn(
-                buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                }),
-                isActive("/analytics") ? "nav-pill-active" : "nav-pill",
-                "rounded-2xl justify-start gap-2",
+                href="/analytics"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  }),
+                  isActive("/analytics") ? "nav-pill-active" : "nav-pill",
+                  "rounded-2xl justify-start gap-2",
                 )}
               >
                 <HugeiconsIcon
@@ -119,14 +124,14 @@ export function AppShell({ children, user }: AppShellProps) {
             ) : null}
             {isOwner ? (
               <Link
-              href="/account"
-              className={cn(
-                buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                }),
-                isActive("/account") ? "nav-pill-active" : "nav-pill",
-                "rounded-2xl justify-start gap-2",
+                href="/account"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  }),
+                  isActive("/account") ? "nav-pill-active" : "nav-pill",
+                  "rounded-2xl justify-start gap-2",
                 )}
               >
                 <HugeiconsIcon
@@ -140,14 +145,14 @@ export function AppShell({ children, user }: AppShellProps) {
             ) : null}
             {isOwner ? (
               <Link
-              href="/help"
-              className={cn(
-                buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                }),
-                isActive("/help") ? "nav-pill-active" : "nav-pill",
-                "rounded-2xl justify-start gap-2",
+                href="/help"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    size: "sm",
+                  }),
+                  isActive("/help") ? "nav-pill-active" : "nav-pill",
+                  "rounded-2xl justify-start gap-2",
                 )}
               >
                 <HugeiconsIcon
@@ -183,7 +188,10 @@ export function AppShell({ children, user }: AppShellProps) {
                   />
                   <p className="text-sm font-medium">
                     Your username is reserved. Please{" "}
-                    <Link href="/account" className="underline hover:no-underline">
+                    <Link
+                      href="/account"
+                      className="underline hover:no-underline"
+                    >
                       change it
                     </Link>{" "}
                     to continue using the app properly.
