@@ -67,6 +67,33 @@ function roundRect(
 const MONO =
   '"Geist Mono", "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace';
 
+const COLORS = {
+  bg1: "#efeff0",
+  bg2: "#e7e7e8",
+  cardHighlight: "#f8f8f9",
+  cardSurface: "#f2f2f3",
+  cardBorder: "rgba(255,255,255,0.7)",
+  cardShadow: "rgba(15,23,42,0.10)",
+  cardInnerTop: "rgba(255,255,255,0.9)",
+  cardInnerLeft: "rgba(255,255,255,0.55)",
+  cardInnerRight: "rgba(15,23,42,0.06)",
+  cardInnerBottom: "rgba(15,23,42,0.08)",
+  overlayTop: "rgba(255,255,255,0.80)",
+  overlayBottom: "rgba(255,255,255,0.0)",
+  subtleHighlight: "rgba(255,255,255,0.96)",
+  subtleSurface: "rgba(255,255,255,0.82)",
+  subtleBorder: "rgba(255,255,255,0.7)",
+  subtleInnerTop: "rgba(255,255,255,0.9)",
+  subtleInnerLeft: "rgba(255,255,255,0.55)",
+  subtleInnerRight: "rgba(15,23,42,0.05)",
+  subtleInnerBottom: "rgba(15,23,42,0.06)",
+  subtleOverlayTop: "rgba(255,255,255,0.75)",
+  subtleOverlayBottom: "rgba(255,255,255,0.0)",
+  foreground: "#2e2e2e",
+  muted: "#929292",
+  brand: "#b0b0b5",
+};
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -77,157 +104,312 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+function drawPanelCard(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  ctx.save();
+  ctx.shadowColor = COLORS.cardShadow;
+  ctx.shadowBlur = 36;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 16;
+  const bg = ctx.createLinearGradient(x, y, x, y + h);
+  bg.addColorStop(0, COLORS.cardHighlight);
+  bg.addColorStop(1, COLORS.cardSurface);
+  roundRect(ctx, x, y, w, h, r);
+  ctx.fillStyle = bg;
+  ctx.fill();
+  ctx.restore();
+
+  roundRect(ctx, x, y, w, h, r);
+  ctx.strokeStyle = COLORS.cardBorder;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.save();
+  roundRect(ctx, x, y, w, h, r);
+  ctx.clip();
+  const overlay = ctx.createLinearGradient(x, y, x, y + h);
+  overlay.addColorStop(0, COLORS.overlayTop);
+  overlay.addColorStop(1, COLORS.overlayBottom);
+  ctx.globalAlpha = 0.65;
+  ctx.fillStyle = overlay;
+  ctx.fillRect(x, y, w, h);
+  ctx.restore();
+
+  const ir = Math.max(0, r - 2);
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(x + 1 + ir, y + 1);
+  ctx.lineTo(x + w - 1 - ir, y + 1);
+  ctx.quadraticCurveTo(x + w - 1, y + 1, x + w - 1, y + 1 + ir);
+  ctx.strokeStyle = COLORS.cardInnerTop;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + 1, y + 1 + ir);
+  ctx.lineTo(x + 1, y + h - 1 - ir);
+  ctx.strokeStyle = COLORS.cardInnerLeft;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + w - 1, y + 1 + ir);
+  ctx.lineTo(x + w - 1, y + h - 1 - ir);
+  ctx.strokeStyle = COLORS.cardInnerRight;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + 1 + ir, y + h - 1);
+  ctx.lineTo(x + w - 1 - ir, y + h - 1);
+  ctx.strokeStyle = COLORS.cardInnerBottom;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawSubtleCard(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  ctx.save();
+  ctx.shadowColor = "rgba(15,23,42,0.06)";
+  ctx.shadowBlur = 24;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 10;
+  const bg = ctx.createLinearGradient(x, y, x, y + h);
+  bg.addColorStop(0, COLORS.subtleHighlight);
+  bg.addColorStop(1, COLORS.subtleSurface);
+  roundRect(ctx, x, y, w, h, r);
+  ctx.fillStyle = bg;
+  ctx.fill();
+  ctx.restore();
+
+  roundRect(ctx, x, y, w, h, r);
+  ctx.strokeStyle = COLORS.subtleBorder;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.save();
+  roundRect(ctx, x, y, w, h, r);
+  ctx.clip();
+  const overlay = ctx.createLinearGradient(x, y, x, y + h);
+  overlay.addColorStop(0, COLORS.subtleOverlayTop);
+  overlay.addColorStop(1, COLORS.subtleOverlayBottom);
+  ctx.globalAlpha = 0.55;
+  ctx.fillStyle = overlay;
+  ctx.fillRect(x, y, w, h);
+  ctx.restore();
+
+  const ir = Math.max(0, r - 2);
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(x + 1 + ir, y + 1);
+  ctx.lineTo(x + w - 1 - ir, y + 1);
+  ctx.strokeStyle = COLORS.subtleInnerTop;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + 1, y + 1 + ir);
+  ctx.lineTo(x + 1, y + h - 1 - ir);
+  ctx.strokeStyle = COLORS.subtleInnerLeft;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + w - 1, y + 1 + ir);
+  ctx.lineTo(x + w - 1, y + h - 1 - ir);
+  ctx.strokeStyle = COLORS.subtleInnerRight;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x + 1 + ir, y + h - 1);
+  ctx.lineTo(x + w - 1 - ir, y + h - 1);
+  ctx.strokeStyle = COLORS.subtleInnerBottom;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+}
+
 async function generateCardCanvas(
   messageContent: string,
   replyContent: string,
   username: string,
   logoImg: HTMLImageElement | null,
 ): Promise<HTMLCanvasElement> {
-  const scale = 2;
-  const cardW = 520;
-  const pad = 36;
+  const scale = 4;
+  const outerPad = 32;
+  const cardW = 480;
+  const totalW = cardW + outerPad * 2;
+  const pad = 28;
   const contentW = cardW - pad * 2;
 
   const tmp = document.createElement("canvas").getContext("2d")!;
 
-  tmp.font = `400 ${14 * scale}px ${MONO}`;
+  tmp.font = `400 ${13 * scale}px ${MONO}`;
   const msgLines = wrapText(tmp, messageContent, contentW * scale);
 
-  tmp.font = `400 ${13 * scale}px ${MONO}`;
-  const replyW = contentW - 28;
-  const replyLines = wrapText(tmp, replyContent, replyW * scale);
+  tmp.font = `400 ${12.5 * scale}px ${MONO}`;
+  const replyContentW = contentW - 40;
+  const replyLines = wrapText(tmp, replyContent, replyContentW * scale);
 
-  const msgLineH = 22;
-  const replyLineH = 21;
+  const msgLineH = 21;
+  const replyLineH = 20;
   const msgTextH = msgLines.length * msgLineH;
   const replyTextH = replyLines.length * replyLineH;
 
-  const labelH = 30;
-  const replyLabelH = 26;
-  const replyPad = 16;
-  const replyBoxH = replyLabelH + replyTextH + replyPad * 2;
-  const brandH = 40;
-  const gap = 14;
+  const kickerH = 26;
+  const replyKickerH = 24;
+  const replyPadV = 14;
+  const replyPadH = 18;
+  const replyBoxW = contentW;
+  const replyBoxH = replyKickerH + replyTextH + replyPadV * 2;
+  const brandRowH = 32;
+  const sectionGap = 16;
 
-  const cardH = pad + labelH + msgTextH + gap + replyBoxH + gap + brandH + pad;
+  const cardInnerH =
+    pad +
+    kickerH +
+    msgTextH +
+    sectionGap +
+    replyBoxH +
+    sectionGap +
+    brandRowH +
+    pad;
+  const totalH = cardInnerH + outerPad * 2;
 
   const canvas = document.createElement("canvas");
-  canvas.width = cardW * scale;
-  canvas.height = cardH * scale;
+  canvas.width = totalW * scale;
+  canvas.height = totalH * scale;
   const ctx = canvas.getContext("2d")!;
   ctx.scale(scale, scale);
 
-  const bg = ctx.createLinearGradient(0, 0, 0, cardH);
-  bg.addColorStop(0, "#f9fbff");
-  bg.addColorStop(1, "#edf1fb");
+  const bodyBg = ctx.createLinearGradient(0, 0, 0, totalH);
+  bodyBg.addColorStop(0, COLORS.bg1);
+  bodyBg.addColorStop(1, COLORS.bg2);
+  ctx.fillStyle = bodyBg;
+  ctx.fillRect(0, 0, totalW, totalH);
 
-  roundRect(ctx, 0, 0, cardW, cardH, 22);
-  ctx.fillStyle = bg;
-  ctx.fill();
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  const r1 = ctx.createRadialGradient(
+    totalW * 0.2,
+    totalH * 0.12,
+    0,
+    totalW * 0.2,
+    totalH * 0.12,
+    totalW * 0.5,
+  );
+  r1.addColorStop(0, "#fafafa");
+  r1.addColorStop(1, "transparent");
+  ctx.fillStyle = r1;
+  ctx.fillRect(0, 0, totalW, totalH);
 
-  roundRect(ctx, 0.5, 0.5, cardW - 1, cardH - 1, 22);
-  ctx.strokeStyle = "rgba(59,109,255,0.12)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
+  const r2 = ctx.createRadialGradient(
+    totalW * 0.8,
+    totalH * 0.18,
+    0,
+    totalW * 0.8,
+    totalH * 0.18,
+    totalW * 0.45,
+  );
+  r2.addColorStop(0, "#f4f4f5");
+  r2.addColorStop(1, "transparent");
+  ctx.fillStyle = r2;
+  ctx.fillRect(0, 0, totalW, totalH);
+  ctx.restore();
 
-  roundRect(ctx, 1.5, 1.5, cardW - 3, cardH - 3, 21);
-  ctx.strokeStyle = "rgba(255,255,255,0.75)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
+  const cardX = outerPad;
+  const cardY = outerPad;
+  const cardR = 24;
 
-  let y = pad;
+  drawPanelCard(ctx, cardX, cardY, cardW, cardInnerH, cardR);
 
-  ctx.font = `600 9px ${MONO}`;
-  ctx.fillStyle = "#8b8fa3";
+  let y = cardY + pad;
+  const textX = cardX + pad;
+
   ctx.textBaseline = "top";
-  ctx.letterSpacing = "1.5px";
-  ctx.fillText("ANONYMOUS MESSAGE", pad, y);
-  ctx.letterSpacing = "0px";
-  y += labelH;
 
-  ctx.font = `400 14px ${MONO}`;
-  ctx.fillStyle = "#1a1d2e";
+  ctx.font = `500 9px ${MONO}`;
+  ctx.fillStyle = COLORS.muted;
+  ctx.letterSpacing = "2.2px";
+  ctx.fillText("ANONYMOUS MESSAGE", textX, y);
+  ctx.letterSpacing = "0px";
+  y += kickerH;
+
+  ctx.font = `400 13px ${MONO}`;
+  ctx.fillStyle = COLORS.foreground;
   for (const line of msgLines) {
-    ctx.fillText(line, pad + 2, y);
+    ctx.fillText(line, textX + 2, y);
     y += msgLineH;
   }
 
-  y += gap;
+  y += sectionGap;
 
-  const rBoxX = pad - 6;
-  const rBoxW = contentW + 12;
-  const rBoxY = y;
+  const replyBoxX = cardX + pad;
+  const replyBoxY = y;
+  const subtleR = 16;
 
-  const rBg = ctx.createLinearGradient(0, rBoxY, 0, rBoxY + replyBoxH);
-  rBg.addColorStop(0, "rgba(255,255,255,0.97)");
-  rBg.addColorStop(1, "rgba(255,255,255,0.86)");
+  drawSubtleCard(ctx, replyBoxX, replyBoxY, replyBoxW, replyBoxH, subtleR);
 
-  roundRect(ctx, rBoxX, rBoxY, rBoxW, replyBoxH, 14);
-  ctx.fillStyle = rBg;
-  ctx.fill();
+  const rTextX = replyBoxX + replyPadH;
+  y = replyBoxY + replyPadV;
 
-  roundRect(ctx, rBoxX + 0.5, rBoxY + 0.5, rBoxW - 1, replyBoxH - 1, 14);
-  ctx.strokeStyle = "rgba(59,109,255,0.06)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  const rContentX = pad + 8;
-  y = rBoxY + replyPad;
-
-  ctx.font = `600 9px ${MONO}`;
-  ctx.fillStyle = "#8b8fa3";
-  ctx.letterSpacing = "1.5px";
-  const replyLabel = "REPLY";
-  ctx.fillText(replyLabel, rContentX, y);
-  const labelWidth = ctx.measureText(replyLabel).width;
+  ctx.font = `500 9px ${MONO}`;
+  ctx.fillStyle = COLORS.muted;
+  ctx.letterSpacing = "2.2px";
+  ctx.fillText("REPLY", rTextX, y);
   ctx.letterSpacing = "0px";
+  y += replyKickerH;
 
-  ctx.font = `400 9px ${MONO}`;
-  ctx.fillText(`  ·  @${username}`, rContentX + labelWidth, y);
-  y += replyLabelH;
-
-  ctx.font = `400 13px ${MONO}`;
-  ctx.fillStyle = "#1a1d2e";
+  ctx.font = `400 12.5px ${MONO}`;
+  ctx.fillStyle = COLORS.foreground;
   for (const line of replyLines) {
-    ctx.fillText(line, rContentX + 2, y);
+    ctx.fillText(line, rTextX + 2, y);
     y += replyLineH;
   }
 
-  const brandY = cardH - pad - 6;
-  const logoSize = 22;
+  const brandY = cardY + cardInnerH - pad - brandRowH + 10;
+  const logoSize = 20;
+
+  ctx.font = `400 10px ${MONO}`;
+  ctx.fillStyle = COLORS.muted;
+  ctx.fillText(`@${username}`, textX, brandY + 5);
 
   if (logoImg) {
+    const logoX = cardX + cardW - pad - logoSize - 68;
+    const logoY = brandY;
+
     ctx.save();
-    roundRect(
-      ctx,
-      cardW - pad - logoSize - 70,
-      brandY - logoSize + 6,
-      logoSize,
-      logoSize,
-      4,
-    );
+    roundRect(ctx, logoX, logoY, logoSize, logoSize, 5);
     ctx.clip();
-    ctx.drawImage(
-      logoImg,
-      cardW - pad - logoSize - 70,
-      brandY - logoSize + 6,
-      logoSize,
-      logoSize,
-    );
+    ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
     ctx.restore();
 
-    ctx.font = `500 11px ${MONO}`;
-    ctx.fillStyle = "#b0b4c8";
-    ctx.letterSpacing = "0.5px";
-    ctx.fillText("BLINDSAY", cardW - pad - 65, brandY - logoSize + 12);
+    ctx.font = `500 10px ${MONO}`;
+    ctx.fillStyle = COLORS.brand;
+    ctx.letterSpacing = "0.8px";
+    ctx.fillText("BLINDSAY", logoX + logoSize + 6, logoY + 5);
     ctx.letterSpacing = "0px";
   } else {
-    ctx.font = `500 11px ${MONO}`;
-    ctx.fillStyle = "#b0b4c8";
-    ctx.letterSpacing = "0.5px";
+    ctx.font = `500 10px ${MONO}`;
+    ctx.fillStyle = COLORS.brand;
+    ctx.letterSpacing = "0.8px";
     const brand = "BLINDSAY";
     const brandW = ctx.measureText(brand).width;
-    ctx.fillText(brand, cardW - pad - brandW, brandY - 4);
+    ctx.fillText(brand, cardX + cardW - pad - brandW, brandY + 5);
     ctx.letterSpacing = "0px";
   }
 
