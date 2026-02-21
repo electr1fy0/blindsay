@@ -130,40 +130,81 @@ export default async function UserInboxPage({
   const baseUrl = getBaseUrl();
   const shareUrl = `${baseUrl}/${profile.username ?? username}`;
 
+  if (!isOwner) {
+    const publishedMessages = messages.filter((m) => m.replies[0] != null);
+
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="panel-card px-6 py-6">
+          <div className="flex flex-col items-center text-center gap-1">
+            <h1 className="text-lg font-semibold">
+              @{profile.username ?? username}
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Send an anonymous message below. Be kind.
+            </p>
+          </div>
+
+          {profile.inboxOpen && !isPaused ? (
+            <div className="mt-5">
+              <CreateMessageForm
+                recipientId={profile.id}
+                recipientUsername={profile.username ?? username}
+              />
+            </div>
+          ) : (
+            <p className="mt-5 text-center text-sm text-muted-foreground">
+              {profile.inboxOpen && isPaused
+                ? `This inbox is paused ${profile.inboxPausedUntil ? formatRelativeTime(profile.inboxPausedUntil, now) : ""}.`
+                : "This inbox is currently closed."}
+            </p>
+          )}
+        </div>
+
+        {publishedMessages.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            <p className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground px-1">
+              Replies
+            </p>
+            {publishedMessages.map((message) => {
+              const reply = message.replies[0]!;
+              return (
+                <MessageCard
+                  key={message.id}
+                  message={message}
+                  reply={reply}
+                  now={now}
+                  messageActions={
+                    <ShareMessageButton
+                      messageContent={message.content}
+                      replyContent={reply.content}
+                      username={profile.username ?? username}
+                    />
+                  }
+                />
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="page-stack">
       <div className="section-header">
-        <h1 className="text-2xl font-semibold">
-          {isOwner ? "Your inbox" : `Leave a note for ${profile.username}`}
-        </h1>
+        <h1 className="text-2xl font-semibold">Your inbox</h1>
         <p className="text-sm text-muted-foreground">
-          {isOwner
-            ? "These messages were sent anonymously."
-            : "Your message will be anonymous. Be kind."}
+          These messages were sent anonymously.
         </p>
       </div>
 
-      {isOwner ? (
-        <SharePanel url={shareUrl} />
-      ) : profile.inboxOpen && !isPaused ? (
-        <section className="panel-card p-4">
-          <CreateMessageForm
-            recipientId={profile.id}
-            recipientUsername={profile.username ?? username}
-          />
-        </section>
-      ) : (
-        <section className="panel-card p-4 text-sm text-muted-foreground">
-          {profile.inboxOpen && isPaused
-            ? `This inbox is paused ${profile.inboxPausedUntil ? formatRelativeTime(profile.inboxPausedUntil, now) : ""}.`
-            : "This inbox is currently closed."}
-        </section>
-      )}
+      <SharePanel url={shareUrl} />
 
       <section className="flex flex-col gap-4">
         {messages.length === 0 ? (
           <div className="panel-card p-4 text-sm text-muted-foreground">
-            {isOwner ? "No messages yet." : "No replies yet."}
+            No messages yet.
           </div>
         ) : (
           messages.map((message) => {
@@ -175,30 +216,22 @@ export default async function UserInboxPage({
                 reply={reply}
                 now={now}
                 messageActions={
-                  isOwner ? (
-                    <>
-                      {reply ? (
-                        <ShareMessageButton
-                          messageContent={message.content}
-                          replyContent={reply.content}
-                          username={profile.username ?? username}
-                        />
-                      ) : null}
-                      <DeleteMessageButton
-                        messageId={message.id}
-                        recipientUsername={profile.username ?? username}
+                  <>
+                    {reply ? (
+                      <ShareMessageButton
+                        messageContent={message.content}
+                        replyContent={reply.content}
+                        username={profile.username ?? username}
                       />
-                    </>
-                  ) : reply ? (
-                    <ShareMessageButton
-                      messageContent={message.content}
-                      replyContent={reply.content}
-                      username={profile.username ?? username}
+                    ) : null}
+                    <DeleteMessageButton
+                      messageId={message.id}
+                      recipientUsername={profile.username ?? username}
                     />
-                  ) : null
+                  </>
                 }
                 replyActions={
-                  isOwner && reply ? (
+                  reply ? (
                     <>
                       <EditReplyButton
                         replyId={reply.id}
@@ -213,7 +246,7 @@ export default async function UserInboxPage({
                   ) : null
                 }
                 replyForm={
-                  isOwner && !reply ? (
+                  !reply ? (
                     <ReplyForm
                       recipientId={profile.id}
                       recipientUsername={profile.username ?? username}
@@ -225,31 +258,29 @@ export default async function UserInboxPage({
             );
           })
         )}
-        {isOwner ? (
-          <div className="panel-card-subtle inline-flex items-center gap-3 px-3 py-2 text-xs text-muted-foreground">
-            <span className="lowercase">
-              page {page} of {totalPages}
-            </span>
-            <div className="flex items-center gap-2">
-              {page > 1 ? (
-                <Link
-                  href={`/${profile.username ?? username}?page=${page - 1}`}
-                  className="panel-card-muted px-3 py-1 text-xs"
-                >
-                  Previous
-                </Link>
-              ) : null}
-              {page < totalPages ? (
-                <Link
-                  href={`/${profile.username ?? username}?page=${page + 1}`}
-                  className="panel-card-muted px-3 py-1 text-xs"
-                >
-                  Next
-                </Link>
-              ) : null}
-            </div>
+        <div className="panel-card-subtle inline-flex items-center gap-3 px-3 py-2 text-xs text-muted-foreground">
+          <span className="lowercase">
+            page {page} of {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
+            {page > 1 ? (
+              <Link
+                href={`/${profile.username ?? username}?page=${page - 1}`}
+                className="panel-card-muted px-3 py-1 text-xs"
+              >
+                Previous
+              </Link>
+            ) : null}
+            {page < totalPages ? (
+              <Link
+                href={`/${profile.username ?? username}?page=${page + 1}`}
+                className="panel-card-muted px-3 py-1 text-xs"
+              >
+                Next
+              </Link>
+            ) : null}
           </div>
-        ) : null}
+        </div>
       </section>
     </div>
   );
