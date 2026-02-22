@@ -12,6 +12,7 @@ import { EditReplyButton } from "@/components/edit-reply-button";
 import { SharePanel } from "@/components/share-panel";
 import { ShareMessageButton } from "@/components/share-message-button";
 import { MessageCard } from "@/components/message-card";
+import { NewBadge, MarkMessagesSeen } from "@/components/new-badge";
 
 type PageProps = {
   params: Promise<{ username?: string }>;
@@ -185,7 +186,11 @@ export default async function UserInboxPage({
               );
             })}
           </div>
-        ) : null}
+        ) : (
+          <p className="text-center text-xs text-muted-foreground py-4">
+            No replies yet — be the first to leave a note.
+          </p>
+        )}
       </div>
     );
   }
@@ -202,6 +207,7 @@ export default async function UserInboxPage({
       <SharePanel url={shareUrl} />
 
       <section className="flex flex-col gap-4">
+        <MarkMessagesSeen messageIds={messages.map((m) => m.id)} />
         {messages.length === 0 ? (
           <div className="panel-card p-4 text-sm text-muted-foreground">
             No messages yet.
@@ -217,6 +223,7 @@ export default async function UserInboxPage({
                 now={now}
                 messageActions={
                   <>
+                    <NewBadge messageId={message.id} />
                     {reply ? (
                       <ShareMessageButton
                         messageContent={message.content}

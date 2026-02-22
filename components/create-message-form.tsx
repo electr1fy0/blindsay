@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { createAnonymousMessage } from "@/app/actions";
 
+const MAX_LENGTH = 500;
+
 interface CreateMessageFormProps {
   recipientId: string;
   recipientUsername: string;
@@ -20,6 +22,7 @@ export function CreateMessageForm({
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +31,12 @@ export function CreateMessageForm({
     startTransition(async () => {
       try {
         setError(null);
-        const result = await createAnonymousMessage(recipientId, recipientUsername, content);
-        
+        const result = await createAnonymousMessage(
+          recipientId,
+          recipientUsername,
+          content,
+        );
+
         if (!result.success) {
           const message = result.message || "Failed to send message.";
           setError(message);
@@ -38,7 +45,7 @@ export function CreateMessageForm({
         }
 
         setContent("");
-        toast("Sent.");
+        setSent(true);
         if (onSuccess) onSuccess();
       } catch (error) {
         const message =
@@ -49,17 +56,47 @@ export function CreateMessageForm({
     });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      e.currentTarget.form?.requestSubmit();
+    }
+  };
+
+  if (sent) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-4 text-center">
+        <p className="text-sm font-medium">
+          Your message was sent anonymously.
+        </p>
+        <button
+          type="button"
+          onClick={() => setSent(false)}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Send another
+        </button>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <Textarea
         placeholder="Write something honest. It stays anonymous."
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={(e) => setContent(e.target.value.slice(0, MAX_LENGTH))}
+        onKeyDown={handleKeyDown}
         disabled={isPending}
         className="min-h-[90px]"
       />
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between">
+        <span
+          className={`text-[0.65rem] tabular-nums ${content.length >= MAX_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
+        >
+          {content.length}/{MAX_LENGTH}
+        </span>
         <Button type="submit" disabled={isPending || !content.trim()}>
           {isPending ? "Sending..." : "Send anonymously"}
         </Button>
