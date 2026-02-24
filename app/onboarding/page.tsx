@@ -12,7 +12,7 @@ export default async function OnboardingPage() {
   if (!session?.user?.email) {
     return (
       <div className="min-h-screen">
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
+        <div className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-16">
           <div className="section-header">
             <div className="flex items-center gap-3">
               <Image
@@ -50,7 +50,7 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16">
+      <div className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-16">
         <div className="section-header">
           <div className="flex items-center gap-3">
             <Image

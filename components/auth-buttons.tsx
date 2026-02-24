@@ -51,7 +51,7 @@ export function AuthButtons({ user, className, size = "default" }: AuthButtonsPr
             </div>
           </div>
         </div>
-        <Button type="button" variant="outline" size={size} className="self-start" onClick={() => signOut()}>
+        <Button type="button" variant="outline" size={size} className="self-start" onClick={() => signOut({ callbackUrl: "/" })}>
           Sign out
         </Button>
       </div>
