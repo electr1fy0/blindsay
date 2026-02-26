@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const STORAGE_KEY = "blindsay:seen";
 
@@ -27,14 +27,7 @@ function markSeen(ids: string[]) {
 }
 
 export function NewBadge({ messageId }: { messageId: string }) {
-  const [isNew, setIsNew] = useState(false);
-
-  useEffect(() => {
-    const seen = getSeenIds();
-    if (!seen.has(messageId)) {
-      setIsNew(true);
-    }
-  }, [messageId]);
+  const isNew = !getSeenIds().has(messageId);
 
   if (!isNew) return null;
 

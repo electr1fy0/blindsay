@@ -13,6 +13,7 @@ import { SharePanel } from "@/components/share-panel";
 import { ShareMessageButton } from "@/components/share-message-button";
 import { MessageCard } from "@/components/message-card";
 import { NewBadge, MarkMessagesSeen } from "@/components/new-badge";
+import { AutoRefresh } from "@/components/auto-refresh";
 
 type PageProps = {
   params: Promise<{ username?: string }>;
@@ -207,6 +208,7 @@ export default async function UserInboxPage({
       <SharePanel url={shareUrl} />
 
       <section className="flex flex-col gap-4">
+        <AutoRefresh />
         <MarkMessagesSeen messageIds={messages.map((m) => m.id)} />
         {messages.length === 0 ? (
           <div className="panel-card p-4 text-sm text-muted-foreground">

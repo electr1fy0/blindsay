@@ -453,15 +453,18 @@ export function ShareMessageButton({
 
   const handleShare = useCallback(async () => {
     setBusy(true);
+    let canvas: HTMLCanvasElement | null = null;
     try {
-      const canvas = await generateCardCanvas(
+      canvas = await generateCardCanvas(
         messageContent,
         replyContent,
         username,
         logoRef.current,
       );
+      if (!canvas) throw new Error("Failed to create share canvas.");
+      const readyCanvas = canvas;
       const blob = await new Promise<Blob>((resolve, reject) =>
-        canvas.toBlob(
+        readyCanvas.toBlob(
           (b) => (b ? resolve(b) : reject(new Error("no blob"))),
           "image/png",
         ),
@@ -500,13 +503,16 @@ export function ShareMessageButton({
       if (err instanceof DOMException && err.name === "AbortError") return;
       console.error(err);
       try {
-        const canvas = await generateCardCanvas(
-          messageContent,
-          replyContent,
+        downloadCanvas(
+          canvas ??
+            (await generateCardCanvas(
+              messageContent,
+              replyContent,
+              username,
+              logoRef.current,
+            )),
           username,
-          logoRef.current,
         );
-        downloadCanvas(canvas, username);
         toast("Card downloaded!");
       } catch {
         toast.error("Failed to create share card.");

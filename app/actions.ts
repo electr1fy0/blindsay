@@ -32,6 +32,24 @@ export type ActionResponse = {
   message?: string;
 };
 
+const UNAUTHORIZED_RESPONSE: ActionResponse = {
+  success: false,
+  message: "You must be signed in.",
+};
+
+async function getAuthenticatedUserId(): Promise<string | null> {
+  const session = await getServerSession(authOptions);
+  const email = session?.user?.email;
+  if (!email) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  return user?.id ?? null;
+}
+
 export async function createAnonymousMessage(
   recipientId: string,
   recipientUsername: string,
@@ -88,17 +106,10 @@ export async function createReplyMessage(
   parentId: string,
   content: string,
 ): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const ownerId = await getAuthenticatedUserId();
+  if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
-  const owner = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!owner || owner.id !== recipientId) {
+  if (ownerId !== recipientId) {
     return { success: false, message: "You cannot reply to this message." };
   }
 
@@ -131,19 +142,8 @@ export async function updateReplyMessage(
   recipientUsername: string,
   content: string,
 ): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
-
-  const owner = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!owner) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const ownerId = await getAuthenticatedUserId();
+  if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
   if (!content || content.trim() === "") {
     return { success: false, message: "Content cannot be empty" };
@@ -154,7 +154,7 @@ export async function updateReplyMessage(
     select: { recipientId: true, parentId: true },
   });
 
-  if (!reply || !reply.parentId || reply.recipientId !== owner.id) {
+  if (!reply || !reply.parentId || reply.recipientId !== ownerId) {
     return { success: false, message: "You cannot edit this reply." };
   }
 
@@ -168,10 +168,8 @@ export async function updateReplyMessage(
 }
 
 export async function setUsername(username: string): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return UNAUTHORIZED_RESPONSE;
 
   const normalized = username.trim().toLowerCase();
   if (RESERVED_USERNAMES.includes(normalized)) {
@@ -188,14 +186,14 @@ export async function setUsername(username: string): Promise<ActionResponse> {
 
   const existing = await prisma.user.findUnique({
     where: { username: normalized },
-    select: { email: true },
+    select: { id: true },
   });
-  if (existing && existing.email !== session.user.email) {
+  if (existing && existing.id !== userId) {
     return { success: false, message: "That username is already taken." };
   }
 
   const user = await prisma.user.update({
-    where: { email: session.user.email },
+    where: { id: userId },
     data: { username: normalized },
   });
 
@@ -206,26 +204,15 @@ export async function deleteMessage(
   messageId: string,
   recipientUsername: string,
 ): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
-
-  const owner = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!owner) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const ownerId = await getAuthenticatedUserId();
+  if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
   const message = await prisma.message.findUnique({
     where: { id: messageId },
     select: { recipientId: true, parentId: true },
   });
 
-  if (!message || message.recipientId !== owner.id) {
+  if (!message || message.recipientId !== ownerId) {
     return { success: false, message: "You cannot delete this message." };
   }
 
@@ -246,15 +233,13 @@ export async function deleteMessage(
 export async function updateHiddenWords(
   words: string[],
 ): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return UNAUTHORIZED_RESPONSE;
 
   const normalized = normalizeHiddenWords(words);
 
   await prisma.user.update({
-    where: { email: session.user.email },
+    where: { id: userId },
     data: { hiddenWords: normalized.slice(0, 50) },
   });
 
@@ -263,16 +248,14 @@ export async function updateHiddenWords(
 }
 
 export async function pauseInbox(hours: number): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return UNAUTHORIZED_RESPONSE;
 
   const safeHours = Math.max(1, Math.min(720, Math.floor(hours)));
   const pauseUntil = new Date(Date.now() + safeHours * 60 * 60 * 1000);
 
   await prisma.user.update({
-    where: { email: session.user.email },
+    where: { id: userId },
     data: { inboxPausedUntil: pauseUntil },
   });
 
@@ -281,13 +264,11 @@ export async function pauseInbox(hours: number): Promise<ActionResponse> {
 }
 
 export async function clearInboxPause(): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return UNAUTHORIZED_RESPONSE;
 
   await prisma.user.update({
-    where: { email: session.user.email },
+    where: { id: userId },
     data: { inboxPausedUntil: null },
   });
 
@@ -296,22 +277,18 @@ export async function clearInboxPause(): Promise<ActionResponse> {
 }
 
 export async function toggleInboxOpen(): Promise<ActionResponse> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return { success: false, message: "You must be signed in." };
-  }
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return UNAUTHORIZED_RESPONSE;
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { id: userId },
     select: { inboxOpen: true },
   });
 
-  if (!user) {
-    return { success: false, message: "You must be signed in." };
-  }
+  if (!user) return UNAUTHORIZED_RESPONSE;
 
   await prisma.user.update({
-    where: { email: session.user.email },
+    where: { id: userId },
     data: { inboxOpen: !user.inboxOpen },
   });
 
