@@ -47,7 +47,7 @@ export default async function AccountPage() {
   const shareUrl = `${baseUrl}/${user.username}`;
 
   return (
-    <div className="page-stack">
+    <div className="page-stack mx-auto w-full max-w-3xl">
       <div className="section-header">
         <h1 className="text-2xl font-semibold">Account</h1>
         <p className="text-sm text-muted-foreground">
@@ -55,131 +55,108 @@ export default async function AccountPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="flex flex-col gap-6">
-          <Card className="panel-card h-fit">
-            <CardHeader className="pb-3">
-              <div className="kicker">Identity</div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {user.username ? (
-                <div className="panel-card-muted overflow-hidden">
-                  <SharePanel
-                    url={shareUrl}
-                    orientation="vertical"
-                    className="border-0 bg-transparent shadow-none"
-                  />
-                </div>
-              ) : null}
-              <div className="panel-card-muted p-4">
+      <Card className="panel-card">
+        <CardHeader className="pb-3">
+          <div className="kicker">Identity</div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="panel-card-muted p-4">
+            <div className="space-y-4">
+              <AuthButtons user={session.user} size="sm" className="w-full" />
+              <div className="border-t border-foreground/10 pt-4">
                 <UsernameForm
                   initialValue={user.username ?? ""}
-                  submitLabel={
-                    user.username ? "Update username" : "Claim username"
-                  }
+                  submitLabel={user.username ? "Update username" : "Claim username"}
                 />
               </div>
-              <div className="panel-card-muted p-4">
-                <div className="kicker">
-                  Session
-                </div>
-                <div className="mt-2">
-                  <AuthButtons user={session.user} size="sm" className="w-full" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-6">
-          <Card className="panel-card h-fit">
-            <CardHeader className="pb-3">
-              <div className="kicker">Inbox Controls</div>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <div className="panel-card-muted px-4 py-3">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <div className="kicker">
-                      Status
-                    </div>
-                    <div className="mt-1 font-medium">
-                      {user.inboxOpen
-                        ? isPaused
-                          ? "Paused"
-                          : "Active"
-                        : "Closed"}
-                    </div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      {user.inboxOpen
-                        ? isPaused
-                          ? `Resumes ${user.inboxPausedUntil ? formatRelativeTime(user.inboxPausedUntil, now) : "soon"}.`
-                          : "Accepting new messages."
-                        : "Not accepting messages."}
-                    </div>
-                  </div>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await toggleInboxOpen();
-                    }}
-                  >
-                    <Button
-                      type="submit"
-                      size="sm"
-                      variant={user.inboxOpen ? "destructive" : "default"}
-                      title={user.inboxOpen ? "Close inbox" : "Open inbox"}
-                    >
-                      <HugeiconsIcon
-                        icon={user.inboxOpen ? ToggleOnIcon : ToggleOffIcon}
-                        size={18}
-                        color="currentColor"
-                        strokeWidth={1.5}
-                      />
-                      {user.inboxOpen ? "Close" : "Open"}
-                    </Button>
-                  </form>
+          {user.username ? (
+            <div className="panel-card-muted overflow-hidden">
+              <SharePanel
+                url={shareUrl}
+                orientation="horizontal"
+                className="border-0 bg-transparent shadow-none"
+              />
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <Card className="panel-card">
+        <CardHeader className="pb-3">
+          <div className="kicker">Inbox Controls</div>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <div className="panel-card-muted px-4 py-3">
+            <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+              <div>
+                <div className="kicker">Status</div>
+                <div className="mt-1 font-medium">
+                  {user.inboxOpen ? (isPaused ? "Paused" : "Active") : "Closed"}
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {user.inboxOpen
+                    ? isPaused
+                      ? `Resumes ${user.inboxPausedUntil ? formatRelativeTime(user.inboxPausedUntil, now) : "soon"}.`
+                      : "Accepting new messages."
+                    : "Not accepting messages."}
                 </div>
               </div>
+              <form
+                action={async () => {
+                  "use server";
+                  await toggleInboxOpen();
+                }}
+              >
+                <Button
+                  type="submit"
+                  size="sm"
+                  variant={user.inboxOpen ? "destructive" : "default"}
+                  title={user.inboxOpen ? "Close inbox" : "Open inbox"}
+                >
+                  <HugeiconsIcon
+                    icon={user.inboxOpen ? ToggleOnIcon : ToggleOffIcon}
+                    size={18}
+                    color="currentColor"
+                    strokeWidth={1.5}
+                  />
+                  {user.inboxOpen ? "Close" : "Open"}
+                </Button>
+              </form>
+            </div>
+          </div>
 
-              <div className="panel-card-muted px-4 py-3">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <div className="kicker">
-                      Pause
-                    </div>
-                    <div className="mt-1 font-medium">
-                      {isPaused ? "Active" : "Ready"}
-                    </div>
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      {isPaused
-                        ? `Paused until ${
-                            user.inboxPausedUntil
-                              ? formatRelativeTime(user.inboxPausedUntil, now)
-                              : "later"
-                          }.`
-                        : "Temporarily stop new messages."}
-                    </div>
-                  </div>
-                  <PauseInboxForm isPaused={isPaused} />
+          <div className="panel-card-muted px-4 py-3">
+            <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+              <div>
+                <div className="kicker">Pause</div>
+                <div className="mt-1 font-medium">{isPaused ? "Active" : "Ready"}</div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {isPaused
+                    ? `Paused until ${
+                        user.inboxPausedUntil
+                          ? formatRelativeTime(user.inboxPausedUntil, now)
+                          : "later"
+                      }.`
+                    : "Temporarily stop new messages."}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <PauseInboxForm isPaused={isPaused} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-          <Card className="panel-card">
-            <CardHeader className="pb-3">
-              <div className="kicker">Moderation</div>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="panel-card-muted px-4 py-3 text-muted-foreground">
-                Messages containing these words will be blocked.
-              </div>
-              <HiddenWordsForm initialValue={user.hiddenWords ?? []} />
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <Card className="panel-card">
+        <CardHeader className="pb-3">
+          <div className="kicker">Moderation</div>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <HiddenWordsForm initialValue={user.hiddenWords ?? []} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

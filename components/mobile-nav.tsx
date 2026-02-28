@@ -182,7 +182,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                 </Link>
               ) : null}
               {isOwner ? (
-                <SignOutButton size="sm" className="w-full justify-center" />
+                <SignOutButton size="sm" className="justify-center" />
               ) : null}
             </div>
           </div>

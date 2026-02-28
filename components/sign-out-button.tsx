@@ -13,7 +13,7 @@ export function SignOutButton({ size = "sm", className }: SignOutButtonProps) {
     <Button
       type="button"
       size={size}
-      variant="outline"
+      variant="destructive"
       className={className}
       onClick={() => signOut({ callbackUrl: "/" })}
     >

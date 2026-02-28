@@ -48,10 +48,10 @@ export default async function Page() {
               Anonymous messages, without fear.
             </h1>
             <p className="text-sm text-muted-foreground">
-              Share one link. Receive honest notes. Publish only the replies you
-              send, with limits and moderation controls.
+              Share one link, get honest anonymous notes, and choose what goes
+              public.
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="mt-6 flex flex-wrap gap-2">
               {!session ? (
                 <AuthButtons user={null} size="lg" />
               ) : viewer?.username ? (
@@ -152,11 +152,12 @@ export default async function Page() {
         </section>
 
         <section className="panel-card p-6">
-          <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+          <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] md:items-start">
             <div className="section-header">
-              <h2 className="text-xl font-semibold">Visibility engine</h2>
+              <h2 className="text-xl font-semibold">Public by choice</h2>
               <p className="text-sm text-muted-foreground">
-                Replies become the public record. Everything else stays private.
+                You decide what gets seen: publish replies, keep the rest
+                private.
               </p>
             </div>
             <div className="panel-card-subtle border-dashed p-4">
@@ -164,7 +165,7 @@ export default async function Page() {
                 <div className="panel-card p-3">Anonymous message arrives</div>
                 <div className="grid gap-2 md:grid-cols-2">
                   <div className="panel-card p-3">
-                    Repled messages published
+                    Replied messages published
                   </div>
                   <div className="panel-card p-3">Unreplied stays private</div>
                 </div>
@@ -234,10 +235,11 @@ export default async function Page() {
           <div className="panel-card p-6">
             <h2 className="text-xl font-semibold">Mobile ready</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              The inbox, account, and share tools are all accessible on mobile.
+              Share your link, review messages, and reply fast from your phone.
             </p>
             <div className="mt-4 panel-card-subtle border-dashed p-4 text-sm">
-              Sidebar collapses into a menu. Share link and QR are one tap away.
+              Your inbox and sharing tools stay quick and clear on small
+              screens.
             </div>
           </div>
         </section>

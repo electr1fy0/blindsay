@@ -43,9 +43,6 @@ export function HiddenWordsForm({ initialValue }: HiddenWordsFormProps) {
       }}
     >
       <div className="space-y-4">
-        <label className="kicker block">
-          Hidden words
-        </label>
         <Textarea
           value={value}
           onChange={(event) => setValue(event.target.value)}

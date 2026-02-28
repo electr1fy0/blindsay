@@ -25,33 +25,42 @@ export function AuthButtons({ user, className, size = "default" }: AuthButtonsPr
     return (
       <div
         className={cn(
-          "panel-card-subtle flex flex-col gap-2 p-3 border-foreground/10",
+          "panel-card-subtle flex h-full flex-col gap-4 p-4 border-foreground/10",
           className
         )}
       >
-        <div className="flex items-start gap-3 min-w-0">
-          {user.image && imageOk ? (
-            <Image
-              src={user.image}
-              alt={user.name ?? "Profile"}
-              width={40}
-              height={40}
-              className="h-10 w-10 rounded-full border border-foreground/20 object-cover"
-              onError={() => setImageOk(false)}
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/20 bg-background text-sm font-semibold">
-              {initials}
-            </div>
-          )}
-          <div className="text-xs min-w-0">
-            <div className="font-medium">{user.name ?? "Signed in"}</div>
-            <div className="text-muted-foreground break-all">
-              {user.email}
+        <div className="space-y-3">
+          <label className="kicker block">Account</label>
+          <div className="flex items-start gap-3 min-w-0">
+            {user.image && imageOk ? (
+              <Image
+                src={user.image}
+                alt={user.name ?? "Profile"}
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-full border border-foreground/20 object-cover"
+                onError={() => setImageOk(false)}
+              />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/20 bg-background text-sm font-semibold">
+                {initials}
+              </div>
+            )}
+            <div className="text-xs min-w-0">
+              <div className="font-medium">{user.name ?? "Signed in"}</div>
+              <div className="text-muted-foreground break-all">
+                {user.email}
+              </div>
             </div>
           </div>
         </div>
-        <Button type="button" variant="outline" size={size} className="self-start" onClick={() => signOut({ callbackUrl: "/" })}>
+        <Button
+          type="button"
+          variant="destructive"
+          size={size}
+          className="mt-auto self-start justify-center"
+          onClick={() => signOut({ callbackUrl: "/" })}
+        >
           Sign out
         </Button>
       </div>

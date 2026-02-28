@@ -5,15 +5,18 @@ import { setUsername } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type UsernameFormProps = {
   initialValue?: string | null;
   submitLabel?: string;
+  className?: string;
 };
 
 export function UsernameForm({
   initialValue,
   submitLabel = "Save username",
+  className,
 }: UsernameFormProps) {
   const [value, setValue] = useState(initialValue ?? "");
   const [isPending, startTransition] = useTransition();
@@ -35,7 +38,7 @@ export function UsernameForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className={cn("flex flex-col gap-4", className)}>
       <div className="space-y-2">
         <label className="kicker block">
           Username
@@ -52,7 +55,12 @@ export function UsernameForm({
         </p>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
-      <Button type="submit" disabled={isPending || !value.trim()}>
+      <Button
+        type="submit"
+        size="sm"
+        className="self-start justify-center"
+        disabled={isPending || !value.trim()}
+      >
         {isPending ? "Saving..." : submitLabel}
       </Button>
     </form>
