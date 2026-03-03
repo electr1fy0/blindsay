@@ -223,6 +223,19 @@
     pointer-events: none;
   }
 
+  .github-badge-wrap {
+    background: rgba(15, 23, 42, 0.1);
+    transition: background 0.35s ease;
+  }
+
+  .github-badge-wrap:hover {
+    background: linear-gradient(135deg, #f472b6, #a78bfa, #38bdf8);
+  }
+
+  .github-badge {
+    transition: color 0.2s ease;
+  }
+
   .panel-card > * ,
   .panel-card-subtle > * ,
   .panel-card-muted > * {

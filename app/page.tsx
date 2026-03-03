@@ -16,6 +16,8 @@ import {
   ViewOffIcon,
   Settings01Icon,
   ToggleOnIcon,
+  GithubIcon,
+  StarIcon,
 } from "@hugeicons/core-free-icons";
 
 export default async function Page() {
@@ -26,6 +28,19 @@ export default async function Page() {
         select: { username: true, name: true },
       })
     : null;
+
+  const ghRes = await fetch("https://api.github.com/repos/electr1fy0/blindsay", {
+    next: { revalidate: 3600 },
+    headers: { Accept: "application/vnd.github+json" },
+  }).catch(() => null);
+  const ghData = ghRes?.ok ? await ghRes.json() : null;
+  const starCount: number | null = ghData?.stargazers_count ?? null;
+  const formattedStars =
+    starCount === null
+      ? null
+      : starCount >= 1000
+        ? `${(starCount / 1000).toFixed(1)}k`
+        : String(starCount);
 
   return (
     <div className="min-h-screen">
@@ -43,6 +58,20 @@ export default async function Page() {
               <p className="text-sm uppercase tracking-[0.12em] text-muted-foreground">
                 BLINDSAY
               </p>
+              <span className="github-badge-wrap inline-flex rounded-2xl p-px">
+                <Link
+                href="https://github.com/electr1fy0/blindsay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="github-badge flex items-center gap-1.5 rounded-[calc(theme(borderRadius.2xl)-2px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,255,255,0.88))] px-3 py-1.5 text-[0.65rem] uppercase tracking-[0.12em] text-muted-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] transition-colors hover:text-foreground"
+              >
+                <HugeiconsIcon icon={GithubIcon} size={13} color="currentColor" strokeWidth={1.5} />
+                <span>GitHub</span>
+                <span className="opacity-30">|</span>
+                <HugeiconsIcon icon={StarIcon} size={13} color="currentColor" strokeWidth={1.5} />
+                {formattedStars !== null && <span>{formattedStars}</span>}
+              </Link>
+              </span>
             </div>
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
               Anonymous messages, without fear.
