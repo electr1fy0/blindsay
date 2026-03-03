@@ -453,26 +453,60 @@ export function ShareMessageButton({
 
   const handleShare = useCallback(async () => {
     setBusy(true);
-    let canvas: HTMLCanvasElement | null = null;
     try {
-      canvas = await generateCardCanvas(
+      const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(
+        navigator.userAgent,
+      );
+      const canUseClipboard =
+        !isIOSSafari() &&
+        typeof ClipboardItem !== "undefined" &&
+        !!navigator.clipboard?.write;
+
+      if (canUseClipboard) {
+        // Pass a Promise to ClipboardItem so the write happens within the
+        // user-gesture context — required for Safari desktop.
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "image/png": generateCardCanvas(
+                messageContent,
+                replyContent,
+                username,
+                logoRef.current,
+              ).then(
+                (c) =>
+                  new Promise<Blob>((resolve, reject) =>
+                    c.toBlob(
+                      (b) => (b ? resolve(b) : reject(new Error("no blob"))),
+                      "image/png",
+                    ),
+                  ),
+              ),
+            }),
+          ]);
+          toast("Card copied to clipboard, paste it anywhere!");
+          return;
+        } catch {
+          // fall through
+        }
+      }
+
+      const canvas = await generateCardCanvas(
         messageContent,
         replyContent,
         username,
         logoRef.current,
       );
-      if (!canvas) throw new Error("Failed to create share canvas.");
-      const readyCanvas = canvas;
       const blob = await new Promise<Blob>((resolve, reject) =>
-        readyCanvas.toBlob(
+        canvas.toBlob(
           (b) => (b ? resolve(b) : reject(new Error("no blob"))),
           "image/png",
         ),
       );
-
       const file = new File([blob], "blindsay.png", { type: "image/png" });
 
       if (
+        isMobile &&
         typeof navigator.share === "function" &&
         navigator.canShare?.({ files: [file] })
       ) {
@@ -481,42 +515,12 @@ export function ShareMessageButton({
         return;
       }
 
-      if (
-        !isIOSSafari() &&
-        typeof ClipboardItem !== "undefined" &&
-        navigator.clipboard?.write
-      ) {
-        try {
-          await navigator.clipboard.write([
-            new ClipboardItem({ "image/png": blob }),
-          ]);
-          toast("Card copied to clipboard — paste it anywhere!");
-          return;
-        } catch {
-          // fall through to download
-        }
-      }
-
       downloadCanvas(canvas, username);
       toast("Card downloaded!");
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
       console.error(err);
-      try {
-        downloadCanvas(
-          canvas ??
-            (await generateCardCanvas(
-              messageContent,
-              replyContent,
-              username,
-              logoRef.current,
-            )),
-          username,
-        );
-        toast("Card downloaded!");
-      } catch {
-        toast.error("Failed to create share card.");
-      }
+      toast.error("Failed to create share card.");
     } finally {
       setBusy(false);
     }

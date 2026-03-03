@@ -70,7 +70,7 @@ export default async function AccountPage() {
       </div>
 
       <Card className="panel-card">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-0">
           <div className="kicker">Identity</div>
         </CardHeader>
         <CardContent className="space-y-4">

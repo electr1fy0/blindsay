@@ -226,13 +226,6 @@ export default async function UserInboxPage({
                 messageActions={
                   <>
                     <NewBadge messageId={message.id} />
-                    {reply ? (
-                      <ShareMessageButton
-                        messageContent={message.content}
-                        replyContent={reply.content}
-                        username={profile.username ?? username}
-                      />
-                    ) : null}
                     <DeleteMessageButton
                       messageId={message.id}
                       recipientUsername={profile.username ?? username}
@@ -242,6 +235,11 @@ export default async function UserInboxPage({
                 replyActions={
                   reply ? (
                     <>
+                      <ShareMessageButton
+                        messageContent={message.content}
+                        replyContent={reply.content}
+                        username={profile.username ?? username}
+                      />
                       <EditReplyButton
                         replyId={reply.id}
                         recipientUsername={profile.username ?? username}
