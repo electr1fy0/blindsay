@@ -40,7 +40,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
             height={26}
             className="rounded-md"
           />
-          <span className="text-sm font-semibold tracking-[0.06em]">
+          <span className="text-sm font-normal tracking-[0.06em]">
             BLINDSAY
           </span>
         </Link>

@@ -8,11 +8,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { toggleInboxOpen } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ToggleOffIcon, ToggleOnIcon } from "@hugeicons/core-free-icons";
+import { ToggleOffIcon, ToggleOnIcon, GithubIcon, StarIcon } from "@hugeicons/core-free-icons";
 import { formatRelativeTime } from "@/lib/relative-time";
 import { HiddenWordsForm } from "@/components/hidden-words-form";
 import { PauseInboxForm } from "@/components/pause-inbox-form";
 import { SharePanel } from "@/components/share-panel";
+import Link from "next/link";
 
 export default async function AccountPage() {
   const session = await getServerSession(authOptions);
@@ -45,6 +46,19 @@ export default async function AccountPage() {
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000");
   const shareUrl = `${baseUrl}/${user.username}`;
+
+  const ghRes = await fetch("https://api.github.com/repos/electr1fy0/blindsay", {
+    next: { revalidate: 3600 },
+    headers: { Accept: "application/vnd.github+json" },
+  }).catch(() => null);
+  const ghData = ghRes?.ok ? await ghRes.json() : null;
+  const starCount: number | null = ghData?.stargazers_count ?? null;
+  const formattedStars =
+    starCount === null
+      ? null
+      : starCount >= 1000
+        ? `${(starCount / 1000).toFixed(1)}k`
+        : String(starCount);
 
   return (
     <div className="page-stack mx-auto w-full max-w-3xl">
@@ -157,6 +171,33 @@ export default async function AccountPage() {
           <HiddenWordsForm initialValue={user.hiddenWords ?? []} />
         </CardContent>
       </Card>
+
+      <div className="panel-card px-4 py-4">
+        <div className="kicker mb-3">Open source</div>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium">Built in public.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Read the code, contribute, or leave a star.
+            </p>
+          </div>
+          <span className="github-badge-wrap inline-flex self-center shrink-0 rounded-2xl p-px">
+            <Link
+              href="https://github.com/electr1fy0/blindsay"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="github-badge flex items-center gap-2 whitespace-nowrap rounded-[calc(theme(borderRadius.2xl)-2px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,255,255,0.88))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] transition-colors hover:text-foreground"
+            >
+              <HugeiconsIcon icon={GithubIcon} size={14} color="currentColor" strokeWidth={1.5} />
+              <span className="text-xs font-medium text-muted-foreground">Star on GitHub</span>
+              <HugeiconsIcon icon={StarIcon} size={13} color="currentColor" strokeWidth={1.5} />
+              {formattedStars !== null && (
+                <span className="text-sm font-semibold tabular-nums text-muted-foreground">{formattedStars}</span>
+              )}
+            </Link>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
