@@ -44,7 +44,7 @@ export default async function Page() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto flex max-w-4xl flex-col gap-10 px-5 py-10">
+      <div className="mx-auto flex max-w-4xl flex-col gap-10 px-[19px] py-10">
         <header className="panel-card grid gap-6 p-6 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div className="section-header">
             <div className="flex items-center gap-3">

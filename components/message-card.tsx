@@ -22,11 +22,11 @@ export function MessageCard({
   return (
     <div className="panel-card px-5 py-4">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
+        <p className="shrink-0 whitespace-nowrap text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
           {formatRelativeTime(message.createdAt, now)}
         </p>
         {messageActions ? (
-          <div className="flex items-center gap-2">{messageActions}</div>
+          <div className="flex items-center gap-1 sm:gap-2">{messageActions}</div>
         ) : null}
       </div>
       <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed pl-1">
@@ -37,13 +37,15 @@ export function MessageCard({
         <div className="mt-2 space-y-1">
           <div className="panel-card-subtle px-4 pb-3 pt-2 mt-4">
             <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <span>Reply</span>
                 <span>·</span>
-                <span>{formatRelativeTime(reply.createdAt, now)}</span>
+                <span className="shrink-0 whitespace-nowrap">
+                  {formatRelativeTime(reply.createdAt, now)}
+                </span>
               </div>
               {replyActions ? (
-                <div className="flex items-center gap-2">{replyActions}</div>
+                <div className="flex items-center gap-1 sm:gap-2">{replyActions}</div>
               ) : null}
             </div>
             <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed pl-1">

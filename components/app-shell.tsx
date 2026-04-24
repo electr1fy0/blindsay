@@ -164,7 +164,7 @@ export function AppShell({ children, user }: AppShellProps) {
               </div>
             </div>
           </aside>
-          <div className="mx-auto flex max-w-5xl gap-6 px-5 py-8 md:pl-[18rem]">
+          <div className="mx-auto flex max-w-5xl gap-6 px-[19px] py-8 md:pl-[18rem]">
             <main className="min-w-0 flex-1">
               <MobileNav username={username} isOwner={isOwner} />
               <div className="mt-4 md:mt-0">
@@ -196,7 +196,7 @@ export function AppShell({ children, user }: AppShellProps) {
           </div>
         </>
       ) : (
-        <div className="mx-auto flex max-w-lg flex-col gap-6 px-5 py-8">
+        <div className="mx-auto flex max-w-lg flex-col gap-6 px-[19px] py-8">
           <header className="flex items-center justify-center gap-2 py-2">
             <Link href="/" className="flex items-center gap-2.5">
               <Image

@@ -530,7 +530,7 @@ export function ShareMessageButton({
     <Button
       type="button"
       variant="ghost"
-      size="xs"
+      size="icon-xs"
       title="Share card"
       disabled={busy}
       onClick={handleShare}

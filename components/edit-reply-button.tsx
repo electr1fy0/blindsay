@@ -39,7 +39,7 @@ export function EditReplyButton({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger
         render={
-          <Button type="button" variant="ghost" size="xs" title="Edit">
+          <Button type="button" variant="ghost" size="icon-xs" title="Edit">
             <HugeiconsIcon
               icon={Edit01Icon}
               size={18}

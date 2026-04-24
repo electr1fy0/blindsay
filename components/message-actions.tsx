@@ -36,7 +36,7 @@ export function DeleteMessageButton({
         render={
           <Button
             variant="ghost"
-            size="xs"
+            size="icon-xs"
             disabled={isPending || done}
             title={done ? "Deleted" : "Delete"}
           >
