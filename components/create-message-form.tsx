@@ -88,7 +88,7 @@ export function CreateMessageForm({
         onChange={(e) => setContent(e.target.value.slice(0, MAX_LENGTH))}
         onKeyDown={handleKeyDown}
         disabled={isPending}
-        className="min-h-[90px]"
+        className="min-h-[90px] sm:text-sm"
       />
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <div className="flex items-center justify-between">

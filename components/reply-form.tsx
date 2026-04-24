@@ -3,8 +3,8 @@
 import { useState, useTransition, useRef } from "react";
 import { toast } from "sonner";
 import { createReplyMessage } from "@/app/actions";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 const MAX_LENGTH = 500;
 
@@ -55,7 +55,7 @@ export function ReplyForm({
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       formRef.current?.requestSubmit();
@@ -78,7 +78,7 @@ export function ReplyForm({
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-2">
-      <Input
+      <Textarea
         placeholder="Reply to the message"
         value={content}
         onChange={(event) =>
@@ -86,7 +86,7 @@ export function ReplyForm({
         }
         onKeyDown={handleKeyDown}
         disabled={isPending}
-        className="h-11 rounded-2xl"
+        className="min-h-[112px] max-h-72 sm:text-sm"
       />
       <div className="flex items-center justify-between">
         <span
