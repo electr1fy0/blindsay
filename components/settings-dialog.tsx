@@ -155,7 +155,7 @@ export function SettingsDialog({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 z-50 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+          className="absolute right-4 top-4 z-50 text-muted-foreground transition-colors hover:text-foreground cursor-pointer hidden md:block"
         >
           <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={1.5} />
         </button>
@@ -232,8 +232,21 @@ export function SettingsDialog({
           </button>
         </aside>
 
+        {/* Mobile Header Row */}
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-border bg-muted/5 md:hidden shrink-0">
+          <span className="text-xs uppercase tracking-[0.16em] text-muted-foreground font-semibold">
+            Settings
+          </span>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+          >
+            <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={1.5} />
+          </button>
+        </div>
+
         {/* Top Navbar for Mobile */}
-        <nav className="flex border-b border-border bg-muted/10 p-2 pr-12 overflow-x-auto scrollbar-none md:hidden shrink-0 gap-1">
+        <nav className="flex border-b border-border bg-muted/10 p-2 overflow-x-auto scrollbar-none md:hidden shrink-0 gap-1">
           <button
             onClick={() => setActiveTab("appearance")}
             className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${
