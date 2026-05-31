@@ -78,8 +78,11 @@ export default async function AnalyticsPage() {
     }
   }
 
-  const maxMessages = Math.max(1, ...buckets.map((b) => b.messages));
-  const maxReplies = Math.max(1, ...buckets.map((b) => b.replies));
+  const maxVal = Math.max(
+    1,
+    ...buckets.map((b) => b.messages),
+    ...buckets.map((b) => b.replies)
+  );
 
   return (
     <div className="page-stack mx-auto w-full max-w-2xl">
@@ -138,12 +141,12 @@ export default async function AnalyticsPage() {
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
           <div className="panel-card-muted p-4">
             <div className="kicker">Messages</div>
-            <div className="mt-4 flex items-end gap-1">
+            <div className="mt-4 flex h-32 items-end gap-1">
               {buckets.map((bucket) => (
-                <div key={bucket.label} className="flex flex-1 flex-col items-center gap-2 min-w-0">
+                <div key={bucket.label} className="flex flex-1 flex-col items-center justify-end gap-2 min-w-0 h-full">
                   <div
                     className="w-full max-w-4 rounded-md bg-primary/80"
-                    style={{ height: `${Math.max(8, (bucket.messages / maxMessages) * 96)}px` }}
+                    style={{ height: `${Math.max(8, (bucket.messages / maxVal) * 96)}px` }}
                     title={`${bucket.messages} messages`}
                   />
                   <div className="w-full text-center text-[0.55rem] text-muted-foreground truncate">
@@ -155,12 +158,12 @@ export default async function AnalyticsPage() {
           </div>
           <div className="panel-card-muted p-4">
             <div className="kicker">Replies</div>
-            <div className="mt-4 flex items-end gap-1">
+            <div className="mt-4 flex h-32 items-end gap-1">
               {buckets.map((bucket) => (
-                <div key={bucket.label} className="flex flex-1 flex-col items-center gap-2 min-w-0">
+                <div key={bucket.label} className="flex flex-1 flex-col items-center justify-end gap-2 min-w-0 h-full">
                   <div
                     className="w-full max-w-4 rounded-md bg-foreground/60"
-                    style={{ height: `${Math.max(8, (bucket.replies / maxReplies) * 96)}px` }}
+                    style={{ height: `${Math.max(8, (bucket.replies / maxVal) * 96)}px` }}
                     title={`${bucket.replies} replies`}
                   />
                   <div className="w-full text-center text-[0.55rem] text-muted-foreground truncate">

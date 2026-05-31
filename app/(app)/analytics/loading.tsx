@@ -39,9 +39,9 @@ export default function Loading() {
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="panel-card-muted p-4 space-y-4">
               <Skeleton className="h-3.5 w-20 bg-muted-foreground/15" />
-              <div className="flex items-end gap-1.5 h-24 pt-4">
+              <div className="mt-4 flex items-end gap-1.5 h-32">
                 {Array.from({ length: 14 }).map((_, j) => (
-                  <div key={j} className="flex flex-1 flex-col items-center gap-2">
+                  <div key={j} className="flex flex-1 flex-col items-center justify-end gap-2 h-full">
                     <Skeleton 
                       className="w-full max-w-4 rounded-md bg-muted/60" 
                       style={{ height: `${20 + (j % 3 === 0 ? 40 : j % 2 === 0 ? 60 : 30)}px` }} 
