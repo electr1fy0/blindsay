@@ -361,21 +361,39 @@ export function SettingsDialog({
                       href="https://github.com/electr1fy0/blindsay"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="github-badge flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border bg-background px-3 py-2 text-xs font-semibold transition-colors hover:text-foreground"
+                      className="group relative p-[1px] rounded-full transition-all duration-300 shrink-0 select-none"
                     >
-                      <HugeiconsIcon
-                        icon={GithubIcon}
-                        size={14}
-                        color="currentColor"
-                        strokeWidth={1.5}
-                      />
-                      <span>GitHub</span>
-                      {stars !== null && (
-                        <>
-                          <span className="text-[#888]">|</span>
-                          <span>★ {stars}</span>
-                        </>
-                      )}
+                      {/* Dynamic 1px border layer */}
+                      <div className="absolute inset-0 rounded-full bg-black/10 dark:bg-white/10 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#ff2a5f] group-hover:via-[#ffb000] group-hover:via-[#00f5a0] group-hover:via-[#00b9ff] group-hover:to-[#b800ff]" />
+
+                      {/* Inner content layer masking the gradient */}
+                      <div className="relative flex items-center gap-2 whitespace-nowrap rounded-full bg-white dark:bg-[#1c1c1f] px-3.5 py-1.5 text-xs font-semibold text-muted-foreground transition-all duration-300 group-hover:text-foreground dark:group-hover:text-white">
+                        <HugeiconsIcon
+                          icon={GithubIcon}
+                          size={14}
+                          color="currentColor"
+                          strokeWidth={1.5}
+                          className="shrink-0"
+                        />
+                        <span>GitHub</span>
+                        {stars !== null && (
+                          <>
+                            <span className="text-black/10 dark:text-white/15 group-hover:text-black/20 dark:group-hover:text-white/20 transition-colors duration-200">|</span>
+                            <span className="font-mono text-[12px] text-muted-foreground group-hover:text-foreground dark:group-hover:text-white transition-colors duration-200 flex items-center gap-1.5">
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="text-muted-foreground/80 group-hover:text-foreground dark:group-hover:text-white transition-colors duration-200 shrink-0"
+                              >
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                              </svg>
+                              {stars}
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </Link>
                   </div>
 

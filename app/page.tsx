@@ -157,13 +157,13 @@ export default async function Page() {
                 {starsCount > 0 && (
                   <>
                     <span className="text-white/10 group-hover:text-white/20 transition-colors duration-200">|</span>
-                    <span className="font-mono text-[11px] text-[#b2afaa] group-hover:text-white transition-colors duration-200 flex items-center gap-1">
+                    <span className="font-mono text-[12px] text-[#b2afaa] group-hover:text-white transition-colors duration-200 flex items-center gap-1.5">
                       <svg
-                        width="10"
-                        height="10"
+                        width="13"
+                        height="13"
                         viewBox="0 0 24 24"
                         fill="currentColor"
-                        className="text-[#888681] group-hover:text-white transition-colors duration-200"
+                        className="text-[#888681] group-hover:text-white transition-colors duration-200 shrink-0"
                       >
                         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                       </svg>
@@ -261,33 +261,11 @@ export default async function Page() {
                   size="lg"
                   variant="default"
                   signInLabel={
-                    <span className="relative pb-0.5 inline-flex flex-col items-center">
-                      <span>Start your inbox</span>
-                      <span className="absolute left-0 right-0 bottom-[-4px] h-[7px] overflow-visible pointer-events-none select-none">
-                        <svg
-                          width="100%"
-                          height="7"
-                          viewBox="0 0 140 7"
-                          preserveAspectRatio="none"
-                          className="w-full h-full stroke-[url(#squiggly-grad-hero)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"
-                          fill="none"
-                        >
-                          <defs>
-                            <linearGradient id="squiggly-grad-hero" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="#ff2a5f" />
-                              <stop offset="100%" stopColor="#ffb000" />
-                            </linearGradient>
-                          </defs>
-                          <path
-                            d="M 0 3.5 Q 8.75 0, 17.5 3.5 T 35 3.5 T 52.5 3.5 T 70 3.5 T 87.5 3.5 T 105 3.5 T 122.5 3.5 T 140 3.5"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      </span>
+                    <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                      Start your inbox
                     </span>
                   }
-                  className="[&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_svg]:hidden"
+                  className="[&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button_>_svg]:hidden"
                 />
               )}
             </div>
@@ -727,33 +705,11 @@ export default async function Page() {
                     size="lg"
                     variant="default"
                     signInLabel={
-                      <span className="relative pb-0.5 inline-flex flex-col items-center">
-                        <span>Begin quietly</span>
-                        <span className="absolute left-0 right-0 bottom-[-4px] h-[7px] overflow-visible pointer-events-none select-none">
-                          <svg
-                            width="100%"
-                            height="7"
-                            viewBox="0 0 140 7"
-                            preserveAspectRatio="none"
-                            className="w-full h-full stroke-[url(#squiggly-grad-bottom)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"
-                            fill="none"
-                          >
-                            <defs>
-                              <linearGradient id="squiggly-grad-bottom" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#ff2a5f" />
-                                <stop offset="100%" stopColor="#ffb000" />
-                              </linearGradient>
-                            </defs>
-                            <path
-                              d="M 0 3.5 Q 8.75 0, 17.5 3.5 T 35 3.5 T 52.5 3.5 T 70 3.5 T 87.5 3.5 T 105 3.5 T 122.5 3.5 T 140 3.5"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                        </span>
+                      <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                        Begin quietly
                       </span>
                     }
-                    className="[&_button]:h-14 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_svg]:hidden"
+                    className="[&_button]:h-14 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button_>_svg]:hidden"
                   />
                 )}
               </div>
