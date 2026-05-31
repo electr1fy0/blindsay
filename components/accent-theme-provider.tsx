@@ -13,7 +13,7 @@ export const accentThemes = [
   {
     id: "sky",
     name: "Sky",
-    description: "Current bright blue accents.",
+    description: "Current Bright blue accents.",
     preview: {
       accent: "#00b9ff",
       reply: "#dff2ff",
@@ -23,7 +23,7 @@ export const accentThemes = [
   {
     id: "sage",
     name: "Sage",
-    description: "Soft green accents with more grounded replies.",
+    description: "Calm soft green accents.",
     preview: {
       accent: "#4e9f73",
       reply: "#dbeee2",
@@ -33,7 +33,7 @@ export const accentThemes = [
   {
     id: "rose",
     name: "Rose",
-    description: "Warm coral accents with clearer reply bubbles.",
+    description: "Cozy warm coral accents.",
     preview: {
       accent: "#e56b6f",
       reply: "#f8dfe1",
