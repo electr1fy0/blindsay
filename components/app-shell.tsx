@@ -62,11 +62,14 @@ export function AppShell({ children, user }: AppShellProps) {
   };
 
   return (
-    <div className="min-h-screen h-screen overflow-hidden flex flex-col bg-body-bg">
+    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col bg-body-bg">
       {isOwner ? (
         <>
           {/* Top Navbar */}
-          <header className="sticky top-0 z-40 w-full bg-body-bg/95 backdrop-blur-md shrink-0">
+          <header 
+            className="sticky top-0 z-40 w-full bg-body-bg/95 backdrop-blur-md shrink-0"
+            style={{ paddingTop: "env(safe-area-inset-top)" }}
+          >
             <div className="w-full flex h-12 items-center justify-between gap-4 px-6">
               {/* Navigation Elements */}
               <nav className="flex items-center gap-1 sm:gap-1.5">

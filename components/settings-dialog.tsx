@@ -233,7 +233,7 @@ export function SettingsDialog({
         </aside>
 
         {/* Top Navbar for Mobile */}
-        <nav className="flex border-b border-border bg-muted/10 p-2 overflow-x-auto scrollbar-none md:hidden shrink-0 gap-1">
+        <nav className="flex border-b border-border bg-muted/10 p-2 pr-12 overflow-x-auto scrollbar-none md:hidden shrink-0 gap-1">
           <button
             onClick={() => setActiveTab("appearance")}
             className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors ${
@@ -446,7 +446,7 @@ export function SettingsDialog({
                       <SharePanel
                         url={shareUrl}
                         orientation="vertical"
-                        className="border-0 bg-transparent shadow-none p-0"
+                        className="border-0 bg-transparent shadow-none p-1.5 pt-2"
                       />
                     ) : (
                       <p className="text-sm text-red-500">

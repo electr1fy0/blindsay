@@ -86,7 +86,10 @@ export default async function Page() {
   }
 
   return (
-    <div className="h-screen overflow-y-auto w-full bg-[#141416] relative text-[#eeecea] selection:bg-primary/30">
+    <div 
+      className="h-[100dvh] overflow-y-auto w-full bg-[#141416] relative text-[#eeecea] selection:bg-primary/30"
+      style={{ colorScheme: "dark" }}
+    >
       <div className="relative z-20">
         <div className="mx-auto max-w-2xl px-6 pb-24 pt-7 sm:px-10 lg:px-0">
           <nav className="flex items-center justify-between">
