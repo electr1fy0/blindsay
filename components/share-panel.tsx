@@ -27,7 +27,7 @@ export function SharePanel({ url, className, orientation = "horizontal" }: Share
   }, [url]);
 
   return (
-    <div className={cn("panel-card p-4", className)}>
+    <div className={cn("panel-card p-6 sm:p-7", className)}>
       <div className="flex items-center justify-between gap-3 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
         <span>Share your link</span>
         <span className="hidden text-[0.55rem] text-muted-foreground/80 md:inline">
@@ -77,7 +77,7 @@ export function SharePanel({ url, className, orientation = "horizontal" }: Share
                 />
                 QR
               </div>
-              <div className="rounded-2xl border border-foreground/10 bg-white p-3">
+              <div className="rounded-md border bg-white p-3">
                 <img src={qr} alt="QR code" className="h-36 w-36" />
               </div>
               <p className="text-xs text-muted-foreground">Scan to open.</p>

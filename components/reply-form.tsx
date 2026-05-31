@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { createReplyMessage } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { usePersistedDraft } from "@/lib/use-persisted-draft";
 
 const MAX_LENGTH = 500;
 
@@ -20,11 +21,15 @@ export function ReplyForm({
   parentId,
 }: ReplyFormProps) {
   const [open, setOpen] = useState(false);
-  const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const draft = usePersistedDraft(
+    `reply:${recipientId}:${recipientUsername.toLowerCase()}:${parentId}`,
+  );
+  const content = draft.value;
+  const setContent = draft.setValue;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -39,7 +44,7 @@ export function ReplyForm({
           content,
         );
         if (result.success) {
-          setContent("");
+          draft.clearDraft();
           setSent(true);
           toast("Sent.");
         } else {
@@ -88,15 +93,35 @@ export function ReplyForm({
         disabled={isPending}
         className="min-h-[112px] max-h-72 sm:text-sm"
       />
+      {draft.hydrated && content ? (
+        <p className="text-xs text-muted-foreground">
+          Draft saved on this device.
+        </p>
+      ) : null}
       <div className="flex items-center justify-between">
         <span
           className={`text-[0.65rem] tabular-nums ${content.length >= MAX_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
         >
           {content.length}/{MAX_LENGTH}
         </span>
-        <Button type="submit" size="sm" disabled={isPending || !content.trim()}>
-          {isPending ? "Sending..." : "Send reply"}
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={isPending}
+            onClick={() => {
+              setOpen(false);
+              setError(null);
+            }}
+            className="cursor-pointer"
+          >
+            Cancel
+          </Button>
+          <Button type="submit" size="sm" disabled={isPending || !content.trim()}>
+            {isPending ? "Sending..." : "Send reply"}
+          </Button>
+        </div>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </form>

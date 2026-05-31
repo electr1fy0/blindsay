@@ -82,7 +82,7 @@ export default async function AnalyticsPage() {
   const maxReplies = Math.max(1, ...buckets.map((b) => b.replies));
 
   return (
-    <div className="page-stack">
+    <div className="page-stack mx-auto w-full max-w-2xl">
       <div className="section-header">
         <h1 className="text-2xl font-semibold">Analytics</h1>
         <p className="text-sm text-muted-foreground">
@@ -142,7 +142,7 @@ export default async function AnalyticsPage() {
               {buckets.map((bucket) => (
                 <div key={bucket.label} className="flex flex-1 flex-col items-center gap-2 min-w-0">
                   <div
-                    className="w-full max-w-4 rounded-2xl bg-primary/80"
+                    className="w-full max-w-4 rounded-md bg-primary/80"
                     style={{ height: `${Math.max(8, (bucket.messages / maxMessages) * 96)}px` }}
                     title={`${bucket.messages} messages`}
                   />
@@ -159,7 +159,7 @@ export default async function AnalyticsPage() {
               {buckets.map((bucket) => (
                 <div key={bucket.label} className="flex flex-1 flex-col items-center gap-2 min-w-0">
                   <div
-                    className="w-full max-w-4 rounded-2xl bg-foreground/60"
+                    className="w-full max-w-4 rounded-md bg-foreground/60"
                     style={{ height: `${Math.max(8, (bucket.replies / maxReplies) * 96)}px` }}
                     title={`${bucket.replies} replies`}
                   />

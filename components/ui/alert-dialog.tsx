@@ -52,7 +52,7 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
-          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 border border-white/80 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(255,255,255,0.94))] ring-foreground/10 shadow-[0_28px_70px_-34px_rgba(15,23,42,0.3),inset_0_1px_0_rgba(255,255,255,0.98)] gap-4 rounded-[1.75rem] p-5 ring-1 duration-100 data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-sm group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 overflow-hidden outline-none before:pointer-events-none before:absolute before:inset-0 before:bg-[linear-gradient(180deg,rgba(255,255,255,0.82),rgba(255,255,255,0))] before:opacity-65 after:pointer-events-none after:absolute after:inset-[1px] after:rounded-[calc(1.75rem-2px)] after:border-t after:border-l after:border-r after:border-b after:border-t-white/90 after:border-l-white/55 after:border-r-[rgba(15,23,42,0.06)] after:border-b-[rgba(15,23,42,0.08)] [&>*]:relative [&>*]:z-[1]",
+          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 overflow-hidden rounded-lg border bg-popover p-5 text-popover-foreground shadow-lg outline-none duration-100 data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-sm group/alert-dialog-content",
           className,
         )}
         {...props}
@@ -85,7 +85,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.86))] -mx-5 -mb-5 rounded-b-[1.75rem] border-t border-white/80 p-5 flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
+        "-mx-5 -mb-5 flex flex-col-reverse gap-2 rounded-b-lg border-t bg-muted/30 p-5 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
         className,
       )}
       {...props}
@@ -170,7 +170,7 @@ function AlertDialogCancel({
           size={size}
           className={cn(
             variant === "ghost"
-              ? "border-foreground/10 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(230,230,230,0.9))] shadow-[inset_0_1px_0_rgba(255,255,255,0.92),0_10px_22px_-20px_rgba(15,23,42,0.14)] hover:bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(240,240,240,0.96))]"
+              ? "border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground"
               : "",
             className,
           )}

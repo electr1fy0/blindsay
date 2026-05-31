@@ -7,17 +7,15 @@ import { prisma } from "@/lib/prisma";
 import { CreateMessageForm } from "@/components/create-message-form";
 import { ReplyForm } from "@/components/reply-form";
 import { formatRelativeTime } from "@/lib/relative-time";
-import { DeleteMessageButton } from "@/components/message-actions";
-import { EditReplyButton } from "@/components/edit-reply-button";
-import { SharePanel } from "@/components/share-panel";
-import { ShareMessageButton } from "@/components/share-message-button";
 import { MessageCard } from "@/components/message-card";
-import { NewBadge, MarkMessagesSeen } from "@/components/new-badge";
+import { MarkMessagesSeen } from "@/components/new-badge";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { SharePanel } from "@/components/share-panel";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type PageProps = {
   params: Promise<{ username?: string }>;
-  searchParams?: Promise<{ page?: string }>;
+  searchParams?: Promise<{ page?: string; filter?: string }>;
 };
 
 function getBaseUrl() {
@@ -76,6 +74,8 @@ export default async function UserInboxPage({
   }
   const username = resolvedParams.username.toLowerCase();
   const resolvedSearchParams = searchParams ? await searchParams : {};
+  const filter =
+    resolvedSearchParams?.filter === "published" ? "published" : "all";
   const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1));
   const pageSize = 12;
   const skip = (page - 1) * pageSize;
@@ -109,7 +109,11 @@ export default async function UserInboxPage({
     where: {
       recipientId: profile.id,
       parentId: null,
-      ...(isOwner ? {} : { replies: { some: {} } }),
+      ...(isOwner
+        ? filter === "published"
+          ? { replies: { some: {} } }
+          : {}
+        : { replies: { some: {} } }),
     },
     orderBy: { createdAt: "desc" as const },
     include: {
@@ -119,15 +123,33 @@ export default async function UserInboxPage({
       },
     },
   };
+  const totalWhere = {
+    recipientId: profile.id,
+    parentId: null as null,
+    ...(isOwner
+      ? filter === "published"
+        ? { replies: { some: {} } }
+        : {}
+      : {}),
+  };
   const total = await prisma.message.count({
-    where: { recipientId: profile.id, parentId: null },
+    where: totalWhere,
   });
+  const publishedCount = isOwner
+    ? await prisma.message.count({
+        where: {
+          recipientId: profile.id,
+          parentId: null,
+          replies: { some: {} },
+        },
+      })
+    : 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   const messages = await prisma.message.findMany({
     ...baseQuery,
     skip: isOwner ? skip : 0,
-    take: isOwner ? pageSize : pageSize,
+    take: pageSize,
   });
   const baseUrl = getBaseUrl();
   const shareUrl = `${baseUrl}/${profile.username ?? username}`;
@@ -136,14 +158,24 @@ export default async function UserInboxPage({
     const publishedMessages = messages.filter((m) => m.replies[0] != null);
 
     return (
-      <div className="flex flex-col gap-6">
-        <div className="panel-card px-6 py-6">
-          <div className="flex flex-col items-center text-center gap-1">
-            <h1 className="text-lg font-semibold">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-1 sm:px-2">
+        <div className="flex items-start justify-between gap-4">
+          <div className="section-header">
+            <h1 className="text-2xl font-semibold">
               @{profile.username ?? username}
             </h1>
-            <p className="text-xs text-muted-foreground">
-              Send an anonymous message below. Be kind.
+            <p className="text-sm text-muted-foreground">
+              Anonymous notes stay private until they are replied to.
+            </p>
+          </div>
+          <ThemeToggle className="shrink-0" />
+        </div>
+
+        <div className="panel-card px-6 py-6 sm:px-7">
+          <div className="flex flex-col gap-2">
+            <p className="kicker">Leave a note</p>
+            <p className="max-w-xl text-sm text-muted-foreground">
+              Send something honest. Your name is never attached, and only a replied exchange becomes public.
             </p>
           </div>
 
@@ -164,131 +196,155 @@ export default async function UserInboxPage({
         </div>
 
         {publishedMessages.length > 0 ? (
-          <div className="flex flex-col gap-3">
-            <p className="text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground px-1">
-              Replies
-            </p>
-            {publishedMessages.map((message) => {
-              const reply = message.replies[0]!;
-              return (
-                <MessageCard
-                  key={message.id}
-                  message={message}
-                  reply={reply}
-                  now={now}
-                  messageActions={
-                    <ShareMessageButton
-                      messageContent={message.content}
-                      replyContent={reply.content}
-                      username={profile.username ?? username}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-3 px-1">
+              <p className="kicker">Published replies</p>
+              <span className="rounded-full border border-border bg-muted/35 px-2.5 py-1 text-[0.65rem] text-muted-foreground">
+                {publishedMessages.length}
+              </span>
+            </div>
+            <div className="panel-card p-4 sm:p-5">
+              <div className="space-y-4">
+                {publishedMessages.map((message) => {
+                  const reply = message.replies[0]!;
+                  return (
+                    <MessageCard
+                      key={message.id}
+                      message={message}
+                      reply={reply}
+                      now={now}
+                      recipientUsername={profile.username ?? username}
+                      isOwner={false}
                     />
-                  }
-                />
-              );
-            })}
+                  );
+                })}
+              </div>
+            </div>
           </div>
         ) : (
-          <p className="text-center text-xs text-muted-foreground py-4">
-            No replies yet — be the first to leave a note.
-          </p>
+          <div className="panel-card p-6 text-center">
+            <p className="kicker">Published replies</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              No replies yet. Be the first to leave a note.
+            </p>
+          </div>
         )}
       </div>
     );
   }
 
   return (
-    <div className="page-stack">
-      <div className="section-header">
-        <h1 className="text-2xl font-semibold">Your inbox</h1>
-        <p className="text-sm text-muted-foreground">
-          These messages were sent anonymously.
-        </p>
-      </div>
-
-      <SharePanel url={shareUrl} />
-
-      <section className="flex flex-col gap-4">
-        <AutoRefresh />
-        <MarkMessagesSeen messageIds={messages.map((m) => m.id)} />
-        {messages.length === 0 ? (
-          <div className="panel-card p-4 text-sm text-muted-foreground">
-            No messages yet.
+    <div className="mx-auto w-full max-w-6xl px-2 sm:px-4">
+      <AutoRefresh />
+      <MarkMessagesSeen messageIds={messages.map((m) => m.id)} />
+      <div className="grid gap-8 xl:gap-16 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="page-stack min-w-0">
+          <div className="section-header">
+            <h1 className="text-2xl font-semibold">Your inbox</h1>
+            <p className="text-sm text-muted-foreground">
+              These messages were sent anonymously.
+            </p>
           </div>
-        ) : (
-          messages.map((message) => {
-            const reply = message.replies[0] ?? null;
-            return (
-              <MessageCard
-                key={message.id}
-                message={message}
-                reply={reply}
-                now={now}
-                messageActions={
-                  <>
-                    <NewBadge messageId={message.id} />
-                    <DeleteMessageButton
-                      messageId={message.id}
-                      recipientUsername={profile.username ?? username}
-                    />
-                  </>
-                }
-                replyActions={
-                  reply ? (
-                    <>
-                      <ShareMessageButton
-                        messageContent={message.content}
-                        replyContent={reply.content}
-                        username={profile.username ?? username}
-                      />
-                      <EditReplyButton
-                        replyId={reply.id}
-                        recipientUsername={profile.username ?? username}
-                        initialContent={reply.content}
-                      />
-                      <DeleteMessageButton
-                        messageId={reply.id}
-                        recipientUsername={profile.username ?? username}
-                      />
-                    </>
-                  ) : null
-                }
-                replyForm={
-                  !reply ? (
-                    <ReplyForm
-                      recipientId={profile.id}
-                      recipientUsername={profile.username ?? username}
-                      parentId={message.id}
-                    />
-                  ) : null
-                }
-              />
-            );
-          })
-        )}
-        <div className="panel-card-subtle inline-flex items-center gap-3 px-3 py-2 text-xs text-muted-foreground">
-          <span className="lowercase">
-            page {page} of {totalPages}
-          </span>
-          <div className="flex items-center gap-2">
-            {page > 1 ? (
-              <Link
-                href={`/${profile.username ?? username}?page=${page - 1}`}
-                className="panel-card-muted px-3 py-1 text-xs"
-              >
-                Previous
-              </Link>
-            ) : null}
-            {page < totalPages ? (
-              <Link
-                href={`/${profile.username ?? username}?page=${page + 1}`}
-                className="panel-card-muted px-3 py-1 text-xs"
-              >
-                Next
-              </Link>
-            ) : null}
+
+          <div className="inline-flex w-fit items-center gap-1 rounded-full border border-border bg-muted/35 p-1 shadow-xs">
+            <Link
+              href={`/${profile.username ?? username}?filter=all`}
+              className={`inline-flex items-center rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                filter === "all"
+                  ? "border-foreground/12 bg-background text-foreground shadow-xs"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span>All</span>
+            </Link>
+            <Link
+              href={`/${profile.username ?? username}?filter=published`}
+              className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                filter === "published"
+                  ? "border-foreground/12 bg-background text-foreground shadow-xs"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span>Published</span>
+              <span className="rounded-full bg-foreground/8 px-1.5 py-0.5 text-[0.65rem] text-muted-foreground">
+                {publishedCount}
+              </span>
+            </Link>
           </div>
+
+          <section className="flex flex-col gap-4">
+            {messages.length === 0 ? (
+              <div className="panel-card p-4 text-sm text-muted-foreground">
+                {filter === "published"
+                  ? "No published replies yet."
+                  : "No messages yet."}
+              </div>
+            ) : (
+              messages.map((message) => {
+                const reply = message.replies[0] ?? null;
+                return (
+                  <MessageCard
+                    key={message.id}
+                    message={message}
+                    reply={reply}
+                    now={now}
+                    recipientUsername={profile.username ?? username}
+                    isOwner={true}
+                    replyForm={
+                      !reply ? (
+                        <ReplyForm
+                          recipientId={profile.id}
+                          recipientUsername={profile.username ?? username}
+                          parentId={message.id}
+                        />
+                      ) : null
+                    }
+                  />
+                );
+              })
+            )}
+            <div className="mt-6 flex justify-center">
+              <div className="inline-flex items-center gap-4 rounded-full border border-border bg-muted/15 px-4 py-1.5 text-xs text-muted-foreground shadow-2xs">
+                {page > 1 ? (
+                  <Link
+                    href={`/${profile.username ?? username}?filter=${filter}&page=${page - 1}`}
+                    className="cursor-pointer font-semibold transition-colors hover:text-foreground"
+                  >
+                    Previous
+                  </Link>
+                ) : (
+                  <span className="cursor-not-allowed opacity-40">Previous</span>
+                )}
+                <span className="text-border">|</span>
+                <span className="font-medium text-foreground">
+                  page {page} of {totalPages}
+                </span>
+                <span className="text-border">|</span>
+                {page < totalPages ? (
+                  <Link
+                    href={`/${profile.username ?? username}?filter=${filter}&page=${page + 1}`}
+                    className="cursor-pointer font-semibold transition-colors hover:text-foreground"
+                  >
+                    Next
+                  </Link>
+                ) : (
+                  <span className="cursor-not-allowed opacity-40">Next</span>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
+
+        <aside className="hidden xl:block xl:pl-10">
+          <div className="sticky top-8">
+            <SharePanel
+              url={shareUrl}
+              orientation="vertical"
+              className="w-full"
+            />
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

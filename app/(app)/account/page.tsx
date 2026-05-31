@@ -181,12 +181,12 @@ export default async function AccountPage() {
               Read the code, contribute, or leave a star.
             </p>
           </div>
-          <span className="github-badge-wrap inline-flex self-center shrink-0 rounded-2xl p-px">
+          <span className="github-badge-wrap inline-flex shrink-0 self-center">
             <Link
               href="https://github.com/electr1fy0/blindsay"
               target="_blank"
               rel="noopener noreferrer"
-              className="github-badge flex items-center gap-2 whitespace-nowrap rounded-[calc(theme(borderRadius.2xl)-2px)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,255,255,0.88))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)] transition-colors hover:text-foreground"
+              className="github-badge flex items-center gap-2 whitespace-nowrap rounded-md px-4 py-3 transition-colors hover:text-foreground"
             >
               <HugeiconsIcon icon={GithubIcon} size={14} color="currentColor" strokeWidth={1.5} />
               <span className="text-xs font-medium text-muted-foreground">Star on GitHub</span>

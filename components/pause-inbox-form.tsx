@@ -69,7 +69,7 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
         className="flex flex-nowrap items-center gap-2"
       >
         <Select value={value} onValueChange={(next) => setValue(next ?? value)}>
-          <SelectTrigger className="h-8 w-[110px] rounded-2xl">
+          <SelectTrigger className="h-8 w-[110px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

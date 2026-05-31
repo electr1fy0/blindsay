@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { createAnonymousMessage } from "@/app/actions";
+import { usePersistedDraft } from "@/lib/use-persisted-draft";
 
 const MAX_LENGTH = 500;
 
@@ -19,10 +20,14 @@ export function CreateMessageForm({
   recipientUsername,
   onSuccess,
 }: CreateMessageFormProps) {
-  const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  const draft = usePersistedDraft(
+    `anonymous:${recipientId}:${recipientUsername.toLowerCase()}`,
+  );
+  const content = draft.value;
+  const setContent = draft.setValue;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +49,7 @@ export function CreateMessageForm({
           return;
         }
 
-        setContent("");
+        draft.clearDraft();
         setSent(true);
         if (onSuccess) onSuccess();
       } catch (error) {
@@ -90,6 +95,11 @@ export function CreateMessageForm({
         disabled={isPending}
         className="min-h-[90px] sm:text-sm"
       />
+      {draft.hydrated && content ? (
+        <p className="text-xs text-muted-foreground">
+          Draft saved on this device.
+        </p>
+      ) : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <div className="flex items-center justify-between">
         <span

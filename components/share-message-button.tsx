@@ -10,6 +10,7 @@ type ShareMessageButtonProps = {
   messageContent: string;
   replyContent: string;
   username: string;
+  className?: string;
 };
 
 function wrapText(
@@ -61,6 +62,32 @@ function roundRect(
   ctx.quadraticCurveTo(x, y + h, x, y + h - r);
   ctx.lineTo(x, y + r);
   ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function bubblePath(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radii: {
+    tl: number;
+    tr: number;
+    br: number;
+    bl: number;
+  },
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + radii.tl, y);
+  ctx.lineTo(x + w - radii.tr, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radii.tr);
+  ctx.lineTo(x + w, y + h - radii.br);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radii.br, y + h);
+  ctx.lineTo(x + radii.bl, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radii.bl);
+  ctx.lineTo(x, y + radii.tl);
+  ctx.quadraticCurveTo(x, y, x + radii.tl, y);
   ctx.closePath();
 }
 
@@ -174,14 +201,19 @@ function drawPanelCard(
   ctx.restore();
 }
 
-function drawSubtleCard(
+function drawBubbleCard(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,
   h: number,
-  r: number,
+  side: "left" | "right",
 ) {
+  const radii =
+    side === "left"
+      ? { tl: 18, tr: 18, br: 18, bl: 6 }
+      : { tl: 18, tr: 18, br: 6, bl: 18 };
+
   ctx.save();
   ctx.shadowColor = "rgba(15,23,42,0.06)";
   ctx.shadowBlur = 24;
@@ -190,18 +222,18 @@ function drawSubtleCard(
   const bg = ctx.createLinearGradient(x, y, x, y + h);
   bg.addColorStop(0, COLORS.subtleHighlight);
   bg.addColorStop(1, COLORS.subtleSurface);
-  roundRect(ctx, x, y, w, h, r);
+  bubblePath(ctx, x, y, w, h, radii);
   ctx.fillStyle = bg;
   ctx.fill();
   ctx.restore();
 
-  roundRect(ctx, x, y, w, h, r);
+  bubblePath(ctx, x, y, w, h, radii);
   ctx.strokeStyle = COLORS.subtleBorder;
   ctx.lineWidth = 1;
   ctx.stroke();
 
   ctx.save();
-  roundRect(ctx, x, y, w, h, r);
+  bubblePath(ctx, x, y, w, h, radii);
   ctx.clip();
   const overlay = ctx.createLinearGradient(x, y, x, y + h);
   overlay.addColorStop(0, COLORS.subtleOverlayTop);
@@ -209,37 +241,6 @@ function drawSubtleCard(
   ctx.globalAlpha = 0.55;
   ctx.fillStyle = overlay;
   ctx.fillRect(x, y, w, h);
-  ctx.restore();
-
-  const ir = Math.max(0, r - 2);
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(x + 1 + ir, y + 1);
-  ctx.lineTo(x + w - 1 - ir, y + 1);
-  ctx.strokeStyle = COLORS.subtleInnerTop;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x + 1, y + 1 + ir);
-  ctx.lineTo(x + 1, y + h - 1 - ir);
-  ctx.strokeStyle = COLORS.subtleInnerLeft;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x + w - 1, y + 1 + ir);
-  ctx.lineTo(x + w - 1, y + h - 1 - ir);
-  ctx.strokeStyle = COLORS.subtleInnerRight;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x + 1 + ir, y + h - 1);
-  ctx.lineTo(x + w - 1 - ir, y + h - 1);
-  ctx.strokeStyle = COLORS.subtleInnerBottom;
-  ctx.lineWidth = 1;
-  ctx.stroke();
   ctx.restore();
 }
 
@@ -266,14 +267,18 @@ async function generateCardCanvas(
   const replyLines = wrapText(tmp, replyContent, replyContentW * scale);
 
   const msgLineH = 21;
+  const msgPadV = 16;
+  const msgPadH = 18;
   const replyLineH = 20;
   const msgTextH = msgLines.length * msgLineH;
   const replyTextH = replyLines.length * replyLineH;
 
-  const kickerH = 26;
+  const kickerH = 24;
   const replyKickerH = 24;
   const replyPadV = 14;
   const replyPadH = 18;
+  const msgBoxW = contentW - 32;
+  const msgBoxH = kickerH + msgTextH + msgPadV * 2;
   const replyBoxW = contentW;
   const replyBoxH = replyKickerH + replyTextH + replyPadV * 2;
   const brandRowH = 32;
@@ -281,8 +286,7 @@ async function generateCardCanvas(
 
   const cardInnerH =
     pad +
-    kickerH +
-    msgTextH +
+    msgBoxH +
     sectionGap +
     replyBoxH +
     sectionGap +
@@ -342,27 +346,32 @@ async function generateCardCanvas(
 
   ctx.textBaseline = "top";
 
+  const msgBoxX = cardX + pad;
+  const msgBoxY = y;
+  drawBubbleCard(ctx, msgBoxX, msgBoxY, msgBoxW, msgBoxH, "left");
+
+  const msgTextX = msgBoxX + msgPadH;
+  y = msgBoxY + msgPadV;
   ctx.font = `500 9px ${MONO}`;
   ctx.fillStyle = COLORS.muted;
   ctx.letterSpacing = "2.2px";
-  ctx.fillText("ANONYMOUS MESSAGE", textX, y);
+  ctx.fillText("ANONYMOUS MESSAGE", msgTextX, y);
   ctx.letterSpacing = "0px";
   y += kickerH;
 
   ctx.font = `400 13px ${MONO}`;
   ctx.fillStyle = COLORS.foreground;
   for (const line of msgLines) {
-    ctx.fillText(line, textX + 2, y);
+    ctx.fillText(line, msgTextX + 2, y);
     y += msgLineH;
   }
 
-  y += sectionGap;
+  y = msgBoxY + msgBoxH + sectionGap;
 
   const replyBoxX = cardX + pad;
   const replyBoxY = y;
-  const subtleR = 16;
 
-  drawSubtleCard(ctx, replyBoxX, replyBoxY, replyBoxW, replyBoxH, subtleR);
+  drawBubbleCard(ctx, replyBoxX, replyBoxY, replyBoxW, replyBoxH, "right");
 
   const rTextX = replyBoxX + replyPadH;
   y = replyBoxY + replyPadV;
@@ -439,6 +448,7 @@ export function ShareMessageButton({
   messageContent,
   replyContent,
   username,
+  className,
 }: ShareMessageButtonProps) {
   const [busy, setBusy] = useState(false);
   const logoRef = useRef<HTMLImageElement | null>(null);
@@ -534,13 +544,14 @@ export function ShareMessageButton({
       title="Share card"
       disabled={busy}
       onClick={handleShare}
+      className={className}
     >
       {busy ? (
         "…"
       ) : (
         <HugeiconsIcon
           icon={Share08Icon}
-          size={18}
+          size={14}
           color="currentColor"
           strokeWidth={1.5}
         />

@@ -1,13 +1,24 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useState, useTransition, type ReactNode } from "react";
 import type { MessageModel as Message } from "@/lib/generated/prisma/models";
 import { formatRelativeTime } from "@/lib/relative-time";
+import { deleteMessage, updateReplyMessage } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ShareMessageButton } from "@/components/share-message-button";
+import { NewBadge } from "@/components/new-badge";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Edit01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface MessageCardProps {
   message: Message;
   reply?: Message | null;
   now?: Date;
-  messageActions?: ReactNode;
-  replyActions?: ReactNode;
+  isOwner?: boolean;
+  recipientUsername?: string;
   replyForm?: ReactNode;
 }
 
@@ -15,47 +26,188 @@ export function MessageCard({
   message,
   reply,
   now = new Date(),
-  messageActions,
-  replyActions,
+  isOwner = false,
+  recipientUsername = "",
   replyForm,
 }: MessageCardProps) {
-  return (
-    <div className="panel-card px-5 py-4">
-      <div className="flex items-start justify-between gap-3">
-        <p className="shrink-0 whitespace-nowrap text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-          {formatRelativeTime(message.createdAt, now)}
-        </p>
-        {messageActions ? (
-          <div className="flex items-center gap-1 sm:gap-2">{messageActions}</div>
-        ) : null}
-      </div>
-      <p className="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed pl-1">
-        {message.content}
-      </p>
+  const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(reply?.content ?? "");
+  const [isPending, startTransition] = useTransition();
 
+  const handleDeleteMessage = () => {
+    if (!confirm("Are you sure you want to delete this message?")) return;
+    startTransition(async () => {
+      const res = await deleteMessage(message.id, recipientUsername);
+      if (res.success) {
+        toast.success("Deleted successfully.");
+        router.refresh();
+      } else {
+        toast.error(res.message ?? "Failed to delete.");
+      }
+    });
+  };
+
+  const handleDeleteReply = () => {
+    if (!reply) return;
+    if (!confirm("Are you sure you want to delete this reply?")) return;
+    startTransition(async () => {
+      const res = await deleteMessage(reply.id, recipientUsername);
+      if (res.success) {
+        toast.success("Reply deleted.");
+        router.refresh();
+      } else {
+        toast.error(res.message ?? "Failed to delete reply.");
+      }
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (!reply) return;
+    if (!editValue.trim()) return;
+    startTransition(async () => {
+      const res = await updateReplyMessage(
+        reply.id,
+        recipientUsername,
+        editValue,
+      );
+      if (res.success) {
+        setIsEditing(false);
+        toast.success("Updated.");
+        router.refresh();
+      } else {
+        toast.error(res.message ?? "Failed to save reply.");
+      }
+    });
+  };
+
+  return (
+    <div className="border-b border-border/30 pb-6 mb-3 last:border-b-0 last:pb-0 last:mb-0 flex flex-col gap-4 w-full">
+      {/* Incoming Anonymous Bubble */}
+      <div className="flex flex-col gap-1.5 max-w-[88%] mr-auto">
+        <div className="bg-muted rounded-t-[1.15rem] rounded-r-[1.15rem] rounded-bl-[0.25rem] px-4.5 py-3 shadow-3xs">
+          <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap">
+            {message.content}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 pl-2">
+          <span className="text-[0.55rem] font-semibold tracking-[0.16em] uppercase text-muted-foreground/60">
+            {formatRelativeTime(message.createdAt, now)}
+          </span>
+          {isOwner && <NewBadge messageId={message.id} />}
+          {isOwner && (
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={handleDeleteMessage}
+              className="text-muted-foreground hover:text-destructive cursor-pointer p-0.5 ml-1 transition-colors"
+              title="Delete message"
+            >
+              <HugeiconsIcon icon={Delete02Icon} size={12} strokeWidth={1.5} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Outbound Reply Bubble */}
       {reply ? (
-        <div className="mt-2 space-y-1">
-          <div className="panel-card-subtle px-4 pb-3 pt-2 mt-4">
-            <div className="flex items-center justify-between gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-              <div className="flex min-w-0 items-center gap-2">
-                <span>Reply</span>
-                <span>·</span>
-                <span className="shrink-0 whitespace-nowrap">
-                  {formatRelativeTime(reply.createdAt, now)}
-                </span>
+        <div className="flex flex-col gap-1.5 max-w-[88%] ml-auto items-end animate-in fade-in-20 duration-200">
+          <div
+            className="rounded-t-[1.15rem] rounded-l-[1.15rem] rounded-br-[0.25rem] px-4.5 py-3 shadow-3xs text-left"
+            style={{ backgroundColor: "var(--reply-bubble)" }}
+          >
+            {/* Inline reply edit editor or read-only text */}
+            {isEditing ? (
+              <div className="space-y-2 animate-in fade-in-20 duration-150 min-w-[240px]">
+                <Textarea
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value.slice(0, 500))}
+                  className="min-h-[80px] w-full text-sm rounded-lg border border-border bg-background text-foreground"
+                  disabled={isPending}
+                  placeholder="Edit your reply..."
+                />
+                <div className="flex gap-1.5 justify-end">
+                  <Button
+                    size="xs"
+                    disabled={isPending || !editValue.trim()}
+                    onClick={handleSaveEdit}
+                    className="cursor-pointer font-medium"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    disabled={isPending}
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditValue(reply.content);
+                    }}
+                    className="cursor-pointer font-medium"
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
-              {replyActions ? (
-                <div className="flex items-center gap-1 sm:gap-2">{replyActions}</div>
-              ) : null}
-            </div>
-            <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed pl-1">
-              {reply.content}
-            </p>
+            ) : (
+              <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap">
+                {reply.content}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 pr-2">
+            {!isEditing && (
+              <div className="flex items-center gap-1.5 mr-1">
+                <ShareMessageButton
+                  messageContent={message.content}
+                  replyContent={reply.content}
+                  username={recipientUsername}
+                  className="text-muted-foreground/60 hover:text-foreground cursor-pointer h-5 w-5"
+                />
+                {isOwner && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      onClick={() => {
+                        setEditValue(reply.content);
+                        setIsEditing(true);
+                      }}
+                      className="text-muted-foreground/60 hover:text-foreground cursor-pointer p-0.5"
+                      title="Edit reply"
+                    >
+                      <HugeiconsIcon
+                        icon={Edit01Icon}
+                        size={13}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      onClick={handleDeleteReply}
+                      className="text-muted-foreground/60 hover:text-destructive cursor-pointer p-0.5"
+                      title="Delete reply"
+                    >
+                      <HugeiconsIcon
+                        icon={Delete02Icon}
+                        size={13}
+                        strokeWidth={1.5}
+                      />
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+            <span className="text-[0.55rem] font-semibold tracking-[0.16em] uppercase text-muted-foreground/60">
+              Reply · {formatRelativeTime(reply.createdAt, now)}
+            </span>
           </div>
         </div>
       ) : null}
 
-      {replyForm ? <div className="mt-2">{replyForm}</div> : null}
+      {/* Reply Form */}
+      {replyForm ? <div className="mt-2 w-full">{replyForm}</div> : null}
     </div>
   );
 }

@@ -46,7 +46,7 @@ export function HiddenWordsForm({ initialValue }: HiddenWordsFormProps) {
         <Textarea
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          className="min-h-[150px] rounded-2xl mt-1"
+          className="mt-1 min-h-[150px]"
           placeholder="Enter words or phrases, one per line"
           disabled={isPending}
         />

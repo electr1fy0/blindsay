@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type ComponentProps, useState } from "react";
 import Image from "next/image";
 import { signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -15,9 +15,19 @@ type AuthButtonsProps = {
   } | null;
   className?: string;
   size?: "xs" | "sm" | "default" | "lg";
+  variant?: ComponentProps<typeof Button>["variant"];
+  signInLabel?: string;
+  callbackUrl?: string;
 };
 
-export function AuthButtons({ user, className, size = "default" }: AuthButtonsProps) {
+export function AuthButtons({
+  user,
+  className,
+  size = "default",
+  variant = "outline",
+  signInLabel = "Sign in with Google",
+  callbackUrl = "/onboarding",
+}: AuthButtonsProps) {
   const [imageOk, setImageOk] = useState(true);
 
   if (user) {
@@ -71,10 +81,10 @@ export function AuthButtons({ user, className, size = "default" }: AuthButtonsPr
     <div className={className}>
       <Button
         type="button"
-        variant="outline"
+        variant={variant}
         size={size}
         className="gap-2"
-        onClick={() => signIn("google", { callbackUrl: "/onboarding" })}
+        onClick={() => signIn("google", { callbackUrl })}
       >
         <svg
           aria-hidden="true"
@@ -98,7 +108,7 @@ export function AuthButtons({ user, className, size = "default" }: AuthButtonsPr
             d="M272 107.7c39.5 0 75 13.6 103 40.3l77.3-77.3C405.5 24.2 344.6 0 272 0 168.3 0 76.7 70.1 32.5 154.4l89.3 69.7C142.9 154.9 202.1 107.7 272 107.7z"
           />
         </svg>
-        Sign in with Google
+        {signInLabel}
       </Button>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "@/components/ui/button-variants";
@@ -8,26 +9,29 @@ import { RESERVED_USERNAMES } from "@/lib/constants";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Notification03Icon,
-  UserSettings01Icon,
-  ViewIcon,
   Analytics01Icon,
-  HelpCircleIcon,
+  Link01Icon,
+  Moon02Icon,
+  Sun03Icon,
 } from "@hugeicons/core-free-icons";
-import { MobileNav } from "@/components/mobile-nav";
-import { SignOutButton } from "@/components/sign-out-button";
-import { usePathname, useParams } from "next/navigation";
+import { usePathname, useParams, useRouter } from "next/navigation";
+import { SettingsDialog } from "@/components/settings-dialog";
+import { useTheme } from "next-themes";
 
 type AppShellProps = {
   children: React.ReactNode;
   user?: {
     username?: string | null;
     email?: string | null;
+    image?: string | null;
   } | null;
 };
 
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const params = useParams();
+  const router = useRouter();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const viewedUsername =
     typeof params?.username === "string" ? params.username : undefined;
@@ -42,176 +46,192 @@ export function AppShell({ children, user }: AppShellProps) {
 
   const isActive = (href: string) => pathname === href;
 
+  // Settings Dialog control state
+  const [isOpenManual, setIsOpenManual] = useState(false);
+
+  // Deep linking logic for /account or /help pages opening settings automatically
+  const isSettingsOpen =
+    isOpenManual || pathname === "/account" || pathname === "/help";
+  const settingsTab = pathname === "/help" ? "support" : "account";
+
+  const handleCloseSettings = () => {
+    setIsOpenManual(false);
+    if (pathname === "/account" || pathname === "/help") {
+      router.push(`/${username || ""}`);
+    }
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen h-screen overflow-hidden flex flex-col bg-body-bg">
       {isOwner ? (
         <>
-          <aside className="fixed left-4 top-4 hidden h-[calc(100vh-2rem)] w-60 md:flex">
-            <div className="panel-card flex h-full w-full flex-col gap-4 px-4 py-6">
-              <Link href="/" className="flex items-center gap-3">
-                <Image
-                  src="/blindsay.png"
-                  alt="BLINDSAY logo"
-                  width={40}
-                  height={40}
-                  className="rounded-md"
-                />
-                <div className="text-base font-normal tracking-[0.06em]">
-                  BLINDSAY
-                </div>
-              </Link>
-              <nav className="flex flex-1 flex-col gap-2 text-sm">
+          {/* Top Navbar */}
+          <header className="sticky top-0 z-40 w-full bg-body-bg/95 backdrop-blur-md shrink-0">
+            <div className="w-full flex h-11 items-center justify-between gap-4 px-6">
+              {/* Navigation Elements */}
+              <nav className="flex items-center gap-1 sm:gap-1.5">
+                {/* Account Settings Avatar Button */}
+                <button
+                  onClick={() => setIsOpenManual(true)}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer mr-2 overflow-hidden"
+                  title="Account Settings"
+                >
+                  {user?.image ? (
+                    <Image
+                      src={user.image}
+                      alt={username ?? "Profile"}
+                      width={28}
+                      height={28}
+                      className="rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[0.65rem] font-bold text-foreground">
+                      {(username ?? user?.email ?? "U")
+                        .slice(0, 1)
+                        .toUpperCase()}
+                    </div>
+                  )}
+                </button>
+
                 {username ? (
                   <Link
                     href={`/${username}`}
                     className={cn(
-                      buttonVariants({
-                        variant: "ghost",
-                        size: "sm",
-                      }),
-                      isActive(`/${username}`) ? "nav-pill-active" : "nav-pill",
-                      "rounded-2xl justify-start gap-2",
+                    isActive(`/${username}`)
+                      ? "nav-pill-active"
+                      : buttonVariants({ variant: "ghost", size: "xs" }),
+                    isActive(`/${username}`) ? "" : "nav-pill",
+                      isActive(`/${username}`) ? "rounded-[7px]" : "rounded-[5px]",
+                      "gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 inline-flex items-center sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
                     )}
                   >
                     <HugeiconsIcon
                       icon={Notification03Icon}
-                      size={18}
-                      color="currentColor"
-                      strokeWidth={1.5}
+                      size={14}
+                      strokeWidth={1.45}
                     />
-                    Inbox
+                    <span>Inbox</span>
                   </Link>
                 ) : null}
-                <Link
-                  href="/published"
-                  className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                    isActive("/published") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={ViewIcon}
-                    size={18}
-                    color="currentColor"
-                    strokeWidth={1.5}
-                  />
-                  Published
-                </Link>
+
                 <Link
                   href="/analytics"
                   className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                    isActive("/analytics") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
+                    isActive("/analytics")
+                      ? "nav-pill-active"
+                      : buttonVariants({ variant: "ghost", size: "xs" }),
+                    isActive("/analytics") ? "" : "nav-pill",
+                    isActive("/analytics") ? "rounded-[7px]" : "rounded-[5px]",
+                    "gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 inline-flex items-center sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
                   )}
                 >
                   <HugeiconsIcon
                     icon={Analytics01Icon}
-                    size={18}
-                    color="currentColor"
-                    strokeWidth={1.5}
+                    size={14}
+                    strokeWidth={1.45}
                   />
-                  Analytics
+                  <span>Analytics</span>
                 </Link>
+
                 <Link
-                  href="/account"
+                  href="/share"
                   className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                    isActive("/account") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
+                    isActive("/share")
+                      ? "nav-pill-active"
+                      : buttonVariants({ variant: "ghost", size: "xs" }),
+                    isActive("/share") ? "" : "nav-pill",
+                    isActive("/share") ? "rounded-[7px]" : "rounded-[5px]",
+                    "gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 inline-flex items-center sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
                   )}
                 >
                   <HugeiconsIcon
-                    icon={UserSettings01Icon}
-                    size={18}
-                    color="currentColor"
-                    strokeWidth={1.5}
+                    icon={Link01Icon}
+                    size={14}
+                    strokeWidth={1.45}
                   />
-                  Account
-                </Link>
-                <Link
-                  href="/help"
-                  className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                    isActive("/help") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={HelpCircleIcon}
-                    size={18}
-                    color="currentColor"
-                    strokeWidth={1.5}
-                  />
-                  Help
+                  <span>Share</span>
                 </Link>
               </nav>
-              <div className="pt-2">
-                <SignOutButton size="sm" className="w-full justify-center" />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                }
+                className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer"
+                title={
+                  resolvedTheme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+                }
+                aria-label={
+                  resolvedTheme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode"
+                }
+              >
+                <HugeiconsIcon
+                  icon={resolvedTheme === "dark" ? Sun03Icon : Moon02Icon}
+                  size={17}
+                  strokeWidth={1.7}
+                />
+              </button>
+            </div>
+          </header>
+
+          {/* Main Layout Area - Floating curved sheet above navbar */}
+          <div className="w-full flex-1 overflow-hidden px-2 sm:px-3 pb-0">
+            <div className="bg-background rounded-t-[1.25rem] border-t border-x border-border shadow-xs h-full flex flex-col overflow-hidden">
+              <div className="shell-scrollbar flex-1 overflow-y-auto px-6 sm:px-8 pt-8 pb-32">
+                <main className="min-w-0 flex-1">
+                  {username &&
+                  RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
+                    <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+                      <div className="flex items-center gap-3">
+                        <HugeiconsIcon
+                          icon={Notification03Icon}
+                          size={20}
+                          className="shrink-0"
+                        />
+                        <p className="text-sm font-medium">
+                          Your username is reserved. Please trigger Settings to
+                          change it.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                  {children}
+                </main>
               </div>
             </div>
-          </aside>
-          <div className="mx-auto flex max-w-5xl gap-6 px-[19px] py-8 md:pl-[18rem]">
-            <main className="min-w-0 flex-1">
-              <MobileNav username={username} isOwner={isOwner} />
-              <div className="mt-4 md:mt-0">
-                {username &&
-                RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
-                  <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
-                    <div className="flex items-center gap-3">
-                      <HugeiconsIcon
-                        icon={Notification03Icon}
-                        size={20}
-                        className="shrink-0"
-                      />
-                      <p className="text-sm font-medium">
-                        Your username is reserved. Please{" "}
-                        <Link
-                          href="/account"
-                          className="underline hover:no-underline"
-                        >
-                          change it
-                        </Link>{" "}
-                        to continue using the app properly.
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
-                {children}
-              </div>
-            </main>
           </div>
+
+          {/* Account Settings Dialog Modal */}
+          <SettingsDialog
+            isOpen={isSettingsOpen}
+            onClose={handleCloseSettings}
+            initialTab={settingsTab}
+          />
         </>
       ) : (
-        <div className="mx-auto flex max-w-lg flex-col gap-6 px-[19px] py-8">
-          <header className="flex items-center justify-center gap-2 py-2">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/blindsay.png"
-                alt="BLINDSAY logo"
-                width={32}
-                height={32}
-                className="rounded-md"
-              />
-              <span className="text-sm font-normal tracking-[0.06em]">
-                BLINDSAY
-              </span>
-            </Link>
-          </header>
-          <main className="min-w-0">{children}</main>
+        <div className="w-full flex-1 overflow-y-auto">
+          <div className="mx-auto flex max-w-lg flex-col gap-6 px-[19px] py-8 pb-24">
+            <header className="flex items-center justify-center gap-2 py-2">
+              <Link href="/" className="flex items-center gap-2.5">
+                <Image
+                  src="/blindsay.png"
+                  alt="BLINDSAY logo"
+                  width={32}
+                  height={32}
+                  className="rounded-md"
+                />
+                <span className="text-sm font-normal tracking-[0.06em]">
+                  BLINDSAY
+                </span>
+              </Link>
+            </header>
+            <main className="min-w-0">{children}</main>
+          </div>
         </div>
       )}
     </div>

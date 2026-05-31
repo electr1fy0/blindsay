@@ -226,7 +226,6 @@ export async function deleteMessage(
   }
 
   revalidatePath(`/${recipientUsername}`);
-  revalidatePath("/published");
   return { success: true };
 }
 
@@ -294,4 +293,21 @@ export async function toggleInboxOpen(): Promise<ActionResponse> {
 
   revalidatePath("/account");
   return { success: true };
+}
+
+export async function getUserSettings() {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return null;
+  return await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      email: true,
+      inboxOpen: true,
+      inboxPausedUntil: true,
+      hiddenWords: true,
+    },
+  });
 }

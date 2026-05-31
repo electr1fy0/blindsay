@@ -8,9 +8,9 @@ import {
   Menu01Icon,
   Notification03Icon,
   UserSettings01Icon,
-  ViewIcon,
   Analytics01Icon,
   HelpCircleIcon,
+  Link01Icon,
 } from "@hugeicons/core-free-icons";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -81,38 +81,17 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive(`/${username}`) ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
+                    isActive(`/${username}`) ? "rounded-[7px]" : "",
+                    "justify-start gap-2 text-base font-medium",
                   )}
                 >
                   <HugeiconsIcon
                     icon={Notification03Icon}
                     size={18}
                     color="currentColor"
-                    strokeWidth={1.5}
+                    strokeWidth={1.7}
                   />
                   Inbox
-                </Link>
-              ) : null}
-              {isOwner ? (
-                <Link
-                  href="/published"
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    buttonVariants({
-                      variant: "ghost",
-                      size: "sm",
-                    }),
-                    isActive("/published") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={ViewIcon}
-                    size={18}
-                    color="currentColor"
-                    strokeWidth={1.5}
-                  />
-                  Published
                 </Link>
               ) : null}
               {isOwner ? (
@@ -125,16 +104,40 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive("/analytics") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
+                    isActive("/analytics") ? "rounded-[7px]" : "",
+                    "justify-start gap-2 text-base font-medium",
                   )}
                 >
                   <HugeiconsIcon
                     icon={Analytics01Icon}
                     size={18}
                     color="currentColor"
-                    strokeWidth={1.5}
+                    strokeWidth={1.7}
                   />
                   Analytics
+                </Link>
+              ) : null}
+              {isOwner ? (
+                <Link
+                  href="/share"
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    buttonVariants({
+                      variant: "ghost",
+                      size: "sm",
+                    }),
+                    isActive("/share") ? "nav-pill-active" : "nav-pill",
+                    isActive("/share") ? "rounded-[7px]" : "",
+                    "justify-start gap-2 text-base font-medium",
+                  )}
+                >
+                  <HugeiconsIcon
+                    icon={Link01Icon}
+                    size={18}
+                    color="currentColor"
+                    strokeWidth={1.7}
+                  />
+                  Share
                 </Link>
               ) : null}
               {isOwner ? (
@@ -147,14 +150,15 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive("/account") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
+                    isActive("/account") ? "rounded-[7px]" : "",
+                    "justify-start gap-2 text-base font-medium",
                   )}
                 >
                   <HugeiconsIcon
                     icon={UserSettings01Icon}
                     size={18}
                     color="currentColor"
-                    strokeWidth={1.5}
+                    strokeWidth={1.7}
                   />
                   Account
                 </Link>
@@ -169,14 +173,15 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
                       size: "sm",
                     }),
                     isActive("/help") ? "nav-pill-active" : "nav-pill",
-                    "rounded-2xl justify-start gap-2",
+                    isActive("/help") ? "rounded-[7px]" : "",
+                    "justify-start gap-2 text-base font-medium",
                   )}
                 >
                   <HugeiconsIcon
                     icon={HelpCircleIcon}
                     size={18}
                     color="currentColor"
-                    strokeWidth={1.5}
+                    strokeWidth={1.7}
                   />
                   Help
                 </Link>
