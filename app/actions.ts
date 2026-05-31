@@ -305,6 +305,7 @@ export async function getUserSettings() {
       username: true,
       name: true,
       email: true,
+      image: true,
       inboxOpen: true,
       inboxPausedUntil: true,
       hiddenWords: true,

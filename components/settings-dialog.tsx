@@ -47,6 +47,7 @@ type UserSettingsData = {
   username: string | null;
   name: string | null;
   email: string | null;
+  image: string | null;
   inboxOpen: boolean;
   inboxPausedUntil: Date | null;
   hiddenWords: string[];
@@ -313,11 +314,21 @@ export function SettingsDialog({
                   <div className="panel-card-muted p-4 space-y-4">
                     {/* User profile detail block */}
                     <div className="flex items-start gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-accent text-lg font-bold text-foreground">
-                        {(user.name ?? user.email ?? "U")
-                          .slice(0, 1)
-                          .toUpperCase()}
-                      </div>
+                      {user.image ? (
+                        <Image
+                          src={user.image}
+                          alt={user.name ?? "Profile"}
+                          width={48}
+                          height={48}
+                          className="h-12 w-12 rounded-full border border-border object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-accent text-lg font-bold text-foreground shrink-0">
+                          {(user.name ?? user.email ?? "U")
+                            .slice(0, 1)
+                            .toUpperCase()}
+                        </div>
+                      )}
                       <div className="space-y-1">
                         <div className="font-semibold text-sm">
                           {user.name ?? "Signed in"}
