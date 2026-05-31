@@ -17,7 +17,7 @@ export const accentThemes = [
     preview: {
       accent: "#00b9ff",
       reply: "#dff2ff",
-      replyDark: "#155e8a",
+      replyDark: "#1075ab",
     },
   },
   {
@@ -27,7 +27,7 @@ export const accentThemes = [
     preview: {
       accent: "#4e9f73",
       reply: "#dbeee2",
-      replyDark: "#1f372b",
+      replyDark: "#1d5c3d",
     },
   },
   {
@@ -37,7 +37,7 @@ export const accentThemes = [
     preview: {
       accent: "#e56b6f",
       reply: "#f8dfe1",
-      replyDark: "#47262b",
+      replyDark: "#802e3a",
     },
   },
 ] as const;

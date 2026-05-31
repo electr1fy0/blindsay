@@ -120,7 +120,7 @@
     --sidebar-accent-foreground: #fafafa;
     --sidebar-border: #2e2e34;
     --sidebar-ring: #00b9ff;
-    --reply-bubble: #155e8a;
+    --reply-bubble: #1075ab;
 }
 
 :root[data-accent-theme="sky"] {
@@ -136,7 +136,7 @@
     --ring: #00b9ff;
     --chart-1: #00b9ff;
     --sidebar-primary: #00b9ff;
-    --reply-bubble: #155e8a;
+    --reply-bubble: #1075ab;
 }
 
 :root[data-accent-theme="sage"] {
@@ -152,7 +152,7 @@
     --ring: #69b98a;
     --chart-1: #69b98a;
     --sidebar-primary: #69b98a;
-    --reply-bubble: #1f372b;
+    --reply-bubble: #1d5c3d;
 }
 
 :root[data-accent-theme="rose"] {
@@ -168,7 +168,7 @@
     --ring: #ef7d81;
     --chart-1: #ef7d81;
     --sidebar-primary: #ef7d81;
-    --reply-bubble: #47262b;
+    --reply-bubble: #802e3a;
 }
 
 @layer base {

@@ -1,6 +1,6 @@
 "use client";
 
-import { type ComponentProps, useState } from "react";
+import { type ComponentProps, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ type AuthButtonsProps = {
   className?: string;
   size?: "xs" | "sm" | "default" | "lg";
   variant?: ComponentProps<typeof Button>["variant"];
-  signInLabel?: string;
+  signInLabel?: ReactNode;
   callbackUrl?: string;
 };
 
@@ -83,7 +83,7 @@ export function AuthButtons({
         type="button"
         variant={variant}
         size={size}
-        className="gap-2"
+        className="gap-2 group"
         onClick={() => signIn("google", { callbackUrl })}
       >
         <svg

@@ -87,15 +87,17 @@ export default async function Page() {
       <div className="relative z-20">
         <div className="mx-auto max-w-2xl px-6 pb-24 pt-7 sm:px-10 lg:px-0">
           <nav className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2.5">
               <Image
                 src="/blindsay.png"
-                alt="BLINDSAY"
-                width={40}
-                height={40}
-                className="opacity-70 grayscale rounded-lg"
+                alt="BLINDSAY logo"
+                width={36}
+                height={36}
+                className="opacity-70 grayscale rounded-md"
               />
-              <span className="sr-only">BLINDSAY</span>
+              <span className="text-[12px] font-medium tracking-[0.12em] uppercase text-[#eeecea] opacity-80 select-none">
+                BLINDSAY
+              </span>
             </Link>
             <div className="flex items-center gap-2">
               {!session ? (
@@ -231,13 +233,9 @@ export default async function Page() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl md:text-6.5xl font-medium leading-[1.08] tracking-[-0.05em] text-[#f1efed]">
-                Receive the words
-                <span className="block mt-1">they never found the courage</span>
-                <span className="block text-[#d8d4d0] mt-1">
-                  to{" "}
-                  <span className="font-normal text-primary">
-                    say aloud.
-                  </span>
+                Receive the unsaid words{" "}
+                <span className="font-normal text-primary">
+                  anonymously.
                 </span>
               </h1>
             </div>
@@ -262,8 +260,34 @@ export default async function Page() {
                   user={null}
                   size="lg"
                   variant="default"
-                  signInLabel="Start your inbox"
-                  className="[&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:underline [&_button]:decoration-wavy [&_button]:decoration-white/30 [&_button]:underline-offset-4 [&_button]:hover:decoration-white/60 [&_button]:transition-colors [&_button]:duration-200 [&_button]:cursor-pointer [&_svg]:hidden"
+                  signInLabel={
+                    <span className="relative pb-0.5 inline-flex flex-col items-center">
+                      <span>Start your inbox</span>
+                      <span className="absolute left-0 right-0 bottom-[-4px] h-[7px] overflow-visible pointer-events-none select-none">
+                        <svg
+                          width="100%"
+                          height="7"
+                          viewBox="0 0 140 7"
+                          preserveAspectRatio="none"
+                          className="w-full h-full stroke-[url(#squiggly-grad-hero)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"
+                          fill="none"
+                        >
+                          <defs>
+                            <linearGradient id="squiggly-grad-hero" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="#ff2a5f" />
+                              <stop offset="100%" stopColor="#ffb000" />
+                            </linearGradient>
+                          </defs>
+                          <path
+                            d="M 0 3.5 Q 8.75 0, 17.5 3.5 T 35 3.5 T 52.5 3.5 T 70 3.5 T 87.5 3.5 T 105 3.5 T 122.5 3.5 T 140 3.5"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  }
+                  className="[&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_svg]:hidden"
                 />
               )}
             </div>
@@ -702,8 +726,34 @@ export default async function Page() {
                     user={null}
                     size="lg"
                     variant="default"
-                    signInLabel="Begin quietly"
-                    className="[&_button]:h-14 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:underline [&_button]:decoration-wavy [&_button]:decoration-white/30 [&_button]:underline-offset-4 [&_button]:hover:decoration-white/60 [&_button]:transition-colors [&_button]:duration-200 [&_button]:cursor-pointer [&_svg]:hidden"
+                    signInLabel={
+                      <span className="relative pb-0.5 inline-flex flex-col items-center">
+                        <span>Begin quietly</span>
+                        <span className="absolute left-0 right-0 bottom-[-4px] h-[7px] overflow-visible pointer-events-none select-none">
+                          <svg
+                            width="100%"
+                            height="7"
+                            viewBox="0 0 140 7"
+                            preserveAspectRatio="none"
+                            className="w-full h-full stroke-[url(#squiggly-grad-bottom)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"
+                            fill="none"
+                          >
+                            <defs>
+                              <linearGradient id="squiggly-grad-bottom" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#ff2a5f" />
+                                <stop offset="100%" stopColor="#ffb000" />
+                              </linearGradient>
+                            </defs>
+                            <path
+                              d="M 0 3.5 Q 8.75 0, 17.5 3.5 T 35 3.5 T 52.5 3.5 T 70 3.5 T 87.5 3.5 T 105 3.5 T 122.5 3.5 T 140 3.5"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="[&_button]:h-14 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_svg]:hidden"
                   />
                 )}
               </div>
