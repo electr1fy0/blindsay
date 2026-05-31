@@ -68,12 +68,15 @@ export default async function Page() {
 
   let starsCount = 0;
   try {
-    const res = await fetch("https://api.github.com/repos/electr1fy0/blindsay", {
-      next: { revalidate: 3600 },
-      headers: {
-        "User-Agent": "blindsay-app",
+    const res = await fetch(
+      "https://api.github.com/repos/electr1fy0/blindsay",
+      {
+        next: { revalidate: 3600 },
+        headers: {
+          "User-Agent": "blindsay-app",
+        },
       },
-    });
+    );
     if (res.ok) {
       const data = await res.json();
       starsCount = data.stargazers_count || 0;
@@ -142,7 +145,7 @@ export default async function Page() {
             >
               {/* Dynamic 1px border layer */}
               <div className="absolute inset-0 rounded-full bg-white/10 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#ff2a5f] group-hover:via-[#ffb000] group-hover:via-[#00f5a0] group-hover:via-[#00b9ff] group-hover:to-[#b800ff]" />
-              
+
               {/* Inner content layer masking the gradient to show only a sharp 1px outline border */}
               <div className="relative flex items-center gap-2.5 rounded-full bg-[#1c1c1f] px-3.5 py-1.5 text-xs text-[#a8a5a1] transition-all duration-300 group-hover:text-white">
                 <svg
@@ -156,7 +159,9 @@ export default async function Page() {
                 <span className="font-medium tracking-wide">GitHub</span>
                 {starsCount > 0 && (
                   <>
-                    <span className="text-white/10 group-hover:text-white/20 transition-colors duration-200">|</span>
+                    <span className="text-white/10 group-hover:text-white/20 transition-colors duration-200">
+                      |
+                    </span>
                     <span className="font-mono text-[12px] text-[#b2afaa] group-hover:text-white transition-colors duration-200 flex items-center gap-1.5">
                       <svg
                         width="13"
@@ -176,10 +181,29 @@ export default async function Page() {
 
             <div className="relative w-full max-w-2xl">
               {/* Floating context-relevant SVG 1: Minimalist paper airplane (Sky Blue to Emerald) */}
-              <div className="absolute -top-12 left-4 sm:-left-12 pointer-events-none select-none animate-bounce" style={{ animationDuration: '6s' }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="url(#airplane-grad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_2px_8px_rgba(0,185,255,0.25)]">
+              <div
+                className="absolute -top-12 left-4 sm:-left-12 pointer-events-none select-none animate-bounce"
+                style={{ animationDuration: "6s" }}
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="url(#airplane-grad)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="drop-shadow-[0_2px_8px_rgba(0,185,255,0.25)]"
+                >
                   <defs>
-                    <linearGradient id="airplane-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient
+                      id="airplane-grad"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
                       <stop offset="0%" stopColor="#00b9ff" />
                       <stop offset="100%" stopColor="#00f5a0" />
                     </linearGradient>
@@ -188,12 +212,31 @@ export default async function Page() {
                   <path d="M10.71 12.79L14 22l8-20-8 20z" />
                 </svg>
               </div>
-              
+
               {/* Floating context-relevant SVG 2: Minimalist open envelope (Amber to Orange) */}
-              <div className="absolute -top-10 right-4 sm:-right-8 pointer-events-none select-none animate-bounce" style={{ animationDuration: '7s', animationDelay: '0.5s' }}>
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="url(#envelope-grad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_2px_8px_rgba(255,90,0,0.25)]">
+              <div
+                className="absolute -top-10 right-4 sm:-right-8 pointer-events-none select-none animate-bounce"
+                style={{ animationDuration: "7s", animationDelay: "0.5s" }}
+              >
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="url(#envelope-grad)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="drop-shadow-[0_2px_8px_rgba(255,90,0,0.25)]"
+                >
                   <defs>
-                    <linearGradient id="envelope-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient
+                      id="envelope-grad"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
                       <stop offset="0%" stopColor="#ffb000" />
                       <stop offset="100%" stopColor="#ff5a00" />
                     </linearGradient>
@@ -204,10 +247,29 @@ export default async function Page() {
               </div>
 
               {/* Floating context-relevant SVG 3: Minimalist speech bubble with dots (Pink to Purple) */}
-              <div className="absolute -bottom-10 right-4 sm:-right-12 pointer-events-none select-none animate-bounce" style={{ animationDuration: '8s', animationDelay: '1s' }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#bubble-grad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_2px_8px_rgba(127,0,255,0.25)]">
+              <div
+                className="absolute -bottom-10 right-4 sm:-right-12 pointer-events-none select-none animate-bounce"
+                style={{ animationDuration: "8s", animationDelay: "1s" }}
+              >
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="url(#bubble-grad)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="drop-shadow-[0_2px_8px_rgba(127,0,255,0.25)]"
+                >
                   <defs>
-                    <linearGradient id="bubble-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient
+                      id="bubble-grad"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
                       <stop offset="0%" stopColor="#ff007f" />
                       <stop offset="100%" stopColor="#7f00ff" />
                     </linearGradient>
@@ -220,10 +282,29 @@ export default async function Page() {
               </div>
 
               {/* Floating context-relevant SVG 4: Minimalist feedback heart (Crimson to Rose) */}
-              <div className="absolute -bottom-8 left-4 sm:-left-8 pointer-events-none select-none animate-bounce" style={{ animationDuration: '9s', animationDelay: '1.5s' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="url(#heart-grad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="drop-shadow-[0_2px_8px_rgba(255,0,85,0.25)]">
+              <div
+                className="absolute -bottom-8 left-4 sm:-left-8 pointer-events-none select-none animate-bounce"
+                style={{ animationDuration: "9s", animationDelay: "1.5s" }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="url(#heart-grad)"
+                  strokeWidth="1.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="drop-shadow-[0_2px_8px_rgba(255,0,85,0.25)]"
+                >
                   <defs>
-                    <linearGradient id="heart-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient
+                      id="heart-grad"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
                       <stop offset="0%" stopColor="#ff0055" />
                       <stop offset="100%" stopColor="#ff5e97" />
                     </linearGradient>
@@ -234,9 +315,7 @@ export default async function Page() {
 
               <h1 className="text-4xl sm:text-5xl md:text-6.5xl font-medium leading-[1.08] tracking-[-0.05em] text-[#f1efed]">
                 Receive the unsaid words{" "}
-                <span className="font-normal text-primary">
-                  anonymously.
-                </span>
+                <span className="font-normal text-primary">anonymously.</span>
               </h1>
             </div>
             <p className="mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-[#888681] max-w-lg font-light tracking-wide text-center">
@@ -280,7 +359,8 @@ export default async function Page() {
                 <p>
                   Some thoughts need distance before they can be shared.
                   Blindsay gives friends, readers, and strangers a private way
-                  to leave anonymous messages, share constructive feedback, or start spontaneous AMAs.
+                  to leave anonymous messages, share constructive feedback, or
+                  start spontaneous AMAs.
                 </p>
                 <p>
                   Your inbox belongs to you.{" "}
@@ -305,7 +385,7 @@ export default async function Page() {
                 <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8 flex flex-col justify-between">
                   <div>
                     <p className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#777672]">
-                      Share your prompt
+                      Share your link
                     </p>
                     <div className="mt-6 text-[#96938f]/60">
                       <svg
@@ -341,7 +421,8 @@ export default async function Page() {
                       Say what you never said.
                     </p>
                     <p className="mt-4 text-sm leading-6 text-[#8d8a86]">
-                      A personal link lets people leave messages, ask questions, or share candid feedback anonymously.
+                      A personal link lets people leave messages, ask questions,
+                      or share candid feedback anonymously.
                     </p>
                   </div>
                   <div className="mt-10 flex items-center justify-between rounded-lg border border-white/[0.09] px-4 py-3 font-mono text-xs text-[#96938f]">
@@ -725,7 +806,9 @@ export default async function Page() {
                 height={20}
                 className="opacity-70 grayscale rounded-md"
               />
-              <span className="text-[11px] font-medium tracking-[0.16em] uppercase">BLINDSAY</span>
+              <span className="text-[11px] font-medium tracking-[0.16em] uppercase">
+                BLINDSAY
+              </span>
             </div>
             <Link
               href="https://github.com/electr1fy0/blindsay"

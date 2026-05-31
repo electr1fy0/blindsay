@@ -63,7 +63,7 @@ export function SharePanel({ url, className, orientation = "horizontal" }: Share
           </div>
         </div>
         <div className={cn(
-          "panel-card-muted flex items-center justify-center p-3",
+          "panel-card-muted flex items-center justify-center p-3 md:min-w-[240px] shrink-0",
           orientation === "vertical" && "w-fit self-center px-6"
         )}>
           {qr ? (

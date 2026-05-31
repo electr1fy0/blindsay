@@ -104,7 +104,7 @@ export function SettingsDialog({
           setStars(
             starCount >= 1000
               ? `${(starCount / 1000).toFixed(1)}k`
-              : String(starCount)
+              : String(starCount),
           );
         }
       })
@@ -114,7 +114,7 @@ export function SettingsDialog({
   useEffect(() => {
     if (typeof window !== "undefined" && user?.username) {
       setShareUrl(
-        `${window.location.protocol}//${window.location.host}/${user.username}`
+        `${window.location.protocol}//${window.location.host}/${user.username}`,
       );
     }
   }, [user?.username]);
@@ -128,7 +128,7 @@ export function SettingsDialog({
       if (res.success) {
         setUser({ ...user, inboxOpen: !user.inboxOpen });
         toast.success(
-          `Inbox ${!user.inboxOpen ? "opened" : "closed"} successfully.`
+          `Inbox ${!user.inboxOpen ? "opened" : "closed"} successfully.`,
         );
         router.refresh();
       } else {
@@ -140,7 +140,7 @@ export function SettingsDialog({
   };
 
   const isPaused = Boolean(
-    user?.inboxPausedUntil && new Date(user.inboxPausedUntil) > new Date()
+    user?.inboxPausedUntil && new Date(user.inboxPausedUntil) > new Date(),
   );
   const now = new Date();
 
@@ -186,7 +186,11 @@ export function SettingsDialog({
                 : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
             }`}
           >
-            <HugeiconsIcon icon={UserSettings01Icon} size={18} strokeWidth={1.5} />
+            <HugeiconsIcon
+              icon={UserSettings01Icon}
+              size={18}
+              strokeWidth={1.5}
+            />
             Account
           </button>
           <button
@@ -208,7 +212,11 @@ export function SettingsDialog({
                 : "text-muted-foreground hover:bg-accent/40 hover:text-foreground"
             }`}
           >
-            <HugeiconsIcon icon={Notification03Icon} size={18} strokeWidth={1.5} />
+            <HugeiconsIcon
+              icon={Notification03Icon}
+              size={18}
+              strokeWidth={1.5}
+            />
             Inbox Control
           </button>
           <button
@@ -245,7 +253,11 @@ export function SettingsDialog({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <HugeiconsIcon icon={UserSettings01Icon} size={15} strokeWidth={1.5} />
+            <HugeiconsIcon
+              icon={UserSettings01Icon}
+              size={15}
+              strokeWidth={1.5}
+            />
             Account
           </button>
           <button
@@ -267,7 +279,11 @@ export function SettingsDialog({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <HugeiconsIcon icon={Notification03Icon} size={15} strokeWidth={1.5} />
+            <HugeiconsIcon
+              icon={Notification03Icon}
+              size={15}
+              strokeWidth={1.5}
+            />
             Inbox
           </button>
           <button
@@ -378,7 +394,9 @@ export function SettingsDialog({
                         <span>GitHub</span>
                         {stars !== null && (
                           <>
-                            <span className="text-black/10 dark:text-white/15 group-hover:text-black/20 dark:group-hover:text-white/20 transition-colors duration-200">|</span>
+                            <span className="text-black/10 dark:text-white/15 group-hover:text-black/20 dark:group-hover:text-white/20 transition-colors duration-200">
+                              |
+                            </span>
                             <span className="font-mono text-[12px] text-muted-foreground group-hover:text-foreground dark:group-hover:text-white transition-colors duration-200 flex items-center gap-1.5">
                               <svg
                                 width="13"
@@ -399,7 +417,10 @@ export function SettingsDialog({
 
                   {/* Sign Out Action */}
                   <div className="border-t border-border pt-4">
-                    <SignOutButton size="sm" className="w-full justify-center rounded-lg" />
+                    <SignOutButton
+                      size="sm"
+                      className="w-full justify-center rounded-lg"
+                    />
                   </div>
                 </div>
               )}
@@ -409,7 +430,7 @@ export function SettingsDialog({
                 <div className="space-y-6 animate-in fade-in-20 duration-150">
                   <div>
                     <h2 className="text-xl font-bold tracking-tight">
-                      Share Your Prompt
+                      Share Your Link
                     </h2>
                     <p className="text-xs text-muted-foreground mt-1">
                       Let others leave honest anonymous notes on your profile.
@@ -418,7 +439,8 @@ export function SettingsDialog({
 
                   <div className="panel-card p-4 space-y-4">
                     <p className="text-xs text-muted-foreground">
-                      Copy your link or scan your QR code to share your inbox with friends, followers, or readers.
+                      Copy your link or scan your QR code to share your inbox
+                      with friends, followers, or readers.
                     </p>
                     {user.username ? (
                       <SharePanel
@@ -428,7 +450,8 @@ export function SettingsDialog({
                       />
                     ) : (
                       <p className="text-sm text-red-500">
-                        Please set a username in the Account tab first before sharing your link.
+                        Please set a username in the Account tab first before
+                        sharing your link.
                       </p>
                     )}
                   </div>
@@ -442,7 +465,8 @@ export function SettingsDialog({
                       Appearance
                     </h2>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Control light and dark mode plus the accent palette for buttons and replies.
+                      Control light and dark mode plus the accent palette for
+                      buttons and replies.
                     </p>
                   </div>
 
@@ -558,7 +582,7 @@ export function SettingsDialog({
                                   user.inboxPausedUntil
                                     ? formatRelativeTime(
                                         new Date(user.inboxPausedUntil),
-                                        now
+                                        now,
                                       )
                                     : "soon"
                                 }.`
@@ -598,7 +622,7 @@ export function SettingsDialog({
                                 user.inboxPausedUntil
                                   ? formatRelativeTime(
                                       new Date(user.inboxPausedUntil),
-                                      now
+                                      now,
                                     )
                                   : "later"
                               }.`
@@ -669,9 +693,9 @@ export function SettingsDialog({
                         </h3>
                       </div>
                       <p className="text-[0.72rem] leading-relaxed text-muted-foreground">
-                        Messages you receive are completely private. If you reply
-                        to a message, the exchange is published to your public
-                        profile feed. Unreplied items remain hidden.
+                        Messages you receive are completely private. If you
+                        reply to a message, the exchange is published to your
+                        public profile feed. Unreplied items remain hidden.
                       </p>
                     </div>
 

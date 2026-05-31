@@ -237,7 +237,7 @@ export default async function UserInboxPage({
     <div className="mx-auto w-full max-w-6xl px-2 sm:px-4">
       <AutoRefresh />
       <MarkMessagesSeen messageIds={messages.map((m) => m.id)} />
-      <div className="grid gap-8 xl:gap-16 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-8 xl:gap-16 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="page-stack min-w-0">
           <div className="section-header">
             <h1 className="text-2xl font-semibold">Your inbox</h1>
@@ -335,7 +335,7 @@ export default async function UserInboxPage({
           </section>
         </div>
 
-        <aside className="hidden xl:block xl:pl-10">
+        <aside className="hidden xl:block xl:pl-6">
           <div className="sticky top-8">
             <SharePanel
               url={shareUrl}

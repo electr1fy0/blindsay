@@ -67,7 +67,7 @@ export function AppShell({ children, user }: AppShellProps) {
         <>
           {/* Top Navbar */}
           <header className="sticky top-0 z-40 w-full bg-body-bg/95 backdrop-blur-md shrink-0">
-            <div className="w-full flex h-11 items-center justify-between gap-4 px-6">
+            <div className="w-full flex h-12 items-center justify-between gap-4 px-6">
               {/* Navigation Elements */}
               <nav className="flex items-center gap-1 sm:gap-1.5">
                 {/* Account Settings Avatar Button */}

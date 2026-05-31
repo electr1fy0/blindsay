@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Loading() {
   return (
     <div className="mx-auto w-full max-w-6xl px-2 sm:px-4">
-      <div className="grid gap-8 xl:gap-16 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="grid gap-8 xl:gap-16 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="page-stack min-w-0 flex flex-col gap-6">
           {/* Header */}
           <div className="section-header flex flex-col gap-1">
@@ -35,9 +35,9 @@ export default function Loading() {
         </div>
 
         {/* Sidebar Skeleton (Matching SharePanel) */}
-        <aside className="hidden xl:block xl:pl-10">
+        <aside className="hidden xl:block xl:pl-6">
           <div className="sticky top-8 space-y-6">
-            <div className="panel-card p-6 sm:p-7 space-y-5">
+            <div className="panel-card p-6 sm:p-7 space-y-5 flex flex-col">
               <Skeleton className="h-4 w-28 bg-muted-foreground/10" />
               <div className="space-y-2">
                 <Skeleton className="h-10 w-full rounded-full bg-muted/60" />
@@ -47,6 +47,12 @@ export default function Loading() {
                 <Skeleton className="h-9 rounded-md bg-muted/60" />
                 <Skeleton className="h-9 rounded-md bg-muted/60" />
                 <Skeleton className="h-9 rounded-md bg-muted/60" />
+              </div>
+              {/* Vertical QR Code Card Loader */}
+              <div className="panel-card-muted flex flex-col items-center justify-center p-3 w-fit self-center px-6 h-40 space-y-2 mt-2">
+                <Skeleton className="h-3 w-12 bg-muted-foreground/10" />
+                <Skeleton className="h-24 w-24 rounded bg-muted-foreground/5" />
+                <Skeleton className="h-3 w-20 bg-muted-foreground/10" />
               </div>
             </div>
           </div>

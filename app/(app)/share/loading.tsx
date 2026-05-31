@@ -24,7 +24,7 @@ export default function Loading() {
               <Skeleton className="h-8 w-28 rounded-md bg-muted/70" />
             </div>
           </div>
-          <div className="panel-card-muted flex flex-col items-center justify-center p-3 w-full md:w-44 h-44 space-y-2">
+          <div className="panel-card-muted flex flex-col items-center justify-center p-3 w-full md:w-[240px] h-44 space-y-2 shrink-0">
             <Skeleton className="h-3 w-12 bg-muted-foreground/10" />
             <Skeleton className="h-28 w-28 rounded bg-muted-foreground/5" />
             <Skeleton className="h-3 w-20 bg-muted-foreground/10" />
