@@ -52,7 +52,12 @@ export function AppShell({ children, user }: AppShellProps) {
   // Deep linking logic for /account or /help pages opening settings automatically
   const isSettingsOpen =
     isOpenManual || pathname === "/account" || pathname === "/help";
-  const settingsTab = pathname === "/help" ? "support" : "account";
+  const settingsTab =
+    pathname === "/help"
+      ? "support"
+      : pathname === "/account"
+        ? "account"
+        : "appearance";
 
   const handleCloseSettings = () => {
     setIsOpenManual(false);

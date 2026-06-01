@@ -759,6 +759,38 @@ export function SettingsDialog({
                       </p>
                     </div>
                   </div>
+
+                  {/* Minimal & Modern Support Banner */}
+                  <div className="rounded-xl border border-border/50 bg-accent/10 p-4 mt-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="space-y-1">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                          Direct Support
+                        </h3>
+                        <p className="text-[0.72rem] text-muted-foreground">
+                          Have questions or feedback? Send an email directly to{" "}
+                          <a
+                            href="https://github.com/electr1fy0"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline underline-offset-2 hover:text-foreground transition-colors font-medium"
+                          >
+                            Ayush
+                          </a>
+                          .
+                        </p>
+                      </div>
+                      
+                      <div className="shrink-0">
+                        <a
+                          href="mailto:thisisayushpandey@gmail.com"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-all select-none cursor-pointer"
+                        >
+                          <span>Email Support</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
