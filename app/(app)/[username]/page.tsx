@@ -132,25 +132,26 @@ export default async function UserInboxPage({
         : {}
       : {}),
   };
-  const total = await prisma.message.count({
-    where: totalWhere,
-  });
-  const publishedCount = isOwner
-    ? await prisma.message.count({
-        where: {
-          recipientId: profile.id,
-          parentId: null,
-          replies: { some: {} },
-        },
-      })
-    : 0;
+  const [total, publishedCount, messages] = await Promise.all([
+    prisma.message.count({
+      where: totalWhere,
+    }),
+    isOwner
+      ? prisma.message.count({
+          where: {
+            recipientId: profile.id,
+            parentId: null,
+            replies: { some: {} },
+          },
+        })
+      : Promise.resolve(0),
+    prisma.message.findMany({
+      ...baseQuery,
+      skip: isOwner ? skip : 0,
+      take: pageSize,
+    }),
+  ]);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-  const messages = await prisma.message.findMany({
-    ...baseQuery,
-    skip: isOwner ? skip : 0,
-    take: pageSize,
-  });
   const baseUrl = getBaseUrl();
   const shareUrl = `${baseUrl}/${profile.username ?? username}`;
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import QRCode from "qrcode";
+import { useState } from "react";
+import { ReactQRCode } from "@lglab/react-qr-code";
+import { useAccentTheme } from "@/components/accent-theme-provider";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Link01Icon, QrCode01Icon } from "@hugeicons/core-free-icons";
@@ -16,15 +17,21 @@ type SharePanelProps = {
 
 export function SharePanel({ url, className, orientation = "horizontal" }: SharePanelProps) {
   const [copied, setCopied] = useState(false);
-  const [qr, setQr] = useState<string | null>(null);
+  const { accentTheme } = useAccentTheme();
 
-  useEffect(() => {
-    QRCode.toDataURL(url, {
-      margin: 1,
-      width: 180,
-      color: { dark: "#0b0f1a", light: "#ffffff" },
-    }).then(setQr);
-  }, [url]);
+  const getQrColor = () => {
+    switch (accentTheme) {
+      case "sage":
+        return "#4e9f73";
+      case "rose":
+        return "#e56b6f";
+      case "sky":
+      default:
+        return "#00b9ff";
+    }
+  };
+
+  const qrColor = getQrColor();
 
   return (
     <div className={cn("panel-card p-6 sm:p-7", className)}>
@@ -66,25 +73,39 @@ export function SharePanel({ url, className, orientation = "horizontal" }: Share
           "panel-card-muted flex items-center justify-center p-3 md:min-w-[240px] shrink-0",
           orientation === "vertical" && "w-fit self-center px-6"
         )}>
-          {qr ? (
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
-                <HugeiconsIcon
-                  icon={QrCode01Icon}
-                  size={18}
-                  color="currentColor"
-                  strokeWidth={1.5}
-                />
-                QR
-              </div>
-              <div className="rounded-md border bg-white p-3">
-                <img src={qr} alt="QR code" className="h-36 w-36" />
-              </div>
-              <p className="text-xs text-muted-foreground">Scan to open.</p>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.22em] text-muted-foreground">
+              <HugeiconsIcon
+                icon={QrCode01Icon}
+                size={18}
+                color="currentColor"
+                strokeWidth={1.5}
+              />
+              QR
             </div>
-          ) : (
-            <div className="text-xs text-muted-foreground">Generating…</div>
-          )}
+            <div className="rounded-xl border border-white/20 bg-white p-3 shadow-sm select-none">
+              <ReactQRCode
+                value={url}
+                size={140}
+                marginSize={1}
+                background="#ffffff"
+                dataModulesSettings={{
+                  style: "rounded",
+                  size: 0.9,
+                  color: qrColor,
+                }}
+                finderPatternOuterSettings={{
+                  style: "rounded-lg",
+                  color: qrColor,
+                }}
+                finderPatternInnerSettings={{
+                  style: "rounded",
+                  color: qrColor,
+                }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">Scan to open.</p>
+          </div>
         </div>
       </div>
     </div>

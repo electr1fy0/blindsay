@@ -229,24 +229,24 @@
         @apply overflow-hidden rounded-2xl border text-card-foreground shadow-xs;
         background-color: color-mix(in srgb, var(--card) 82%, transparent);
         border-color: color-mix(in srgb, var(--border) 70%, transparent);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
     .panel-card-subtle {
         @apply overflow-hidden rounded-xl border;
         background-color: color-mix(in srgb, var(--muted) 45%, transparent);
         border-color: color-mix(in srgb, var(--border) 60%, transparent);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
     }
 
     .panel-card-muted {
         @apply overflow-hidden rounded-lg border;
         background-color: color-mix(in srgb, var(--muted) 65%, transparent);
         border-color: color-mix(in srgb, var(--border) 60%, transparent);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
     }
 
     /* Tactile 2D/3D Button Effects */
@@ -362,8 +362,8 @@
     .glass-bubble-incoming {
         background-color: rgba(240, 240, 243, 0.9) !important;
         border: 1px solid rgba(0, 0, 0, 0.07) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
         box-shadow: 
             inset 0 1px 0 0 #ffffff,
             0 2px 6px -2px rgba(0, 0, 0, 0.03) !important;
@@ -372,8 +372,8 @@
     .dark .glass-bubble-incoming {
         background-color: rgba(255, 255, 255, 0.04) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
         box-shadow: 
             inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
             0 4px 12px -2px rgba(0, 0, 0, 0.25) !important;
@@ -382,8 +382,8 @@
     .glass-bubble-reply {
         background-color: color-mix(in srgb, var(--reply-bubble) 88%, transparent) !important;
         border: 1px solid color-mix(in srgb, var(--reply-bubble) 60%, rgba(255, 255, 255, 0.4)) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
         box-shadow: 
             inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
             0 2px 6px -2px rgba(0, 0, 0, 0.05) !important;
@@ -392,8 +392,8 @@
     .dark .glass-bubble-reply {
         background-color: color-mix(in srgb, var(--reply-bubble) 80%, transparent) !important;
         border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(6px) !important;
+        -webkit-backdrop-filter: blur(6px) !important;
         box-shadow: 
             inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
             0 4px 12px -2px rgba(0, 0, 0, 0.2) !important;

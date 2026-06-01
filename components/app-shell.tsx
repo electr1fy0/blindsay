@@ -65,8 +65,8 @@ export function AppShell({ children, user }: AppShellProps) {
     <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col bg-body-bg relative">
       {/* Dynamic Glassmorphic Background Glow Blobs */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[55%] h-[55%] rounded-full bg-primary/7 blur-[120px] dark:bg-primary/5 animate-pulse" style={{ animationDuration: '9s' }} />
-        <div className="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] rounded-full bg-primary/6 blur-[150px] dark:bg-primary/4 animate-pulse" style={{ animationDuration: '13s', animationDelay: '2.5s' }} />
+        <div className="absolute -top-[10%] -left-[10%] w-[55%] h-[55%] rounded-full bg-primary/6 blur-[80px] dark:bg-primary/4 pointer-events-none" style={{ transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }} />
+        <div className="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] rounded-full bg-primary/5 blur-[100px] dark:bg-primary/3 pointer-events-none" style={{ transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }} />
       </div>
 
       {isOwner ? (
@@ -190,7 +190,7 @@ export function AppShell({ children, user }: AppShellProps) {
 
           {/* Main Layout Area - Floating curved sheet above navbar */}
           <div className="w-full flex-1 overflow-hidden px-2 sm:px-3 pb-0 z-10">
-            <div className="bg-background/80 backdrop-blur-xl rounded-t-[1.25rem] border-t border-x border-border/70 shadow-xs h-full flex flex-col overflow-hidden">
+            <div className="bg-background/80 backdrop-blur-md rounded-t-[1.25rem] border-t border-x border-border/70 shadow-xs h-full flex flex-col overflow-hidden">
               <div className="shell-scrollbar flex-1 overflow-y-auto px-6 sm:px-8 pt-8 pb-32">
                 <main className="min-w-0 flex-1">
                   {username &&

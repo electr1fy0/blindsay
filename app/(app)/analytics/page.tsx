@@ -19,22 +19,33 @@ export default async function AnalyticsPage() {
     redirect("/");
   }
 
-  const messages = await prisma.message.aggregate({
-    where: { recipientId: user.id, parentId: null },
-    _count: { id: true },
-  });
-  const replies = await prisma.message.aggregate({
-    where: { recipientId: user.id, parentId: { not: null } },
-    _count: { id: true },
-  });
-  const latestMessage = await prisma.message.findFirst({
-    where: { recipientId: user.id, parentId: null },
-    orderBy: { createdAt: "desc" },
-  });
-  const latestReply = await prisma.message.findFirst({
-    where: { recipientId: user.id, parentId: { not: null } },
-    orderBy: { createdAt: "desc" },
-  });
+  const days = 14;
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - (days - 1));
+
+  const [messages, replies, latestMessage, latestReply, recent] = await Promise.all([
+    prisma.message.aggregate({
+      where: { recipientId: user.id, parentId: null },
+      _count: { id: true },
+    }),
+    prisma.message.aggregate({
+      where: { recipientId: user.id, parentId: { not: null } },
+      _count: { id: true },
+    }),
+    prisma.message.findFirst({
+      where: { recipientId: user.id, parentId: null },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.message.findFirst({
+      where: { recipientId: user.id, parentId: { not: null } },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.message.findMany({
+      where: { recipientId: user.id, createdAt: { gte: start } },
+      select: { createdAt: true, parentId: true },
+    }),
+  ]);
 
   const now = new Date();
   const latestMessageLabel = latestMessage
@@ -43,16 +54,6 @@ export default async function AnalyticsPage() {
   const latestReplyLabel = latestReply
     ? formatRelativeTime(latestReply.createdAt, now)
     : "—";
-
-  const days = 14;
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - (days - 1));
-
-  const recent = await prisma.message.findMany({
-    where: { recipientId: user.id, createdAt: { gte: start } },
-    select: { createdAt: true, parentId: true },
-  });
 
   const buckets = Array.from({ length: days }, (_, index) => {
     const date = new Date(start);
