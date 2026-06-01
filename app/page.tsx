@@ -332,10 +332,12 @@ export default async function Page() {
                   href={`/${viewer.username}`}
                   className={cn(
                     buttonVariants({ variant: "default", size: "lg" }),
-                    "h-13 rounded-full px-9 text-base font-medium bg-primary text-white hover:bg-primary/90 transition-all duration-200 cursor-pointer shadow-none hover:shadow-none focus:ring-0",
+                    "group h-13 rounded-full px-9 text-base font-medium bg-primary text-white hover:bg-primary/90 transition-all duration-200 cursor-pointer shadow-none hover:shadow-none focus:ring-0",
                   )}
                 >
-                  Open your inbox
+                  <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                    Open your inbox
+                  </span>
                 </Link>
               ) : (
                 <AuthButtons
@@ -778,10 +780,12 @@ export default async function Page() {
                     href={`/${viewer.username}`}
                     className={cn(
                       buttonVariants({ variant: "default", size: "lg" }),
-                      "h-14 rounded-full px-9 text-base font-medium bg-primary text-white hover:bg-primary/90 transition-all duration-200 cursor-pointer shadow-none hover:shadow-none focus:ring-0",
+                      "group h-14 rounded-full px-9 text-base font-medium bg-primary text-white hover:bg-primary/90 transition-all duration-200 cursor-pointer shadow-none hover:shadow-none focus:ring-0",
                     )}
                   >
-                    Open your inbox
+                    <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                      Open your inbox
+                    </span>
                   </Link>
                 ) : (
                   <AuthButtons

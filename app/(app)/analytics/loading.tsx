@@ -12,7 +12,7 @@ export default function Loading() {
       {/* Top 2 Metric Cards */}
       <div className="grid gap-4 md:grid-cols-2">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="panel-card p-5 space-y-3">
+          <div key={i} className="panel-card p-4 sm:p-5 space-y-3">
             <div className="flex justify-between items-center">
               <Skeleton className="h-4 w-24 bg-muted-foreground/10" />
               <Skeleton className="h-3 w-10 bg-muted-foreground/10" />
@@ -24,7 +24,7 @@ export default function Loading() {
       </div>
 
       {/* Chart Panel */}
-      <div className="panel-card p-6 space-y-4">
+      <div className="panel-card p-4 sm:p-6 space-y-4">
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <Skeleton className="h-4 w-28 bg-muted-foreground/15" />
@@ -37,18 +37,20 @@ export default function Loading() {
         </div>
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="panel-card-muted p-4 space-y-4">
+            <div key={i} className="panel-card-muted p-3 sm:p-4 space-y-4">
               <Skeleton className="h-3.5 w-20 bg-muted-foreground/15" />
-              <div className="mt-4 flex items-end gap-1.5 h-32">
-                {Array.from({ length: 14 }).map((_, j) => (
-                  <div key={j} className="flex flex-1 flex-col items-center justify-end gap-2 min-w-[18px] h-full">
-                    <Skeleton 
-                      className="w-full max-w-4 rounded-md bg-muted/60" 
-                      style={{ height: `${20 + (j % 3 === 0 ? 40 : j % 2 === 0 ? 60 : 30)}px` }} 
-                    />
-                    <Skeleton className="h-2 w-full max-w-4 bg-muted-foreground/10" />
-                  </div>
-                ))}
+              <div className="mt-4 overflow-x-auto no-scrollbar">
+                <div className="flex w-full h-32 items-end justify-between gap-0.5 sm:gap-1 lg:gap-0.5">
+                  {Array.from({ length: 14 }).map((_, j) => (
+                    <div key={j} className="flex flex-1 flex-col items-center justify-end gap-1.5 sm:gap-2 min-w-[10px] sm:min-w-[18px] lg:min-w-[12px] h-full">
+                      <Skeleton 
+                        className="w-full max-w-4 rounded-[3px] sm:rounded-md bg-muted/60" 
+                        style={{ height: `${20 + (j % 3 === 0 ? 40 : j % 2 === 0 ? 60 : 30)}px` }} 
+                      />
+                      <Skeleton className="h-2 w-full max-w-4 bg-muted-foreground/10" />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
@@ -58,7 +60,7 @@ export default function Loading() {
       {/* Bottom 3 Metric Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="panel-card p-5 space-y-3">
+          <div key={i} className="panel-card p-4 sm:p-5 space-y-3">
             <div className="flex justify-between items-center">
               <Skeleton className="h-4 w-24 bg-muted-foreground/10" />
               <Skeleton className="h-3 w-10 bg-muted-foreground/10" />

@@ -94,7 +94,7 @@ export default async function AnalyticsPage() {
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="panel-card p-5">
+        <div className="panel-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">Messages</div>
             <div className="kicker">Total</div>
@@ -106,7 +106,7 @@ export default async function AnalyticsPage() {
             All time received.
           </p>
         </div>
-        <div className="panel-card p-5">
+        <div className="panel-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">Latest message</div>
             <div className="kicker">Recency</div>
@@ -120,7 +120,7 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      <div className="panel-card p-6">
+      <div className="panel-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="text-sm font-semibold">Last 14 days</div>
@@ -130,7 +130,7 @@ export default async function AnalyticsPage() {
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-primary/40 border border-primary/20 backdrop-blur-xs shadow-3xs" />
+              <span className="h-2 w-2 rounded-full bg-primary/40 border border-primary/25 backdrop-blur-xs shadow-3xs" />
               Messages
             </span>
             <span className="inline-flex items-center gap-2">
@@ -140,45 +140,49 @@ export default async function AnalyticsPage() {
           </div>
         </div>
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <div className="panel-card-muted p-4">
+          <div className="panel-card-muted p-3 sm:p-4">
             <div className="kicker">Messages</div>
-            <div className="mt-4 flex w-full h-32 items-end justify-between gap-1">
-              {buckets.map((bucket) => (
-                <div key={bucket.label} className="flex flex-1 flex-col items-center justify-end gap-2 min-w-[18px] h-full">
-                  <div
-                    className="w-full max-w-[14px] rounded-md bg-primary/35 backdrop-blur-xs border border-primary/25 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)]"
-                    style={{ height: `${Math.max(8, (bucket.messages / maxVal) * 96)}px` }}
-                    title={`${bucket.messages} messages`}
-                  />
-                  <div className="w-full text-center text-[0.55rem] text-muted-foreground whitespace-nowrap">
-                    {bucket.label}
+            <div className="mt-4 overflow-x-auto no-scrollbar">
+              <div className="flex w-full h-32 items-end justify-between gap-0.5 sm:gap-1 lg:gap-0.5">
+                {buckets.map((bucket) => (
+                  <div key={bucket.label} className="flex flex-1 flex-col items-center justify-end gap-1.5 sm:gap-2 min-w-[10px] sm:min-w-[18px] lg:min-w-[12px] h-full">
+                    <div
+                      className="w-full max-w-[14px] rounded-[3px] sm:rounded-md bg-primary/35 backdrop-blur-xs border border-primary/25 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.35)]"
+                      style={{ height: `${Math.max(8, (bucket.messages / maxVal) * 96)}px` }}
+                      title={`${bucket.messages} messages`}
+                    />
+                    <div className="w-full text-center text-[0.5rem] sm:text-[0.55rem] text-muted-foreground whitespace-nowrap">
+                      {bucket.label}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-          <div className="panel-card-muted p-4">
+          <div className="panel-card-muted p-3 sm:p-4">
             <div className="kicker">Replies</div>
-            <div className="mt-4 flex w-full h-32 items-end justify-between gap-1">
-              {buckets.map((bucket) => (
-                <div key={bucket.label} className="flex flex-1 flex-col items-center justify-end gap-2 min-w-[18px] h-full">
-                  <div
-                    className="w-full max-w-[14px] rounded-md bg-foreground/20 backdrop-blur-xs border border-foreground/15 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]"
-                    style={{ height: `${Math.max(8, (bucket.replies / maxVal) * 96)}px` }}
-                    title={`${bucket.replies} replies`}
-                  />
-                  <div className="w-full text-center text-[0.55rem] text-muted-foreground whitespace-nowrap">
-                    {bucket.label}
+            <div className="mt-4 overflow-x-auto no-scrollbar">
+              <div className="flex w-full h-32 items-end justify-between gap-0.5 sm:gap-1 lg:gap-0.5">
+                {buckets.map((bucket) => (
+                  <div key={bucket.label} className="flex flex-1 flex-col items-center justify-end gap-1.5 sm:gap-2 min-w-[10px] sm:min-w-[18px] lg:min-w-[12px] h-full">
+                    <div
+                      className="w-full max-w-[14px] rounded-[3px] sm:rounded-md bg-foreground/20 backdrop-blur-xs border border-foreground/15 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15)]"
+                      style={{ height: `${Math.max(8, (bucket.replies / maxVal) * 96)}px` }}
+                      title={`${bucket.replies} replies`}
+                    />
+                    <div className="w-full text-center text-[0.5rem] sm:text-[0.55rem] text-muted-foreground whitespace-nowrap">
+                      {bucket.label}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="section-grid md:grid-cols-3">
-        <div className="panel-card p-5">
+        <div className="panel-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">Replies total</div>
             <div className="kicker">All time</div>
@@ -190,7 +194,7 @@ export default async function AnalyticsPage() {
             Total replies created in your inbox.
           </p>
         </div>
-        <div className="panel-card p-5">
+        <div className="panel-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">Latest reply</div>
             <div className="kicker">Recency</div>
@@ -202,7 +206,7 @@ export default async function AnalyticsPage() {
             Published
           </p>
         </div>
-        <div className="panel-card p-5">
+        <div className="panel-card p-4 sm:p-5">
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">Response ratio</div>
             <div className="kicker">Replies</div>
