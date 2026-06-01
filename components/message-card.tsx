@@ -85,7 +85,7 @@ export function MessageCard({
     <div className="border-b border-border/30 pb-6 mb-3 last:border-b-0 last:pb-0 last:mb-0 flex flex-col gap-4 w-full">
       {/* Incoming Anonymous Bubble */}
       <div className="flex flex-col gap-1.5 max-w-[88%] mr-auto">
-        <div className="bg-muted rounded-t-[1.15rem] rounded-r-[1.15rem] rounded-bl-[0.25rem] px-4.5 py-3 shadow-3xs">
+        <div className="glass-bubble-incoming rounded-t-[1.15rem] rounded-r-[1.15rem] rounded-bl-[0.25rem] px-4.5 py-3">
           <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap">
             {message.content}
           </p>
@@ -113,8 +113,7 @@ export function MessageCard({
       {reply ? (
         <div className="flex flex-col gap-1.5 max-w-[88%] ml-auto items-end animate-in fade-in-20 duration-200">
           <div
-            className="rounded-t-[1.15rem] rounded-l-[1.15rem] rounded-br-[0.25rem] px-4.5 py-3 shadow-3xs text-left"
-            style={{ backgroundColor: "var(--reply-bubble)" }}
+            className="glass-bubble-reply rounded-t-[1.15rem] rounded-l-[1.15rem] rounded-br-[0.25rem] px-4.5 py-3 text-left"
           >
             {/* Inline reply edit editor or read-only text */}
             {isEditing ? (

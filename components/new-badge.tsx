@@ -32,7 +32,7 @@ export function NewBadge({ messageId }: { messageId: string }) {
   if (!isNew) return null;
 
   return (
-    <span className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[0.55rem] font-medium uppercase tracking-wider text-primary">
+    <span className="inline-flex items-center rounded-full bg-primary/15 backdrop-blur-xs border border-primary/20 px-1.5 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-primary shadow-3xs">
       new
     </span>
   );

@@ -35,6 +35,7 @@ import {
   accentThemes,
   useAccentTheme,
 } from "@/components/accent-theme-provider";
+import { cn } from "@/lib/utils";
 
 type SettingsDialogProps = {
   isOpen: boolean;
@@ -490,21 +491,32 @@ export function SettingsDialog({
                         Switch between light and dark themes.
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                      }
-                      className="h-9 cursor-pointer rounded-lg gap-1.5"
-                    >
-                      <HugeiconsIcon
-                        icon={resolvedTheme === "dark" ? Sun03Icon : Moon02Icon}
-                        size={15}
-                        strokeWidth={1.5}
-                      />
-                      {resolvedTheme === "dark" ? "Light Mode" : "Dark Mode"}
-                    </Button>
+                    <div className="flex bg-muted p-0.5 rounded-lg border border-border/40 shrink-0 select-none">
+                      <button
+                        onClick={() => setTheme("light")}
+                        className={cn(
+                          "flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md cursor-pointer transition-all w-24 h-7.5",
+                          resolvedTheme === "light"
+                            ? "bg-background text-foreground shadow-xs border border-border/10"
+                            : "text-muted-foreground hover:text-foreground border border-transparent"
+                        )}
+                      >
+                        <HugeiconsIcon icon={Sun03Icon} size={13} strokeWidth={1.8} />
+                        <span>Light</span>
+                      </button>
+                      <button
+                        onClick={() => setTheme("dark")}
+                        className={cn(
+                          "flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md cursor-pointer transition-all w-24 h-7.5",
+                          resolvedTheme === "dark"
+                            ? "bg-background text-foreground shadow-xs border border-border/10"
+                            : "text-muted-foreground hover:text-foreground border border-transparent"
+                        )}
+                      >
+                        <HugeiconsIcon icon={Moon02Icon} size={13} strokeWidth={1.8} />
+                        <span>Dark</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="panel-card-muted p-4">
@@ -514,7 +526,7 @@ export function SettingsDialog({
                         Changes button accents and reply bubble color together.
                       </p>
                     </div>
-                    <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                    <div className="mt-4 grid grid-cols-3 gap-2">
                       {accentThemes.map((themeOption) => {
                         const isSelected = accentTheme === themeOption.id;
 
@@ -523,13 +535,13 @@ export function SettingsDialog({
                             key={themeOption.id}
                             type="button"
                             onClick={() => setAccentTheme(themeOption.id)}
-                            className={`flex min-h-40 flex-col justify-start rounded-xl border p-3 text-left align-top transition-colors cursor-pointer ${
+                            className={`flex flex-col items-center sm:items-start justify-center sm:justify-start rounded-xl border p-2 sm:p-3 text-center sm:text-left align-top transition-colors cursor-pointer sm:min-h-36 ${
                               isSelected
                                 ? "border-primary bg-primary/8"
                                 : "border-border bg-background hover:border-primary/40"
                             }`}
                           >
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
                               <span className="flex items-center gap-1">
                                 <span
                                   className="h-3 w-3 rounded-full"
@@ -547,11 +559,11 @@ export function SettingsDialog({
                                   }}
                                 />
                               </span>
-                              <span className="text-sm leading-none font-semibold">
+                              <span className="text-xs sm:text-sm leading-none font-semibold">
                                 {themeOption.name}
                               </span>
                             </div>
-                            <p className="mt-6 text-[0.68rem] leading-5 text-muted-foreground">
+                            <p className="mt-3 text-[0.68rem] leading-normal text-muted-foreground hidden sm:block">
                               {themeOption.description}
                             </p>
                           </button>

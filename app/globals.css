@@ -112,7 +112,7 @@
     --chart-3: #a1a1aa;
     --chart-4: #71717a;
     --chart-5: #3f3f46;
-    --sidebar: #1c1c1f;
+     --sidebar: #1c1c1f;
     --sidebar-foreground: #f4f4f6;
     --sidebar-primary: #00b9ff;
     --sidebar-primary-foreground: #ffffff;
@@ -120,7 +120,7 @@
     --sidebar-accent-foreground: #fafafa;
     --sidebar-border: #2e2e34;
     --sidebar-ring: #00b9ff;
-    --reply-bubble: #1075ab;
+    --reply-bubble: #00b9ff;
 }
 
 :root[data-accent-theme="sky"] {
@@ -136,7 +136,7 @@
     --ring: #00b9ff;
     --chart-1: #00b9ff;
     --sidebar-primary: #00b9ff;
-    --reply-bubble: #1075ab;
+    --reply-bubble: #00b9ff;
 }
 
 :root[data-accent-theme="sage"] {
@@ -152,7 +152,7 @@
     --ring: #69b98a;
     --chart-1: #69b98a;
     --sidebar-primary: #69b98a;
-    --reply-bubble: #1d5c3d;
+    --reply-bubble: #69b98a;
 }
 
 :root[data-accent-theme="rose"] {
@@ -168,7 +168,7 @@
     --ring: #ef7d81;
     --chart-1: #ef7d81;
     --sidebar-primary: #ef7d81;
-    --reply-bubble: #802e3a;
+    --reply-bubble: #ef7d81;
 }
 
 @layer base {
@@ -226,15 +226,177 @@
     }
 
     .panel-card {
-        @apply overflow-hidden rounded-2xl border bg-card text-card-foreground;
+        @apply overflow-hidden rounded-2xl border text-card-foreground shadow-xs;
+        background-color: color-mix(in srgb, var(--card) 82%, transparent);
+        border-color: color-mix(in srgb, var(--border) 70%, transparent);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
     }
 
     .panel-card-subtle {
-        @apply overflow-hidden rounded-xl border bg-muted/30;
+        @apply overflow-hidden rounded-xl border;
+        background-color: color-mix(in srgb, var(--muted) 45%, transparent);
+        border-color: color-mix(in srgb, var(--border) 60%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
     }
 
     .panel-card-muted {
-        @apply overflow-hidden rounded-lg border bg-muted/50;
+        @apply overflow-hidden rounded-lg border;
+        background-color: color-mix(in srgb, var(--muted) 65%, transparent);
+        border-color: color-mix(in srgb, var(--border) 60%, transparent);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* Tactile 2D/3D Button Effects */
+    .btn-tactile-primary {
+        border-top-color: rgba(255, 255, 255, 0.45) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.18) !important;
+        border-left-color: rgba(0, 0, 0, 0.08) !important;
+        border-right-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 0 rgba(0, 0, 0, 0.08) !important;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease !important;
+    }
+    .dark .btn-tactile-primary {
+        border-top-color: rgba(255, 255, 255, 0.45) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.35) !important;
+        border-left-color: rgba(0, 0, 0, 0.15) !important;
+        border-right-color: rgba(0, 0, 0, 0.15) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2.5px 0 rgba(0, 0, 0, 0.25) !important;
+    }
+    .btn-tactile-primary:active:not(:disabled) {
+        transform: translateY(1.5px) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0.5px 0 rgba(0, 0, 0, 0.05) !important;
+        border-top-color: rgba(255, 255, 255, 0.2) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+    }
+    .dark .btn-tactile-primary:active:not(:disabled) {
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0.5px 0 rgba(0, 0, 0, 0.1) !important;
+        border-top-color: rgba(255, 255, 255, 0.2) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-tactile-secondary {
+        border-top-color: #ffffff !important;
+        border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+        border-left-color: rgba(0, 0, 0, 0.05) !important;
+        border-right-color: rgba(0, 0, 0, 0.05) !important;
+        box-shadow: inset 0 1px 0 #ffffff, 0 1.5px 0 rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease !important;
+    }
+    .dark .btn-tactile-secondary {
+        border-top-color: rgba(255, 255, 255, 0.25) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.4) !important;
+        border-left-color: rgba(0, 0, 0, 0.2) !important;
+        border-right-color: rgba(0, 0, 0, 0.2) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 2.5px 0 rgba(0, 0, 0, 0.25) !important;
+    }
+    .btn-tactile-secondary:active:not(:disabled) {
+        transform: translateY(1.5px) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0.5px 0 rgba(0, 0, 0, 0.02) !important;
+        border-top-color: rgba(255, 255, 255, 0.15) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    .dark .btn-tactile-secondary:active:not(:disabled) {
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0.5px 0 rgba(0, 0, 0, 0.05) !important;
+        border-top-color: rgba(255, 255, 255, 0.15) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .btn-tactile-destructive {
+        border-top-color: rgba(255, 255, 255, 0.4) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.2) !important;
+        border-left-color: rgba(0, 0, 0, 0.08) !important;
+        border-right-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 0 rgba(0, 0, 0, 0.08) !important;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease !important;
+    }
+    .dark .btn-tactile-destructive {
+        border-top-color: rgba(255, 255, 255, 0.45) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.35) !important;
+        border-left-color: rgba(0, 0, 0, 0.15) !important;
+        border-right-color: rgba(0, 0, 0, 0.15) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2.5px 0 rgba(0, 0, 0, 0.25) !important;
+    }
+    .btn-tactile-destructive:active:not(:disabled) {
+        transform: translateY(1.5px) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0.5px 0 rgba(0, 0, 0, 0.05) !important;
+        border-top-color: rgba(255, 255, 255, 0.2) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+    }
+    .dark .btn-tactile-destructive:active:not(:disabled) {
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0.5px 0 rgba(0, 0, 0, 0.1) !important;
+        border-top-color: rgba(255, 255, 255, 0.2) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-tactile-outline {
+        border-top-color: #ffffff !important;
+        border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+        border-left-color: rgba(0, 0, 0, 0.05) !important;
+        border-right-color: rgba(0, 0, 0, 0.05) !important;
+        box-shadow: inset 0 1px 0 #ffffff, 0 1.5px 0 rgba(0, 0, 0, 0.04) !important;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease !important;
+    }
+    .dark .btn-tactile-outline {
+        border-top-color: rgba(255, 255, 255, 0.18) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.35) !important;
+        border-left-color: rgba(0, 0, 0, 0.2) !important;
+        border-right-color: rgba(0, 0, 0, 0.2) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2.5px 0 rgba(0, 0, 0, 0.2) !important;
+    }
+    .btn-tactile-outline:active:not(:disabled) {
+        transform: translateY(1.5px) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0.5px 0 rgba(0, 0, 0, 0.02) !important;
+        border-top-color: rgba(255, 255, 255, 0.08) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    .dark .btn-tactile-outline:active:not(:disabled) {
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0.5px 0 rgba(0, 0, 0, 0.05) !important;
+        border-top-color: rgba(255, 255, 255, 0.08) !important;
+        border-bottom-color: rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Museum-Grade Glassmorphic Bubbles */
+    .glass-bubble-incoming {
+        background-color: rgba(240, 240, 243, 0.9) !important;
+        border: 1px solid rgba(0, 0, 0, 0.07) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 
+            inset 0 1px 0 0 #ffffff,
+            0 2px 6px -2px rgba(0, 0, 0, 0.03) !important;
+    }
+    
+    .dark .glass-bubble-incoming {
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+            0 4px 12px -2px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .glass-bubble-reply {
+        background-color: color-mix(in srgb, var(--reply-bubble) 88%, transparent) !important;
+        border: 1px solid color-mix(in srgb, var(--reply-bubble) 60%, rgba(255, 255, 255, 0.4)) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+            0 2px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .dark .glass-bubble-reply {
+        background-color: color-mix(in srgb, var(--reply-bubble) 80%, transparent) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+            0 4px 12px -2px rgba(0, 0, 0, 0.2) !important;
     }
 
     .github-badge-wrap {

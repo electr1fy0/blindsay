@@ -6,15 +6,15 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+          "border-primary bg-primary text-primary-foreground hover:bg-primary/90 btn-tactile-primary",
         outline:
-          "border-input bg-background text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground aria-expanded:bg-accent",
+          "border-input bg-background text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground aria-expanded:bg-accent btn-tactile-outline",
         secondary:
-          "border-secondary bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border-secondary bg-secondary text-secondary-foreground hover:bg-secondary/80 btn-tactile-secondary",
         ghost:
           "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
         destructive:
-          "border-destructive bg-destructive text-white hover:bg-destructive/90",
+          "border-destructive bg-destructive text-white hover:bg-destructive/90 btn-tactile-destructive",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

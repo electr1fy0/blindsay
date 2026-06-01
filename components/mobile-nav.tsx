@@ -58,7 +58,7 @@ export function MobileNav({ username, isOwner }: MobileNavProps) {
         <div className="fixed inset-0 z-50">
           <button
             type="button"
-            className="absolute inset-0 bg-foreground/10"
+            className="absolute inset-0 bg-black/15 backdrop-blur-xs"
             onClick={() => setOpen(false)}
           />
           <div className="absolute left-4 top-6 w-56 max-w-[calc(100vw-1.5rem)] panel-card p-4">
