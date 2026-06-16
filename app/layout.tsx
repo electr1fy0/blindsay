@@ -76,6 +76,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("blindsay-accent-theme");if(t==="sage"||t==="rose")document.documentElement.dataset.accentTheme=t;}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="antialiased">
         <ThemeProvider>
           <AccentThemeProvider>

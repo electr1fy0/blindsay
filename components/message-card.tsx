@@ -120,7 +120,7 @@ export function MessageCard({
               <div className="space-y-2 animate-in fade-in-20 duration-150 min-w-[240px]">
                 <Textarea
                   value={editValue}
-                  onChange={(e) => setEditValue(e.target.value.slice(0, 500))}
+                  onChange={(e) => setEditValue(e.target.value.slice(0, 4000))}
                   className="min-h-[80px] w-full text-sm rounded-lg border border-border bg-background text-foreground"
                   disabled={isPending}
                   placeholder="Edit your reply..."

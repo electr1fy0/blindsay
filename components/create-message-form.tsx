@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { createAnonymousMessage } from "@/app/actions";
 import { usePersistedDraft } from "@/lib/use-persisted-draft";
 
-const MAX_LENGTH = 500;
+const MAX_LENGTH = 4000;
 
 interface CreateMessageFormProps {
   recipientId: string;

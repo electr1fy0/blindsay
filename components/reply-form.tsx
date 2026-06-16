@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { usePersistedDraft } from "@/lib/use-persisted-draft";
 
-const MAX_LENGTH = 500;
+const MAX_LENGTH = 4000;
 
 type ReplyFormProps = {
   recipientId: string;

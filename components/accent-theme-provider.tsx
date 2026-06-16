@@ -63,6 +63,9 @@ export function AccentThemeProvider({ children }: { children: ReactNode }) {
       return "sky";
     }
 
+    const existing = document.documentElement.dataset.accentTheme;
+    if (existing && isAccentTheme(existing)) return existing;
+
     const storedTheme = window.localStorage.getItem(STORAGE_KEY);
     return storedTheme && isAccentTheme(storedTheme) ? storedTheme : "sky";
   });
