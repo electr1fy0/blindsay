@@ -86,7 +86,7 @@ export function MessageCard({
       {/* Incoming Anonymous Bubble */}
       <div className="flex flex-col gap-1.5 max-w-[88%] mr-auto">
         <div className="glass-bubble-incoming rounded-t-[1.15rem] rounded-r-[1.15rem] rounded-bl-[0.25rem] px-4.5 py-3">
-          <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap">
+          <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap break-words">
             {message.content}
           </p>
         </div>
@@ -117,7 +117,7 @@ export function MessageCard({
           >
             {/* Inline reply edit editor or read-only text */}
             {isEditing ? (
-              <div className="space-y-2 animate-in fade-in-20 duration-150 min-w-[240px]">
+              <div className="space-y-2 animate-in fade-in-20 duration-150 sm:min-w-[240px] min-w-0">
                 <Textarea
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value.slice(0, 4000))}
@@ -149,7 +149,7 @@ export function MessageCard({
                 </div>
               </div>
             ) : (
-              <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap">
+              <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap break-words">
                 {reply.content}
               </p>
             )}

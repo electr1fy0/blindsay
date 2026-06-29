@@ -2,6 +2,7 @@
 
 import { RESERVED_USERNAMES } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -55,6 +56,14 @@ export async function createAnonymousMessage(
   recipientUsername: string,
   content: string,
 ): Promise<ActionResponse> {
+  const rateLimitCheck = await checkRateLimit("send-message", 5, "60 s");
+  if (rateLimitCheck && !rateLimitCheck.success) {
+    return {
+      success: false,
+      message: "You're sending too fast. Please wait a moment before trying again.",
+    };
+  }
+
   if (!content || content.trim() === "") {
     return { success: false, message: "Content cannot be empty" };
   }

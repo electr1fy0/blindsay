@@ -192,7 +192,7 @@ export function AppShell({ children, user }: AppShellProps) {
           {/* Main Layout Area - Floating curved sheet above navbar */}
           <div className="w-full flex-1 overflow-hidden px-2 sm:px-3 pb-0 z-10">
             <div className="bg-background/80 backdrop-blur-md rounded-t-[1.25rem] border-t border-x border-border/70 shadow-xs h-full flex flex-col overflow-hidden">
-              <div className="shell-scrollbar flex-1 overflow-y-auto px-4 sm:px-8 pt-8 pb-32">
+              <div className="shell-scrollbar flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-8 pb-32">
                 <main className="min-w-0 flex-1">
                   {username &&
                   RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
@@ -224,7 +224,7 @@ export function AppShell({ children, user }: AppShellProps) {
           />
         </>
       ) : (
-        <div className="w-full flex-1 overflow-y-auto">
+        <div className="w-full flex-1 overflow-y-auto overflow-x-hidden">
           <div className="mx-auto flex max-w-lg flex-col gap-6 px-[19px] py-8 pb-24">
             <header className="flex items-center justify-center gap-2 py-2">
               <Link href="/" className="flex items-center gap-2.5">
