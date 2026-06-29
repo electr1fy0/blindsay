@@ -45,10 +45,9 @@ export async function GET(
           flexDirection: "column",
           width: "100%",
           height: "100%",
-          background:
-            "linear-gradient(135deg, #0f0f11 0%, #141416 40%, #1a1a1e 100%)",
+          background: "#ffffff",
           fontFamily: '"Geist"',
-          color: "#f4f4f6",
+          color: "#09090b",
           position: "relative",
           overflow: "hidden",
         }}
@@ -74,8 +73,8 @@ export async function GET(
               style={{
                 borderRadius: "50%",
                 objectFit: "cover",
-                border: "3px solid rgba(255,255,255,0.15)",
-                boxShadow: "0 0 0 8px rgba(255,255,255,0.05)",
+                border: "3px solid rgba(0,0,0,0.08)",
+                boxShadow: "0 0 0 8px rgba(0,0,0,0.03)",
               }}
             />
           ) : (
@@ -84,15 +83,15 @@ export async function GET(
                 width: 120,
                 height: 120,
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.08)",
+                background: "rgba(0,0,0,0.04)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "3px solid rgba(255,255,255,0.12)",
-                boxShadow: "0 0 0 8px rgba(255,255,255,0.05)",
+                border: "3px solid rgba(0,0,0,0.06)",
+                boxShadow: "0 0 0 8px rgba(0,0,0,0.02)",
                 fontSize: 48,
                 fontWeight: 500,
-                color: "rgba(255,255,255,0.6)",
+                color: "rgba(0,0,0,0.3)",
               }}
             >
               @
@@ -112,7 +111,7 @@ export async function GET(
                 style={{
                   fontSize: 20,
                   fontWeight: 400,
-                  color: "rgba(255,255,255,0.5)",
+                  color: "rgba(0,0,0,0.4)",
                   letterSpacing: "0.02em",
                 }}
               >
@@ -134,7 +133,7 @@ export async function GET(
           <span
             style={{
               fontSize: 22,
-              color: "rgba(255,255,255,0.4)",
+              color: "rgba(0,0,0,0.35)",
               fontWeight: 400,
               marginTop: "4px",
             }}
@@ -152,7 +151,6 @@ export async function GET(
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 8,
           }}
         >
           <span
@@ -160,29 +158,11 @@ export async function GET(
               fontSize: 18,
               fontWeight: 500,
               letterSpacing: "0.04em",
-              color: "rgba(0, 185, 255, 0.7)",
+              color: "rgba(0,0,0,0.25)",
               textTransform: "uppercase",
             }}
           >
             blindsay
-          </span>
-          <span
-            style={{
-              fontSize: 14,
-              color: "rgba(255,255,255,0.2)",
-              fontWeight: 400,
-            }}
-          >
-            ·
-          </span>
-          <span
-            style={{
-              fontSize: 14,
-              color: "rgba(255,255,255,0.25)",
-              fontWeight: 400,
-            }}
-          >
-            say the things you never said
           </span>
         </div>
       </div>
