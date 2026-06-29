@@ -36,6 +36,7 @@ export async function generateMetadata({
 
   const baseUrl = getBaseUrl();
   const pageUrl = `${baseUrl}/${username}`;
+  const ogImageUrl = `${baseUrl}/api/og/${username}`;
 
   return {
     title: `Leave a note for @${username}`,
@@ -47,10 +48,10 @@ export async function generateMetadata({
         "Anonymous inboxes for the words people never said out loud.",
       images: [
         {
-          url: `${baseUrl}/blindsay_thumb.jpg`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: "Blindsay",
+          alt: `@${username} on Blindsay`,
         },
       ],
     },
@@ -59,7 +60,7 @@ export async function generateMetadata({
       title: `Leave a note for @${username}`,
       description:
         "Anonymous inboxes for the words people never said out loud.",
-      images: [`${baseUrl}/blindsay_thumb.jpg`],
+      images: [ogImageUrl],
     },
   };
 }
