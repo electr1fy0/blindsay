@@ -68,11 +68,7 @@ export function AppShell({ children, user }: AppShellProps) {
 
   return (
     <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col bg-body-bg relative">
-      {/* Dynamic Glassmorphic Background Glow Blobs */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[55%] h-[55%] rounded-full bg-primary/6 blur-[80px] dark:bg-primary/4 pointer-events-none" style={{ transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }} />
-        <div className="absolute -bottom-[15%] -right-[10%] w-[65%] h-[65%] rounded-full bg-primary/5 blur-[100px] dark:bg-primary/3 pointer-events-none" style={{ transform: 'translate3d(0,0,0)', backfaceVisibility: 'hidden' }} />
-      </div>
+
 
       {isOwner ? (
         <>
