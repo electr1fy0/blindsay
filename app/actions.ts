@@ -45,8 +45,10 @@ async function getAuthenticatedUserId(): Promise<string | null> {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { id: true },
+    select: { id: true, deletedAt: true },
   });
+
+  if (user?.deletedAt) return null;
 
   return user?.id ?? null;
 }
@@ -74,10 +76,10 @@ export async function createAnonymousMessage(
 
   const recipient = await prisma.user.findUnique({
     where: { id: recipientId },
-    select: { inboxOpen: true, inboxPausedUntil: true, hiddenWords: true },
+    select: { inboxOpen: true, inboxPausedUntil: true, hiddenWords: true, deletedAt: true },
   });
 
-  if (!recipient) {
+  if (!recipient || recipient.deletedAt) {
     return { success: false, message: "Recipient not found." };
   }
 
@@ -235,6 +237,21 @@ export async function deleteMessage(
   }
 
   revalidatePath(`/${recipientUsername}`);
+  return { success: true };
+}
+
+export async function deleteAccount(): Promise<ActionResponse> {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) return UNAUTHORIZED_RESPONSE;
+
+  await prisma.$transaction([
+    prisma.session.deleteMany({ where: { userId } }),
+    prisma.user.update({
+      where: { id: userId },
+      data: { deletedAt: new Date(), username: null },
+    }),
+  ]);
+
   return { success: true };
 }
 

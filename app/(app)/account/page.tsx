@@ -12,6 +12,7 @@ import { ToggleOffIcon, ToggleOnIcon, GithubIcon, StarIcon } from "@hugeicons/co
 import { formatRelativeTime } from "@/lib/relative-time";
 import { HiddenWordsForm } from "@/components/hidden-words-form";
 import { PauseInboxForm } from "@/components/pause-inbox-form";
+import { DeleteAccountButton } from "@/components/delete-account-button";
 import { SharePanel } from "@/components/share-panel";
 import Link from "next/link";
 
@@ -198,6 +199,26 @@ export default async function AccountPage() {
           </span>
         </div>
       </div>
+
+      <Card className="panel-card border-destructive/20">
+        <CardHeader className="pb-3">
+          <div className="kicker text-destructive">Danger Zone</div>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <div className="panel-card-muted px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <div className="font-medium">Delete account</div>
+                <div className="mt-0.5 text-xs text-muted-foreground">
+                  Your username will be freed and you will be signed out. You
+                  can sign back in anytime to restore your account and data.
+                </div>
+              </div>
+              <DeleteAccountButton />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
