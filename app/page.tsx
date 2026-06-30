@@ -7,6 +7,9 @@ import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
+import { CanvasText } from "@/components/ui/canvas-text";
+import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
+import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 
 const steps = [
   {
@@ -87,9 +90,10 @@ export default async function Page() {
 
   return (
     <div 
-      className="h-[100dvh] overflow-y-auto w-full bg-[#141416] relative text-[#eeecea] selection:bg-primary/30"
+      className="h-[100dvh] overflow-y-auto w-full bg-[#080808] relative text-[#eeecea] selection:bg-[#3B82F6]/30"
       style={{ colorScheme: "dark" }}
     >
+      <BackgroundRippleEffect />
       <div className="relative z-20">
         <div className="mx-auto max-w-2xl px-6 pb-24 pt-7 sm:px-10 lg:px-0">
           <nav className="flex items-center justify-between">
@@ -115,23 +119,22 @@ export default async function Page() {
                     signInLabel="Log in"
                     className="[&_button]:rounded-full [&_button]:border [&_button]:border-white/10 [&_button]:px-5 [&_button]:h-10 [&_button]:text-[#ddd] [&_button]:hover:bg-white/[0.06] [&_button]:hover:text-white [&_svg]:hidden"
                   />
-                  <AuthButtons
-                    user={null}
-                    size="default"
-                    variant="default"
-                    signInLabel="Start inbox"
-                    className="[&_button]:rounded-full [&_button]:px-5 [&_button]:h-10 [&_svg]:hidden"
-                  />
+                  <div className="[&_button]:rounded-full [&_button]:px-5 [&_button]:h-10 [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:outline-none [&_button]:focus-visible:ring-[3px] [&_button]:focus-visible:ring-ring/30 [&_svg]:hidden">
+                    <AuthButtons
+                      user={null}
+                      size="default"
+                      variant="default"
+                      signInLabel="Start inbox"
+                      className="gap-2 group"
+                    />
+                  </div>
                 </>
               ) : (
                 <Link
                   href={
                     viewer?.username ? `/${viewer.username}` : "/onboarding"
                   }
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "default" }),
-                    "rounded-full px-5 h-10",
-                  )}
+                  className="inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap rounded-full px-5 h-10 text-sm font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border border-[#2563EB] border-t-white/20 transition-all duration-200 cursor-pointer"
                 >
                   {viewer?.username ? "Open inbox" : "Claim username"}
                 </Link>
@@ -147,7 +150,7 @@ export default async function Page() {
               className="group relative mb-6 p-[1px] rounded-full transition-all duration-300"
             >
               {/* Dynamic 1px border layer */}
-              <div className="absolute inset-0 rounded-full bg-white/10 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#ff2a5f] group-hover:via-[#ffb000] group-hover:via-[#00f5a0] group-hover:via-[#00b9ff] group-hover:to-[#b800ff]" />
+              <div className="absolute inset-0 rounded-full bg-white/10 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#ff2a5f] group-hover:via-[#ffb000] group-hover:via-[#00f5a0] group-hover:via-[#3B82F6] group-hover:to-[#b800ff]" />
 
               {/* Inner content layer masking the gradient to show only a sharp 1px outline border */}
               <div className="relative flex items-center gap-2.5 rounded-full bg-[#1c1c1f] px-3.5 py-1.5 text-xs text-[#a8a5a1] transition-all duration-300 group-hover:text-white">
@@ -207,7 +210,7 @@ export default async function Page() {
                       x2="100%"
                       y2="100%"
                     >
-                      <stop offset="0%" stopColor="#00b9ff" />
+                      <stop offset="0%" stopColor="#2563EB" />
                       <stop offset="100%" stopColor="#00f5a0" />
                     </linearGradient>
                   </defs>
@@ -318,7 +321,25 @@ export default async function Page() {
 
               <h1 className="text-4xl sm:text-5xl md:text-6.5xl font-medium leading-[1.08] tracking-[-0.05em] text-[#f1efed]">
                 Receive the unsaid words{" "}
-                <span className="font-normal text-primary">anonymously.</span>
+                <CanvasText
+                  text="anonymously"
+                  backgroundClassName="bg-blue-600 dark:bg-blue-700"
+                  colors={[
+                    "rgba(0, 153, 255, 1)",
+                    "rgba(0, 153, 255, 0.9)",
+                    "rgba(0, 153, 255, 0.8)",
+                    "rgba(0, 153, 255, 0.7)",
+                    "rgba(0, 153, 255, 0.6)",
+                    "rgba(0, 153, 255, 0.5)",
+                    "rgba(0, 153, 255, 0.4)",
+                    "rgba(0, 153, 255, 0.3)",
+                    "rgba(0, 153, 255, 0.2)",
+                    "rgba(0, 153, 255, 0.1)",
+                  ]}
+                  lineGap={4}
+                  animationDuration={20}
+                  className="align-middle"
+                />
               </h1>
             </div>
             <p className="mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-[#888681] max-w-lg font-light tracking-wide text-center">
@@ -330,27 +351,26 @@ export default async function Page() {
               {viewer?.username ? (
                 <Link
                   href={`/${viewer.username}`}
-                  className={cn(
-                    buttonVariants({ variant: "default", size: "lg" }),
-                    "group h-13 rounded-full px-9 text-base font-medium bg-primary text-white hover:bg-primary/90 transition-all duration-200 cursor-pointer shadow-none hover:shadow-none focus:ring-0",
-                  )}
+                  className="group inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap h-13 rounded-full px-9 text-base font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border border-[#2563EB] border-t-white/20 transition-all duration-200 cursor-pointer"
                 >
                   <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
                     Open your inbox
                   </span>
                 </Link>
               ) : (
-                <AuthButtons
-                  user={null}
-                  size="lg"
-                  variant="default"
-                  signInLabel={
-                    <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
-                      Start your inbox
-                    </span>
-                  }
-                  className="[&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button_>_svg]:hidden"
-                />
+                <div className="[&_button]:inline-flex [&_button]:shrink-0 [&_button]:select-none [&_button]:items-center [&_button]:justify-center [&_button]:whitespace-nowrap [&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button]:shadow-none [&_button]:hover:shadow-none [&_button]:focus:ring-0 [&_button]:outline-none [&_button_>_svg]:hidden">
+                  <AuthButtons
+                    user={null}
+                    size="lg"
+                    variant="default"
+                    signInLabel={
+                      <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                        Start your inbox
+                      </span>
+                    }
+                    className="gap-2 group"
+                  />
+                </div>
               )}
             </div>
           </header>
@@ -399,7 +419,7 @@ export default async function Page() {
                         viewBox="0 0 48 48"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary/70"
+                        className="text-[#3B82F6]/70"
                       >
                         <rect
                           x="4"
@@ -432,7 +452,7 @@ export default async function Page() {
                   </div>
                   <div className="mt-10 flex items-center justify-between rounded-lg border border-white/[0.09] px-4 py-3 font-mono text-xs text-[#96938f]">
                     <span>blindsay.app/you</span>
-                    <span className="text-primary">Copy</span>
+                    <span className="text-[#3B82F6]">Copy</span>
                   </div>
                 </div>
                 <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8 flex flex-col justify-between">
@@ -448,7 +468,7 @@ export default async function Page() {
                         viewBox="0 0 48 48"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary/70"
+                        className="text-[#3B82F6]/70"
                       >
                         <rect
                           x="6"
@@ -492,7 +512,7 @@ export default async function Page() {
                   <div>
                     <div className="my-7 h-px bg-white/[0.09]" />
                     <div className="flex gap-4">
-                      <span className="mt-1 font-mono text-[0.68rem] uppercase tracking-[0.18em] text-primary">
+                      <span className="mt-1 font-mono text-[0.68rem] uppercase tracking-[0.18em] text-[#3B82F6]">
                         Reply
                       </span>
                       <p className="text-sm leading-6 text-[#b2afaa]">
@@ -509,7 +529,7 @@ export default async function Page() {
 
             <section className="mt-32 sm:mt-40">
               <div className="mb-10 inline-flex rounded-full border border-white/10 px-4 py-2 font-mono text-xs text-[#96938f]">
-                How it works <span className="ml-3 text-primary">03</span>
+                How it works <span className="ml-3 text-[#3B82F6]">03</span>
               </div>
               <div className="border-t border-white/[0.09]">
                 {steps.map((step) => (
@@ -517,7 +537,7 @@ export default async function Page() {
                     key={step.count}
                     className="grid gap-4 border-b border-dashed border-white/[0.11] py-8 sm:grid-cols-[4.5rem_18rem_1fr] sm:items-start"
                   >
-                    <span className="font-mono text-xs text-primary">
+                    <span className="font-mono text-xs text-[#3B82F6]">
                       {step.count}
                     </span>
                     <div className="flex items-center gap-3">
@@ -531,7 +551,7 @@ export default async function Page() {
                           strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="text-primary shrink-0"
+                          className="text-[#3B82F6] shrink-0"
                         >
                           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
@@ -547,7 +567,7 @@ export default async function Page() {
                           strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="text-primary shrink-0"
+                          className="text-[#3B82F6] shrink-0"
                         >
                           <rect x="2" y="4" width="20" height="16" rx="2" />
                           <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -563,7 +583,7 @@ export default async function Page() {
                           strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="text-primary shrink-0"
+                          className="text-[#3B82F6] shrink-0"
                         >
                           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                         </svg>
@@ -606,7 +626,7 @@ export default async function Page() {
                 <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8">
                   <div className="mb-16 flex items-center justify-between font-mono text-xs text-[#777672]">
                     <span>REPLY / PUBLISHED</span>
-                    <span className="rounded-full bg-primary/15 px-3 py-1 text-primary">
+                    <span className="rounded-full bg-[#3B82F6]/15 px-3 py-1 text-[#3B82F6]">
                       Live
                     </span>
                   </div>
@@ -647,7 +667,7 @@ export default async function Page() {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary/70"
+                        className="text-[#3B82F6]/70"
                       >
                         <rect
                           x="4"
@@ -687,7 +707,7 @@ export default async function Page() {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary/70"
+                        className="text-[#3B82F6]/70"
                       >
                         <rect
                           x="6"
@@ -720,7 +740,7 @@ export default async function Page() {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-primary/70"
+                        className="text-[#3B82F6]/70"
                       >
                         <path
                           d="M8 20h24"
@@ -770,41 +790,58 @@ export default async function Page() {
               <LandingFaq questions={questions} />
             </section>
 
-            <section className="mb-16 mt-32 border-t border-white/[0.09] pt-14 sm:mt-44">
-              <h2 className="max-w-xl text-4xl font-medium tracking-[-0.055em] sm:text-5xl">
-                Give unsaid words somewhere gentle to land.
-              </h2>
-              <div className="mt-10 flex flex-wrap items-center gap-5">
-                {viewer?.username ? (
-                  <Link
-                    href={`/${viewer.username}`}
-                    className={cn(
-                      buttonVariants({ variant: "default", size: "lg" }),
-                      "group h-14 rounded-full px-9 text-base font-medium bg-primary text-white hover:bg-primary/90 transition-all duration-200 cursor-pointer shadow-none hover:shadow-none focus:ring-0",
+            <section className="mb-0 mt-12 sm:mt-16">
+              <div className="relative flex min-h-[14rem] items-end justify-end overflow-hidden rounded-[1.25rem] border border-white/[0.1] px-6 py-6 shadow shadow-black/10 ring-1 ring-white/5 sm:min-h-[16rem] sm:px-8 sm:py-8 dark:shadow-white/10 dark:ring-white/5">
+                <div className="relative z-20 flex w-full flex-col items-start gap-14">
+                  <h2 className="max-w-lg text-3xl font-medium tracking-[-0.055em] text-[#f1efed] sm:text-4xl">
+                    Give unsaid words somewhere gentle to land.
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-4">
+                    {viewer?.username ? (
+                      <Link
+                        href={`/${viewer.username}`}
+                        className="group inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap h-13 rounded-full px-8 text-base font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border border-[#2563EB] border-t-white/20 transition-all duration-200 cursor-pointer"
+                      >
+                        <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                          Open your inbox
+                        </span>
+                      </Link>
+                    ) : (
+                      <div className="[&_button]:inline-flex [&_button]:shrink-0 [&_button]:select-none [&_button]:items-center [&_button]:justify-center [&_button]:whitespace-nowrap [&_button]:h-13 [&_button]:rounded-full [&_button]:px-8 [&_button]:text-base [&_button]:font-medium [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button]:shadow-none [&_button]:hover:shadow-none [&_button]:focus:ring-0 [&_button]:outline-none [&_button_>_svg]:hidden">
+                        <AuthButtons
+                          user={null}
+                          size="lg"
+                          variant="default"
+                          signInLabel={
+                            <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                              Begin quietly
+                            </span>
+                          }
+                          className="gap-2 group"
+                        />
+                      </div>
                     )}
-                  >
-                    <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
-                      Open your inbox
-                    </span>
-                  </Link>
-                ) : (
-                  <AuthButtons
-                    user={null}
-                    size="lg"
-                    variant="default"
-                    signInLabel={
-                      <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
-                        Begin quietly
-                      </span>
-                    }
-                    className="[&_button]:h-14 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-primary [&_button]:text-white [&_button]:hover:bg-primary/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button_>_svg]:hidden"
-                  />
-                )}
+                  </div>
+                </div>
+                <DottedGlowBackground
+                  className="pointer-events-none mask-radial-to-90% mask-radial-at-center"
+                  opacity={1}
+                  gap={10}
+                  radius={1.6}
+                  colorLightVar="--color-neutral-500"
+                  glowColorLightVar="--color-neutral-600"
+                  colorDarkVar="--color-neutral-500"
+                  glowColorDarkVar="--color-sky-800"
+                  backgroundOpacity={0}
+                  speedMin={0.3}
+                  speedMax={1.6}
+                  speedScale={1}
+                />
               </div>
             </section>
           </main>
 
-          <footer className="mt-36 border-t border-white/[0.08] pt-8 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <footer className="mt-16 border-t border-white/[0.08] pt-8 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2.5 text-[#eeecea] opacity-80 select-none">
               <Image
                 src="/blindsay.png"
