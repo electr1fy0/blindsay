@@ -11,7 +11,9 @@ import { CanvasText } from "@/components/ui/canvas-text";
 import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { FloatingHeroSvgs } from "@/components/ui/floating-hero-svgs";
 import { WobbleCard } from "@/components/ui/wobble-card";
+import { StaggerContainer, StaggerItem } from "@/components/ui/hero-reveal";
 
 const steps = [
   {
@@ -144,181 +146,51 @@ export default async function Page() {
             </div>
           </nav>
 
-          <header className="landing-reveal pt-24 sm:pt-32 flex flex-col items-center text-center relative z-10">
-            <Link
-              href="https://github.com/electr1fy0/blindsay"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <HoverBorderGradient
-                containerClassName="rounded-full mb-6"
-                as="span"
-                className="bg-[#1c1c1f] text-[#a8a5a1] dark:bg-[#1c1c1f] dark:text-[#a8a5a1] flex items-center gap-2.5 px-3.5 py-1.5 text-xs"
-                duration={2}
+          <StaggerContainer className="pt-32 sm:pt-40 flex flex-col items-center text-center relative z-10">
+            <StaggerItem yOffset={-12}>
+              <Link
+                href="https://github.com/electr1fy0/blindsay"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <svg
-                  height="14"
-                  width="14"
-                  viewBox="0 0 16 16"
-                  className="fill-current"
+                <HoverBorderGradient
+                  containerClassName="rounded-full mb-6"
+                  as="span"
+                  className="bg-[#1c1c1f] text-[#a8a5a1] dark:bg-[#1c1c1f] dark:text-[#a8a5a1] flex items-center gap-2.5 px-3.5 py-1.5 text-xs"
+                  duration={2}
                 >
-                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
-                </svg>
-                <span className="font-medium tracking-wide">GitHub</span>
-                {starsCount > 0 && (
-                  <>
-                    <span className="text-white/20">|</span>
-                    <span className="font-mono text-[12px] flex items-center gap-1.5">
-                      <svg
-                        width="13"
-                        height="13"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="shrink-0"
-                      >
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                      {starsCount}
-                    </span>
-                  </>
-                )}
-              </HoverBorderGradient>
-            </Link>
+                  <svg
+                    height="14"
+                    width="14"
+                    viewBox="0 0 16 16"
+                    className="fill-current"
+                  >
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+                  </svg>
+                  <span className="font-medium tracking-wide">GitHub</span>
+                  {starsCount > 0 && (
+                    <>
+                      <span className="text-white/20">|</span>
+                      <span className="font-mono text-[12px] flex items-center gap-1.5">
+                        <svg
+                          width="13"
+                          height="13"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="shrink-0"
+                        >
+                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                        {starsCount}
+                      </span>
+                    </>
+                  )}
+                </HoverBorderGradient>
+              </Link>
+            </StaggerItem>
 
-            <div className="relative w-full max-w-2xl">
-              {/* Floating context-relevant SVG 1: Minimalist paper airplane (Sky Blue to Emerald) */}
-              <div
-                className="absolute -top-12 left-4 sm:-left-12 pointer-events-none select-none animate-bounce"
-                style={{ animationDuration: "6s" }}
-              >
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="url(#airplane-grad)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="drop-shadow-[0_2px_8px_rgba(0,185,255,0.25)]"
-                >
-                  <defs>
-                    <linearGradient
-                      id="airplane-grad"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#2563EB" />
-                      <stop offset="100%" stopColor="#00f5a0" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M22 2L2 9l8.71 3.79L22 2z" />
-                  <path d="M10.71 12.79L14 22l8-20-8 20z" />
-                </svg>
-              </div>
-
-              {/* Floating context-relevant SVG 2: Minimalist open envelope (Amber to Orange) */}
-              <div
-                className="absolute -top-10 right-4 sm:-right-8 pointer-events-none select-none animate-bounce"
-                style={{ animationDuration: "7s", animationDelay: "0.5s" }}
-              >
-                <svg
-                  width="26"
-                  height="26"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="url(#envelope-grad)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="drop-shadow-[0_2px_8px_rgba(255,90,0,0.25)]"
-                >
-                  <defs>
-                    <linearGradient
-                      id="envelope-grad"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#ffb000" />
-                      <stop offset="100%" stopColor="#ff5a00" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-              </div>
-
-              {/* Floating context-relevant SVG 3: Minimalist speech bubble with dots (Pink to Purple) */}
-              <div
-                className="absolute -bottom-10 right-4 sm:-right-12 pointer-events-none select-none animate-bounce"
-                style={{ animationDuration: "8s", animationDelay: "1s" }}
-              >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="url(#bubble-grad)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="drop-shadow-[0_2px_8px_rgba(127,0,255,0.25)]"
-                >
-                  <defs>
-                    <linearGradient
-                      id="bubble-grad"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#ff007f" />
-                      <stop offset="100%" stopColor="#7f00ff" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  <circle cx="8" cy="10" r="1" fill="url(#bubble-grad)" />
-                  <circle cx="12" cy="10" r="1" fill="url(#bubble-grad)" />
-                  <circle cx="16" cy="10" r="1" fill="url(#bubble-grad)" />
-                </svg>
-              </div>
-
-              {/* Floating context-relevant SVG 4: Minimalist feedback heart (Crimson to Rose) */}
-              <div
-                className="absolute -bottom-8 left-4 sm:-left-8 pointer-events-none select-none animate-bounce"
-                style={{ animationDuration: "9s", animationDelay: "1.5s" }}
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="url(#heart-grad)"
-                  strokeWidth="1.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="drop-shadow-[0_2px_8px_rgba(255,0,85,0.25)]"
-                >
-                  <defs>
-                    <linearGradient
-                      id="heart-grad"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#ff0055" />
-                      <stop offset="100%" stopColor="#ff5e97" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              </div>
-
+            <StaggerItem yOffset={24} className="relative w-full max-w-2xl">
+              <FloatingHeroSvgs />
               <h1 className="text-4xl sm:text-5xl md:text-6.5xl font-medium leading-[1.08] tracking-[-0.05em] text-[#f1efed]">
                 Receive the unsaid words{" "}
                 <CanvasText
@@ -341,13 +213,17 @@ export default async function Page() {
                   className="align-middle"
                 />
               </h1>
-            </div>
-            <p className="mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-[#888681] max-w-lg font-light tracking-wide text-center">
-              Anonymous messages, AMAs, and feedback.
-              <br />
-              Private by default, public by choice.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center items-center gap-4">
+            </StaggerItem>
+
+            <StaggerItem yOffset={16}>
+              <p className="mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-[#888681] max-w-lg font-light tracking-wide text-center">
+                Anonymous messages, AMAs, and feedback.
+                <br />
+                Private by default, public by choice.
+              </p>
+            </StaggerItem>
+
+            <StaggerItem yOffset={12} className="mt-8 flex flex-wrap justify-center items-center gap-4">
               {viewer?.username ? (
                 <Link
                   href={`/${viewer.username}`}
@@ -372,8 +248,8 @@ export default async function Page() {
                   />
                 </div>
               )}
-            </div>
-          </header>
+            </StaggerItem>
+          </StaggerContainer>
 
           <main className="landing-reveal-late">
             <section className="mt-36 max-w-[46rem] sm:mt-48">
@@ -408,7 +284,7 @@ export default async function Page() {
               </div>
               <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr]">
                 <WobbleCard
-                  containerClassName="bg-indigo-950 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  containerClassName="bg-indigo-900 border border-white/[0.1] rounded-[1.25rem] p-0"
                   className="h-full flex flex-col justify-between p-6 sm:p-8"
                 >
                   <div>
@@ -422,7 +298,7 @@ export default async function Page() {
                         viewBox="0 0 48 48"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#3B82F6]/70"
+                        className="text-[#3B82F6]"
                       >
                         <rect
                           x="4"
@@ -459,7 +335,7 @@ export default async function Page() {
                   </div>
                 </WobbleCard>
                 <WobbleCard
-                  containerClassName="bg-purple-950 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  containerClassName="bg-purple-900 border border-white/[0.1] rounded-[1.25rem] p-0"
                   className="h-full flex flex-col justify-between p-6 sm:p-8"
                 >
                   <div>
@@ -474,7 +350,7 @@ export default async function Page() {
                         viewBox="0 0 48 48"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#3B82F6]/70"
+                        className="text-[#3B82F6]"
                       >
                         <rect
                           x="6"
@@ -616,7 +492,7 @@ export default async function Page() {
               </p>
               <div className="grid gap-5 md:grid-cols-2">
                 <WobbleCard
-                  containerClassName="bg-stone-900 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  containerClassName="bg-stone-800 border border-white/[0.1] rounded-[1.25rem] p-0"
                   className="p-6 sm:p-8 sm:px-10"
                 >
                   <div className="mb-16 flex items-center justify-between font-mono text-xs text-white/70">
@@ -633,7 +509,7 @@ export default async function Page() {
                   </p>
                 </WobbleCard>
                 <WobbleCard
-                  containerClassName="bg-teal-950 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  containerClassName="bg-teal-900 border border-white/[0.1] rounded-[1.25rem] p-0"
                   className="p-6 sm:p-8 sm:px-10"
                 >
                   <div className="mb-16 flex items-center justify-between font-mono text-xs text-white/70">
@@ -672,7 +548,7 @@ export default async function Page() {
                     detail:
                       "Filter names and phrases before they reach your inbox.",
                     meta: "14 filters",
-                    color: "bg-rose-950",
+                    color: "bg-rose-900",
                     illustration: (
                       <svg
                         width="40"
@@ -680,7 +556,7 @@ export default async function Page() {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#3B82F6]/70"
+                        className="text-[#3B82F6]"
                       >
                         <rect
                           x="4"
@@ -713,7 +589,7 @@ export default async function Page() {
                     detail:
                       "Stop incoming messages without taking down your link.",
                     meta: "Available",
-                    color: "bg-amber-950",
+                    color: "bg-amber-900",
                     illustration: (
                       <svg
                         width="40"
@@ -721,7 +597,7 @@ export default async function Page() {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#3B82F6]/70"
+                        className="text-[#3B82F6]"
                       >
                         <rect
                           x="6"
@@ -747,7 +623,7 @@ export default async function Page() {
                     detail:
                       "Only replies publish. Everything else remains private.",
                     meta: "Private first",
-                    color: "bg-blue-950",
+                    color: "bg-blue-900",
                     illustration: (
                       <svg
                         width="40"
@@ -755,7 +631,7 @@ export default async function Page() {
                         viewBox="0 0 40 40"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#3B82F6]/70"
+                        className="text-[#3B82F6]"
                       >
                         <path
                           d="M8 20h24"
