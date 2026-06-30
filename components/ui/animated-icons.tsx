@@ -164,14 +164,10 @@ export function AnimatedStepBubbleIcon() {
 
 export function AnimatedFilterIcon() {
   return (
-    <motion.div
-      animate={{ rotate: [0, 2, -2, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      className="text-red-400"
-    >
+    <div className="text-red-400 flex items-center justify-center">
       <svg
-        width="48"
-        height="48"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -195,44 +191,36 @@ export function AnimatedFilterIcon() {
           strokeLinecap="round"
         />
       </svg>
-    </motion.div>
+    </div>
   );
 }
 
 export function AnimatedPauseToggle() {
   return (
-    <div className="text-amber-400 relative w-16 h-8 bg-amber-950/40 rounded-full border border-amber-500/30 flex items-center px-1">
-      <motion.div
-        animate={{ x: [0, 24, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center shadow-lg"
-      >
+    <div className="text-amber-400 relative w-10.5 h-6 bg-amber-950/40 rounded-full border border-amber-500/30 flex items-center px-0.5 select-none">
+      <div className="w-4.5 h-4.5 bg-amber-400 rounded-full flex items-center justify-center shadow-lg ml-auto">
         <svg
-          width="12"
-          height="12"
+          width="10"
+          height="10"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="text-amber-950 font-bold"
         >
-          <path d="M9 17V7M15 17V7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+          <path d="M9 17V7M15 17V7" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
         </svg>
-      </motion.div>
+      </div>
     </div>
   );
 }
 
 export function AnimatedReplyControlIcon() {
   return (
-    <div className="text-blue-400 relative w-16 h-8 bg-blue-950/40 rounded-full border border-blue-500/30 flex items-center px-1">
-      <motion.div
-        animate={{ x: [0, 24, 0] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center shadow-lg"
-      >
+    <div className="text-blue-400 relative w-10.5 h-6 bg-blue-950/40 rounded-full border border-blue-500/30 flex items-center px-0.5 select-none">
+      <div className="w-4.5 h-4.5 bg-blue-400 rounded-full flex items-center justify-center shadow-lg">
         <svg
-          width="12"
-          height="12"
+          width="10"
+          height="10"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -241,7 +229,64 @@ export function AnimatedReplyControlIcon() {
           <rect x="5" y="11" width="14" height="10" rx="1.5" fill="currentColor" />
           <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
         </svg>
+      </div>
+    </div>
+  );
+}
+
+export function AnimatedHiddenWordsWidget() {
+  return (
+    <div className="flex gap-2">
+      <motion.span
+        animate={{ scale: [1, 0.98, 1], opacity: [0.8, 1, 0.8] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono text-rose-400 bg-rose-400/10 border border-rose-400/15 rounded-full select-none"
+      >
+        spam
+      </motion.span>
+      <motion.span
+        animate={{ scale: [1, 1.02, 1], opacity: [1, 0.8, 1] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono text-rose-400 bg-rose-400/10 border border-rose-400/15 rounded-full select-none"
+      >
+        promo
+      </motion.span>
+    </div>
+  );
+}
+
+export function AnimatedPauseInboxWidget() {
+  return (
+    <div className="text-amber-400 relative w-11 h-6 bg-amber-500/10 rounded-full border border-amber-500/20 flex items-center px-0.5">
+      <motion.div
+        animate={{ x: [0, 18, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        className="w-4.5 h-4.5 bg-amber-400 rounded-full flex items-center justify-center shadow-md shadow-amber-500/20"
+      >
+        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" className="text-amber-950">
+          <path d="M9 17V7M15 17V7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+        </svg>
       </motion.div>
+    </div>
+  );
+}
+
+export function AnimatedReplyControlWidget() {
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex h-5 items-center gap-1 px-1.5 bg-white/[0.03] border border-white/[0.06] rounded-md">
+        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white/40">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <span className="text-[7px] text-white/40 font-mono">Private</span>
+      </div>
+      <div className="flex h-5 items-center gap-1 px-1.5 bg-[#00b9ff]/10 border border-[#00b9ff]/20 rounded-md">
+        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-[#00b9ff]">
+          <path d="M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+        </svg>
+        <span className="text-[7px] text-[#00b9ff] font-mono font-medium">Public</span>
+      </div>
     </div>
   );
 }

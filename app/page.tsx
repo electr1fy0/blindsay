@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { motion } from "motion/react";
 import Image from "next/image";
 import { AuthButtons } from "@/components/auth-buttons";
 import { LandingFaq } from "@/components/landing-faq";
@@ -21,7 +20,10 @@ import {
   AnimatedInboxIcon,
   AnimatedFilterIcon,
   AnimatedPauseToggle,
-  AnimatedReplyControlIcon
+  AnimatedReplyControlIcon,
+  AnimatedHiddenWordsWidget,
+  AnimatedPauseInboxWidget,
+  AnimatedReplyControlWidget
 } from "@/components/ui/animated-icons";
 import { HowItWorksTimeline } from "@/components/ui/how-it-works-timeline";
 
