@@ -17,6 +17,7 @@
     "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "@tabler/icons-react": "^3.44.0",
     "@types/pg": "^8.16.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",

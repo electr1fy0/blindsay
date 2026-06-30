@@ -40,7 +40,7 @@ export const WobbleCard = ({
         damping: 20,
       }}
       className={cn(
-        "mx-auto w-full relative rounded-2xl overflow-hidden",
+        "mx-auto w-full h-full relative rounded-2xl overflow-hidden",
         containerClassName
       )}
     >
