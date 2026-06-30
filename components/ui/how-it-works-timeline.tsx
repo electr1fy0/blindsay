@@ -188,10 +188,7 @@ export function HowItWorksTimeline() {
   }, []);
 
   return (
-    <div className="relative w-full mt-16 pl-8 space-y-32">
-      {/* Static vertical track line linking all steps */}
-      <div className="absolute left-[9px] top-8 bottom-8 w-[2px] bg-white/[0.04]" />
-
+    <div className="relative w-full mt-16 space-y-24">
       {steps.map((step, idx) => {
         const isActive = idx === activeStep;
         return (
@@ -200,46 +197,42 @@ export function HowItWorksTimeline() {
             ref={(el) => {
               stepRefs.current[idx] = el;
             }}
-            className="w-full text-left flex gap-6 relative transition-all duration-750 ease-out select-none flex-col justify-center py-6"
+            className="w-full flex gap-6 relative transition-all duration-700 ease-out flex-col justify-center border-b border-white/[0.03] pb-20 last:border-0"
             style={{
               opacity: isActive ? 1 : 0.25,
-              transform: isActive ? "scale(1)" : "scale(0.97)"
+              transform: isActive ? "scale(1)" : "scale(0.98)"
             }}
           >
-            {/* Step number bullet (positioned on the progress line) */}
-            <div
-              className={`absolute left-[-31px] top-8 w-5 h-5 rounded-full flex items-center justify-center border transition-all duration-500 z-10 ${
-                isActive
-                  ? "bg-blue-500 border-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)] scale-110"
-                  : "bg-[#0d0d0e] border-white/10"
-              }`}
-            >
-              <span className={`text-[8px] font-bold ${isActive ? "text-white" : "text-white/30"}`}>
-                {step.count}
-              </span>
-            </div>
-
-            {/* Title & Body */}
-            <div className="space-y-3 flex-1 min-w-0">
-              <div className="flex items-center gap-3">
-                {step.count === "01" && <AnimatedStepLinkIcon />}
-                {step.count === "02" && <AnimatedStepInboxIcon />}
-                {step.count === "03" && <AnimatedStepBubbleIcon />}
-                <h3
-                  className={`text-xl font-medium tracking-tight transition-colors duration-300 ${
-                    isActive ? "text-white" : "text-white/40"
-                  }`}
-                >
-                  {step.title}
-                </h3>
+            <div className="grid grid-cols-[auto_1fr] gap-6 sm:gap-8 items-start">
+              {/* Left Side: Large, thin elegant step count */}
+              <div className="pt-0.5 select-none font-mono text-3xl font-light tracking-tighter">
+                <span className={`transition-colors duration-700 ${isActive ? "text-white font-normal" : "text-[#777672]/15"}`}>
+                  {step.count}
+                </span>
               </div>
-              <p className="text-sm leading-7 text-[#85827e] transition-colors duration-300 max-w-md">
-                {step.body}
-              </p>
 
-              {/* Inline Mock Preview: Fits the mockup width perfectly */}
-              <div className="mt-8 bg-[#0d0d0e]/40 border border-white/[0.05] rounded-2xl p-6 shadow-lg flex justify-center items-center max-w-sm w-full">
-                <MockPreviewContent step={idx} />
+              {/* Right Side: Step Title & Content */}
+              <div className="space-y-3 flex-1 min-w-0">
+                <div className="flex items-center gap-3">
+                  {step.count === "01" && <AnimatedStepLinkIcon />}
+                  {step.count === "02" && <AnimatedStepInboxIcon />}
+                  {step.count === "03" && <AnimatedStepBubbleIcon />}
+                  <h3
+                    className={`text-lg font-medium tracking-tight transition-colors duration-500 ${
+                      isActive ? "text-[#f1efed]" : "text-[#888681]"
+                    }`}
+                  >
+                    {step.title}
+                  </h3>
+                </div>
+                <p className="text-sm leading-7 text-[#85827e] transition-colors duration-300 max-w-md">
+                  {step.body}
+                </p>
+
+                {/* Inline Mock Preview: Centered directly below the description, always rendered, no layout shifts */}
+                <div className="mt-8 bg-[#0d0d0e]/40 border border-white/[0.05] rounded-2xl p-6 shadow-lg flex justify-center items-center max-w-sm w-full transition-all duration-500">
+                  <MockPreviewContent step={idx} />
+                </div>
               </div>
             </div>
           </div>

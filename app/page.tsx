@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { AuthButtons } from "@/components/auth-buttons";
 import { LandingFaq } from "@/components/landing-faq";

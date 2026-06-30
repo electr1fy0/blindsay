@@ -224,41 +224,24 @@ export function AnimatedPauseToggle() {
 
 export function AnimatedReplyControlIcon() {
   return (
-    <motion.div
-      animate={{ y: [0, -3, 0] }}
-      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      className="text-blue-400"
-    >
-      <svg
-        width="48"
-        height="48"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+    <div className="text-blue-400 relative w-16 h-8 bg-blue-950/40 rounded-full border border-blue-500/30 flex items-center px-1">
+      <motion.div
+        animate={{ x: [0, 24, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center shadow-lg"
       >
-        <path
-          d="M8 12h8M8 16h5"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <rect
-          x="3"
-          y="3"
-          width="18"
-          height="18"
-          rx="4"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-        <path
-          d="M17 9l3-3-3-3M20 6h-6a3 3 0 00-3 3v3"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </motion.div>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="text-blue-950"
+        >
+          <rect x="5" y="11" width="14" height="10" rx="1.5" fill="currentColor" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      </motion.div>
+    </div>
   );
 }
