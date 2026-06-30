@@ -20,7 +20,10 @@ export const BackgroundRippleEffect = ({
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleMouseClick = (e: MouseEvent) => {
+    const handleMouseClick = (e: any) => {
+      // Ignore touch events so the ripple doesn't trigger on mobile taps/scrolls
+      if (e.pointerType === "touch") return;
+      
       if (!gridRef.current) return;
       
       const rect = gridRef.current.getBoundingClientRect();
@@ -36,9 +39,9 @@ export const BackgroundRippleEffect = ({
       setClickedCell({ row, col, id: Date.now() });
     };
 
-    window.addEventListener("click", handleMouseClick);
+    window.addEventListener("pointerdown", handleMouseClick);
     return () => {
-      window.removeEventListener("click", handleMouseClick);
+      window.removeEventListener("pointerdown", handleMouseClick);
     };
   }, [cellSize]);
 
@@ -46,10 +49,8 @@ export const BackgroundRippleEffect = ({
     <div
       className={cn(
         "absolute inset-0 h-full w-full overflow-hidden pointer-events-none",
-        "[--cell-border-color:rgba(0,0,0,0.07)] [--cell-fill-color:rgba(0,0,0,0.03)]",
-        "dark:[--cell-border-color:rgba(255,255,255,0.04)] dark:[--cell-fill-color:rgba(255,255,255,0.015)]",
-        "[mask-image:linear-gradient(to_bottom,white_30%,transparent_100%)]",
-        "dark:[mask-image:linear-gradient(to_bottom,white_30%,transparent_100%)]"
+        "[--cell-border-color:rgba(255,255,255,0.04)] [--cell-fill-color:rgba(255,255,255,0.015)]",
+        "[mask-image:linear-gradient(to_bottom,white_30%,transparent_100%)]"
       )}
     >
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden">

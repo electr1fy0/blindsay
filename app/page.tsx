@@ -510,7 +510,7 @@ export default async function Page() {
                         />
                       </svg>
                     </div>
-                    <p className="mt-6 max-w-md text-xl tracking-[-0.03em] text-[#e5e2de]">
+                    <p className="mt-6 max-w-md text-xl tracking-[-0.03em] text-white">
                       &ldquo;I still think about the kindness you showed me that
                       day.&rdquo;
                     </p>
