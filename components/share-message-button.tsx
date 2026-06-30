@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Share08Icon } from "@hugeicons/core-free-icons";
@@ -461,7 +461,7 @@ export function ShareMessageButton({
       .catch(() => {});
   }, []);
 
-  const handleShare = useCallback(async () => {
+  const handleShare = async () => {
     setBusy(true);
     try {
       const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(
@@ -534,7 +534,7 @@ export function ShareMessageButton({
     } finally {
       setBusy(false);
     }
-  }, [messageContent, replyContent, username]);
+  };
 
   return (
     <Button

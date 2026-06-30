@@ -1,15 +1,16 @@
 "use client";
 
-import { memo, useState, useTransition, type ReactNode } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import type { MessageModel as Message } from "@/lib/generated/prisma/models";
 import { formatRelativeTime } from "@/lib/relative-time";
-import { deleteMessage, updateReplyMessage } from "@/app/actions";
+import { updateReplyMessage } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { DeleteMessageButton } from "@/components/message-actions";
 import { ShareMessageButton } from "@/components/share-message-button";
 import { NewBadge } from "@/components/new-badge";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Edit01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
+import { Edit01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -22,7 +23,7 @@ interface MessageCardProps {
   replyForm?: ReactNode;
 }
 
-export const MessageCard = memo(function MessageCard({
+export function MessageCard({
   message,
   reply,
   now = new Date(),
@@ -34,33 +35,6 @@ export const MessageCard = memo(function MessageCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(reply?.content ?? "");
   const [isPending, startTransition] = useTransition();
-
-  const handleDeleteMessage = () => {
-    if (!confirm("Are you sure you want to delete this message?")) return;
-    startTransition(async () => {
-      const res = await deleteMessage(message.id, recipientUsername);
-      if (res.success) {
-        toast.success("Deleted successfully.");
-        router.refresh();
-      } else {
-        toast.error(res.message ?? "Failed to delete.");
-      }
-    });
-  };
-
-  const handleDeleteReply = () => {
-    if (!reply) return;
-    if (!confirm("Are you sure you want to delete this reply?")) return;
-    startTransition(async () => {
-      const res = await deleteMessage(reply.id, recipientUsername);
-      if (res.success) {
-        toast.success("Reply deleted.");
-        router.refresh();
-      } else {
-        toast.error(res.message ?? "Failed to delete reply.");
-      }
-    });
-  };
 
   const handleSaveEdit = () => {
     if (!reply) return;
@@ -96,15 +70,12 @@ export const MessageCard = memo(function MessageCard({
           </span>
           {isOwner && <NewBadge messageId={message.id} />}
           {isOwner && (
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={handleDeleteMessage}
+            <DeleteMessageButton
+              messageId={message.id}
+              recipientUsername={recipientUsername}
+              size="icon-xs"
               className="text-muted-foreground hover:text-destructive cursor-pointer p-0.5 ml-1 transition-colors"
-              title="Delete message"
-            >
-              <HugeiconsIcon icon={Delete02Icon} size={12} strokeWidth={1.5} />
-            </button>
+            />
           )}
         </div>
       </div>
@@ -181,19 +152,12 @@ export const MessageCard = memo(function MessageCard({
                         strokeWidth={1.5}
                       />
                     </button>
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      onClick={handleDeleteReply}
+                    <DeleteMessageButton
+                      messageId={reply.id}
+                      recipientUsername={recipientUsername}
+                      size="icon-xs"
                       className="text-muted-foreground/60 hover:text-destructive cursor-pointer p-0.5"
-                      title="Delete reply"
-                    >
-                      <HugeiconsIcon
-                        icon={Delete02Icon}
-                        size={13}
-                        strokeWidth={1.5}
-                      />
-                    </button>
+                    />
                   </>
                 )}
               </div>
@@ -209,4 +173,4 @@ export const MessageCard = memo(function MessageCard({
       {replyForm ? <div className="mt-2 w-full">{replyForm}</div> : null}
     </div>
   );
-});
+}

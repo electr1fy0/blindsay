@@ -20,11 +20,15 @@ import { toast } from "sonner";
 type DeleteMessageButtonProps = {
   messageId: string;
   recipientUsername: string;
+  size?: "xs" | "sm" | "icon-xs" | "default" | "lg";
+  className?: string;
 };
 
 export function DeleteMessageButton({
   messageId,
   recipientUsername,
+  size = "icon-xs",
+  className,
 }: DeleteMessageButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
@@ -36,9 +40,10 @@ export function DeleteMessageButton({
         render={
           <Button
             variant="ghost"
-            size="icon-xs"
+            size={size}
             disabled={isPending || done}
             title={done ? "Deleted" : "Delete"}
+            className={className}
           >
             {done ? (
               "Deleted"

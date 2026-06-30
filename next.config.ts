@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    // @ts-expect-error - reactCompiler is supported at runtime but not yet in types
+    reactCompiler: true,
+  },
 };
 
 export default nextConfig;

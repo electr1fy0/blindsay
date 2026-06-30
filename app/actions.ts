@@ -338,3 +338,18 @@ export async function getUserSettings() {
     },
   });
 }
+
+export async function checkForNewMessages(since: Date) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return { hasNew: false };
+
+  const count = await prisma.message.count({
+    where: {
+      recipientId: session.user.id,
+      createdAt: { gt: since },
+      parentId: null,
+    },
+  });
+
+  return { hasNew: count > 0 };
+}

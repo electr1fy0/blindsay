@@ -4,7 +4,6 @@ import {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -75,13 +74,10 @@ export function AccentThemeProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, accentTheme);
   }, [accentTheme]);
 
-  const value = useMemo(
-    () => ({
-      accentTheme,
-      setAccentTheme: setAccentThemeState,
-    }),
-    [accentTheme],
-  );
+  const value = {
+    accentTheme,
+    setAccentTheme: setAccentThemeState,
+  };
 
   return (
     <AccentThemeContext.Provider value={value}>
