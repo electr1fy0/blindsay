@@ -88,7 +88,6 @@ export default async function UserInboxPage({
       id: true,
       username: true,
       name: true,
-      email: true,
       inboxOpen: true,
       inboxPausedUntil: true,
     },
@@ -99,7 +98,7 @@ export default async function UserInboxPage({
   }
 
   const isOwner = Boolean(
-    session?.user?.email && session.user.email === profile.email,
+    session?.user?.id && session.user.id === profile.id,
   );
   const now = new Date();
   const isPaused = Boolean(

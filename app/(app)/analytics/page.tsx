@@ -11,7 +11,7 @@ export default async function AnalyticsPage() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { id: session.user.id },
     select: { id: true, username: true },
   });
 
@@ -44,6 +44,7 @@ export default async function AnalyticsPage() {
     prisma.message.findMany({
       where: { recipientId: user.id, createdAt: { gte: start } },
       select: { createdAt: true, parentId: true },
+      take: 1000,
     }),
   ]);
 
@@ -79,11 +80,7 @@ export default async function AnalyticsPage() {
     }
   }
 
-  const maxVal = Math.max(
-    1,
-    ...buckets.map((b) => b.messages),
-    ...buckets.map((b) => b.replies)
-  );
+  const maxVal = Math.max(1, ...buckets.flatMap((b) => [b.messages, b.replies]));
 
   return (
     <div className="page-stack mx-auto w-full max-w-2xl">

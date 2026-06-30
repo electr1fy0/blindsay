@@ -40,17 +40,7 @@ const UNAUTHORIZED_RESPONSE: ActionResponse = {
 
 async function getAuthenticatedUserId(): Promise<string | null> {
   const session = await getServerSession(authOptions);
-  const email = session?.user?.email;
-  if (!email) return null;
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, deletedAt: true },
-  });
-
-  if (user?.deletedAt) return null;
-
-  return user?.id ?? null;
+  return session?.user?.id ?? null;
 }
 
 export async function createAnonymousMessage(

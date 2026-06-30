@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { memo, useState, useTransition, type ReactNode } from "react";
 import type { MessageModel as Message } from "@/lib/generated/prisma/models";
 import { formatRelativeTime } from "@/lib/relative-time";
 import { deleteMessage, updateReplyMessage } from "@/app/actions";
@@ -22,7 +22,7 @@ interface MessageCardProps {
   replyForm?: ReactNode;
 }
 
-export function MessageCard({
+export const MessageCard = memo(function MessageCard({
   message,
   reply,
   now = new Date(),
@@ -209,4 +209,4 @@ export function MessageCard({
       {replyForm ? <div className="mt-2 w-full">{replyForm}</div> : null}
     </div>
   );
-}
+});

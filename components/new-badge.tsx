@@ -4,12 +4,16 @@ import { useEffect } from "react";
 
 const STORAGE_KEY = "blindsay:seen";
 
+let cachedSeenIds: Set<string> | null = null;
+
 function getSeenIds(): Set<string> {
+  if (cachedSeenIds) return cachedSeenIds;
   if (typeof window === "undefined") return new Set();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return new Set();
-    return new Set(JSON.parse(raw));
+    cachedSeenIds = new Set(JSON.parse(raw));
+    return cachedSeenIds;
   } catch {
     return new Set();
   }
@@ -17,6 +21,7 @@ function getSeenIds(): Set<string> {
 
 function markSeen(ids: string[]) {
   if (typeof window === "undefined") return;
+  cachedSeenIds = null;
   const seen = getSeenIds();
   for (const id of ids) seen.add(id);
   try {

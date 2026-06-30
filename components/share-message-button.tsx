@@ -250,7 +250,7 @@ async function generateCardCanvas(
   username: string,
   logoImg: HTMLImageElement | null,
 ): Promise<HTMLCanvasElement> {
-  const scale = 4;
+  const scale = 2;
   const outerPad = 32;
   const cardW = 480;
   const totalW = cardW + outerPad * 2;

@@ -22,6 +22,10 @@ model Message {
   replies   Message[] @relation("MessageToMessage")
   recipientId String?
   recipient   User?   @relation(fields: [recipientId], references: [id])
+
+  @@index([recipientId, createdAt])
+  @@index([recipientId, parentId])
+  @@index([parentId])
 }
 
 model User {

@@ -25,15 +25,19 @@ export function usePersistedDraft(storageKey: string, initialValue = "") {
   useEffect(() => {
     if (!hydrated) return;
 
-    try {
-      if (value.trim()) {
-        window.localStorage.setItem(key, value);
-      } else {
-        window.localStorage.removeItem(key);
+    const timer = setTimeout(() => {
+      try {
+        if (value.trim()) {
+          window.localStorage.setItem(key, value);
+        } else {
+          window.localStorage.removeItem(key);
+        }
+      } catch {
+        // Ignore storage write failures and keep the in-memory draft.
       }
-    } catch {
-      // Ignore storage write failures and keep the in-memory draft.
-    }
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [hydrated, key, value]);
 
   const clearDraft = () => {
