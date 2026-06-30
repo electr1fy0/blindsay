@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { CanvasText } from "@/components/ui/canvas-text";
 import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
 import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { WobbleCard } from "@/components/ui/wobble-card";
 
 const steps = [
   {
@@ -147,34 +149,32 @@ export default async function Page() {
               href="https://github.com/electr1fy0/blindsay"
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative mb-6 p-[1px] rounded-full transition-all duration-300"
             >
-              {/* Dynamic 1px border layer */}
-              <div className="absolute inset-0 rounded-full bg-white/10 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#ff2a5f] group-hover:via-[#ffb000] group-hover:via-[#00f5a0] group-hover:via-[#3B82F6] group-hover:to-[#b800ff]" />
-
-              {/* Inner content layer masking the gradient to show only a sharp 1px outline border */}
-              <div className="relative flex items-center gap-2.5 rounded-full bg-[#1c1c1f] px-3.5 py-1.5 text-xs text-[#a8a5a1] transition-all duration-300 group-hover:text-white">
+              <HoverBorderGradient
+                containerClassName="rounded-full mb-6"
+                as="span"
+                className="bg-[#1c1c1f] text-[#a8a5a1] dark:bg-[#1c1c1f] dark:text-[#a8a5a1] flex items-center gap-2.5 px-3.5 py-1.5 text-xs"
+                duration={2}
+              >
                 <svg
                   height="14"
                   width="14"
                   viewBox="0 0 16 16"
-                  className="fill-current text-[#888681] group-hover:text-white transition-colors duration-200"
+                  className="fill-current"
                 >
                   <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
                 </svg>
                 <span className="font-medium tracking-wide">GitHub</span>
                 {starsCount > 0 && (
                   <>
-                    <span className="text-white/10 group-hover:text-white/20 transition-colors duration-200">
-                      |
-                    </span>
-                    <span className="font-mono text-[12px] text-[#b2afaa] group-hover:text-white transition-colors duration-200 flex items-center gap-1.5">
+                    <span className="text-white/20">|</span>
+                    <span className="font-mono text-[12px] flex items-center gap-1.5">
                       <svg
                         width="13"
                         height="13"
                         viewBox="0 0 24 24"
                         fill="currentColor"
-                        className="text-[#888681] group-hover:text-white transition-colors duration-200 shrink-0"
+                        className="shrink-0"
                       >
                         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                       </svg>
@@ -182,7 +182,7 @@ export default async function Page() {
                     </span>
                   </>
                 )}
-              </div>
+              </HoverBorderGradient>
             </Link>
 
             <div className="relative w-full max-w-2xl">
@@ -407,12 +407,15 @@ export default async function Page() {
                 </h2>
               </div>
               <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr]">
-                <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8 flex flex-col justify-between">
+                <WobbleCard
+                  containerClassName="bg-indigo-950 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  className="h-full flex flex-col justify-between p-6 sm:p-8"
+                >
                   <div>
-                    <p className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#777672]">
+                    <p className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-white/70">
                       Share your link
                     </p>
-                    <div className="mt-6 text-[#96938f]/60">
+                    <div className="mt-6 text-white/80">
                       <svg
                         width="48"
                         height="48"
@@ -442,26 +445,29 @@ export default async function Page() {
                         <circle cx="36" cy="32" r="2" fill="currentColor" />
                       </svg>
                     </div>
-                    <p className="mt-6 text-2xl font-medium tracking-[-0.045em] text-[#ece9e5]">
+                    <p className="mt-6 text-2xl font-medium tracking-[-0.045em] text-white">
                       Say what you never said.
                     </p>
-                    <p className="mt-4 text-sm leading-6 text-[#8d8a86]">
+                    <p className="mt-4 text-sm leading-6 text-white/80">
                       A personal link lets people leave messages, ask questions,
                       or share candid feedback anonymously.
                     </p>
                   </div>
-                  <div className="mt-10 flex items-center justify-between rounded-lg border border-white/[0.09] px-4 py-3 font-mono text-xs text-[#96938f]">
+                  <div className="mt-10 flex items-center justify-between rounded-lg border border-white/[0.09] px-4 py-3 font-mono text-xs text-white/70">
                     <span>blindsay.app/you</span>
                     <span className="text-[#3B82F6]">Copy</span>
                   </div>
-                </div>
-                <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8 flex flex-col justify-between">
+                </WobbleCard>
+                <WobbleCard
+                  containerClassName="bg-purple-950 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  className="h-full flex flex-col justify-between p-6 sm:p-8"
+                >
                   <div>
-                    <div className="flex items-center justify-between font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[#777672]">
+                    <div className="flex items-center justify-between font-mono text-[0.68rem] uppercase tracking-[0.22em] text-white/70">
                       <span>Private inbox</span>
                       <span>Anonymous</span>
                     </div>
-                    <div className="mt-6 text-[#96938f]/60">
+                    <div className="mt-6 text-white/80">
                       <svg
                         width="48"
                         height="48"
@@ -523,7 +529,7 @@ export default async function Page() {
                       </p>
                     </div>
                   </div>
-                </div>
+                </WobbleCard>
               </div>
             </section>
 
@@ -609,34 +615,40 @@ export default async function Page() {
                 stay yours alone, while a reply turns one into a conversation.
               </p>
               <div className="grid gap-5 md:grid-cols-2">
-                <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8">
-                  <div className="mb-16 flex items-center justify-between font-mono text-xs text-[#777672]">
+                <WobbleCard
+                  containerClassName="bg-stone-900 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  className="p-6 sm:p-8 sm:px-10"
+                >
+                  <div className="mb-16 flex items-center justify-between font-mono text-xs text-white/70">
                     <span>INBOX / PRIVATE</span>
                     <span className="rounded-full bg-white/[0.05] px-3 py-1">
                       Unread
                     </span>
                   </div>
-                  <blockquote className="text-xl tracking-[-0.025em] text-[#e4e1dd]">
+                  <blockquote className="text-xl tracking-[-0.025em] text-white">
                     &ldquo;I never told you how much that helped.&rdquo;
                   </blockquote>
-                  <p className="mt-4 text-sm text-[#7f7d78]">
+                  <p className="mt-4 text-sm text-white/80">
                     Visible only to you until you respond.
                   </p>
-                </div>
-                <div className="rounded-[1.25rem] border border-white/[0.1] p-6 sm:p-8">
-                  <div className="mb-16 flex items-center justify-between font-mono text-xs text-[#777672]">
+                </WobbleCard>
+                <WobbleCard
+                  containerClassName="bg-teal-950 border border-white/[0.1] rounded-[1.25rem] p-0"
+                  className="p-6 sm:p-8 sm:px-10"
+                >
+                  <div className="mb-16 flex items-center justify-between font-mono text-xs text-white/70">
                     <span>REPLY / PUBLISHED</span>
                     <span className="rounded-full bg-[#3B82F6]/15 px-3 py-1 text-[#3B82F6]">
                       Live
                     </span>
                   </div>
-                  <blockquote className="text-xl tracking-[-0.025em] text-[#e4e1dd]">
+                  <blockquote className="text-xl tracking-[-0.025em] text-white">
                     &ldquo;You were worth showing up for.&rdquo;
                   </blockquote>
-                  <p className="mt-4 text-sm text-[#7f7d78]">
+                  <p className="mt-4 text-sm text-white/80">
                     Your reply makes the exchange visible.
                   </p>
-                </div>
+                </WobbleCard>
               </div>
             </section>
 
@@ -660,6 +672,7 @@ export default async function Page() {
                     detail:
                       "Filter names and phrases before they reach your inbox.",
                     meta: "14 filters",
+                    color: "bg-rose-950",
                     illustration: (
                       <svg
                         width="40"
@@ -700,6 +713,7 @@ export default async function Page() {
                     detail:
                       "Stop incoming messages without taking down your link.",
                     meta: "Available",
+                    color: "bg-amber-950",
                     illustration: (
                       <svg
                         width="40"
@@ -733,6 +747,7 @@ export default async function Page() {
                     detail:
                       "Only replies publish. Everything else remains private.",
                     meta: "Private first",
+                    color: "bg-blue-950",
                     illustration: (
                       <svg
                         width="40"
@@ -760,25 +775,26 @@ export default async function Page() {
                     ),
                   },
                 ].map((control) => (
-                  <div
+                  <WobbleCard
                     key={control.title}
-                    className="flex min-h-56 flex-col justify-between rounded-[1.15rem] border border-white/[0.1] p-6"
+                    containerClassName={`${control.color} border border-white/[0.1] rounded-[1.15rem] p-0`}
+                    className="flex min-h-56 flex-col justify-between p-6"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-center justify-between">
                       {control.illustration}
-                      <span className="rounded-full border border-white/[0.09] px-3 py-1 font-mono text-[0.68rem] text-[#87847f]">
+                      <span className="rounded-full border border-white/[0.09] px-3 py-1 font-mono text-[0.68rem] text-white/70">
                         {control.meta}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-medium tracking-[-0.03em]">
+                      <h3 className="text-lg font-medium tracking-[-0.03em] text-white">
                         {control.title}
                       </h3>
-                      <p className="mt-3 text-sm leading-6 text-[#8d8a86]">
+                      <p className="mt-3 text-sm leading-6 text-white/80">
                         {control.detail}
                       </p>
                     </div>
-                  </div>
+                  </WobbleCard>
                 ))}
               </div>
             </section>
