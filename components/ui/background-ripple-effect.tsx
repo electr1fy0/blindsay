@@ -49,7 +49,8 @@ export const BackgroundRippleEffect = ({
     <div
       className={cn(
         "absolute inset-0 h-full w-full overflow-hidden pointer-events-none",
-        "[--cell-border-color:rgba(255,255,255,0.04)] [--cell-fill-color:rgba(255,255,255,0.015)]",
+        "[--cell-border-color:rgba(255,255,255,0.12)] [--cell-fill-color:rgba(255,255,255,0.04)]",
+        "sm:[--cell-border-color:rgba(255,255,255,0.08)] sm:[--cell-fill-color:rgba(255,255,255,0.025)]",
         "[mask-image:linear-gradient(to_bottom,white_30%,transparent_100%)]"
       )}
     >
