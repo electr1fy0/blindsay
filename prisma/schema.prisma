@@ -17,6 +17,7 @@ model Message {
   id        String    @id @default(cuid())
   content   String
   createdAt DateTime  @default(now())
+  deletedAt DateTime?
   parentId  String?
   parent    Message?  @relation("MessageToMessage", fields: [parentId], references: [id])
   replies   Message[] @relation("MessageToMessage")

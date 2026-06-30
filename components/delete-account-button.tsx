@@ -5,16 +5,15 @@ import { signOut } from "next-auth/react";
 import { deleteAccount } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 type DeleteAccountButtonProps = {
@@ -30,8 +29,8 @@ export function DeleteAccountButton({
   const [open, setOpen] = useState(false);
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
         render={
           <Button
             type="button"
@@ -44,18 +43,19 @@ export function DeleteAccountButton({
           </Button>
         }
       />
-      <AlertDialogContent size="sm">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-          <AlertDialogDescription>
+      <DialogContent size="sm">
+        <DialogHeader>
+          <DialogTitle>Delete your account?</DialogTitle>
+          <DialogDescription>
             Your messages and settings will be preserved. Your username will be
             freed up. You can sign back in at any time to reclaim your account
             and pick a new username.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose>Cancel</DialogClose>
+          <Button
+            variant="destructive"
             disabled={isPending}
             onClick={() => {
               startTransition(async () => {
@@ -70,9 +70,9 @@ export function DeleteAccountButton({
             }}
           >
             {isPending ? "Deleting…" : "Delete account"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

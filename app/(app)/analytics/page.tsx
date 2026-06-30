@@ -26,23 +26,23 @@ export default async function AnalyticsPage() {
 
   const [messages, replies, latestMessage, latestReply, recent] = await Promise.all([
     prisma.message.aggregate({
-      where: { recipientId: user.id, parentId: null },
+      where: { recipientId: user.id, parentId: null, deletedAt: null },
       _count: { id: true },
     }),
     prisma.message.aggregate({
-      where: { recipientId: user.id, parentId: { not: null } },
+      where: { recipientId: user.id, parentId: { not: null }, deletedAt: null },
       _count: { id: true },
     }),
     prisma.message.findFirst({
-      where: { recipientId: user.id, parentId: null },
+      where: { recipientId: user.id, parentId: null, deletedAt: null },
       orderBy: { createdAt: "desc" },
     }),
     prisma.message.findFirst({
-      where: { recipientId: user.id, parentId: { not: null } },
+      where: { recipientId: user.id, parentId: { not: null }, deletedAt: null },
       orderBy: { createdAt: "desc" },
     }),
     prisma.message.findMany({
-      where: { recipientId: user.id, createdAt: { gte: start } },
+      where: { recipientId: user.id, createdAt: { gte: start }, deletedAt: null },
       select: { createdAt: true, parentId: true },
       take: 1000,
     }),

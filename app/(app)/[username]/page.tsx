@@ -105,27 +105,20 @@ export default async function UserInboxPage({
     profile.inboxPausedUntil && profile.inboxPausedUntil > now,
   );
 
-  const baseQuery = {
-    where: {
-      recipientId: profile.id,
-      parentId: null,
-      ...(isOwner
-        ? filter === "published"
-          ? { replies: { some: {} } }
-          : {}
-        : { replies: { some: {} } }),
-    },
-    orderBy: { createdAt: "desc" as const },
-    include: {
-      replies: {
-        orderBy: { createdAt: "asc" as const },
-        take: 1,
-      },
-    },
+  const baseWhere = {
+    recipientId: profile.id,
+    parentId: null as null,
+    deletedAt: null,
+    ...(isOwner
+      ? filter === "published"
+        ? { replies: { some: {} } }
+        : {}
+      : { replies: { some: {} } }),
   };
   const totalWhere = {
     recipientId: profile.id,
     parentId: null as null,
+    deletedAt: null,
     ...(isOwner
       ? filter === "published"
         ? { replies: { some: {} } }
@@ -141,12 +134,21 @@ export default async function UserInboxPage({
           where: {
             recipientId: profile.id,
             parentId: null,
+            deletedAt: null,
             replies: { some: {} },
           },
         })
       : Promise.resolve(0),
     prisma.message.findMany({
-      ...baseQuery,
+      where: baseWhere,
+      orderBy: { createdAt: "desc" as const },
+      include: {
+        replies: {
+          where: { deletedAt: null },
+          orderBy: { createdAt: "asc" as const },
+          take: 1,
+        },
+      },
       skip: isOwner ? skip : 0,
       take: pageSize,
     }),

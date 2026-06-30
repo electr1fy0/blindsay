@@ -4,16 +4,15 @@ import { useState, useTransition } from "react";
 import { deleteMessage } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
@@ -29,10 +28,11 @@ export function DeleteMessageButton({
 }: DeleteMessageButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
         render={
           <Button
             variant="ghost"
@@ -54,22 +54,24 @@ export function DeleteMessageButton({
           </Button>
         }
       />
-      <AlertDialogContent size="sm">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete this message?</AlertDialogTitle>
-          <AlertDialogDescription>
+      <DialogContent size="sm">
+        <DialogHeader>
+          <DialogTitle>Delete this message?</DialogTitle>
+          <DialogDescription>
             This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose>Cancel</DialogClose>
+          <Button
+            variant="destructive"
             disabled={isPending || done}
             onClick={() => {
               startTransition(async () => {
                 const result = await deleteMessage(messageId, recipientUsername);
                 if (result.success) {
                   setDone(true);
+                  setOpen(false);
                   toast("Deleted.");
                 } else {
                   toast.error(result.message || "Failed to delete message.");
@@ -78,9 +80,9 @@ export function DeleteMessageButton({
             }}
           >
             Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

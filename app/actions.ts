@@ -217,13 +217,23 @@ export async function deleteMessage(
     return { success: false, message: "You cannot delete this message." };
   }
 
+  const now = new Date();
   if (!message.parentId) {
     await prisma.$transaction([
-      prisma.message.deleteMany({ where: { parentId: messageId } }),
-      prisma.message.delete({ where: { id: messageId } }),
+      prisma.message.updateMany({
+        where: { parentId: messageId },
+        data: { deletedAt: now },
+      }),
+      prisma.message.update({
+        where: { id: messageId },
+        data: { deletedAt: now },
+      }),
     ]);
   } else {
-    await prisma.message.delete({ where: { id: messageId } });
+    await prisma.message.update({
+      where: { id: messageId },
+      data: { deletedAt: now },
+    });
   }
 
   revalidatePath(`/${recipientUsername}`);
