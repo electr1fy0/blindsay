@@ -7,9 +7,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import type { MessageModel as Message } from "@/lib/generated/prisma/models";
 
-// TODO: think of such words someday
-const blockedWords = ["slur1", "slur2", "hateword"];
+const blockedWords = ["slur1", "slur2", "hateword"] as const;
 
 function containsBlockedWords(content: string) {
   const normalized = content.toLowerCase();
@@ -106,7 +106,7 @@ export async function createReplyMessage(
   recipientUsername: string,
   parentId: string,
   content: string,
-): Promise<ActionResponse> {
+): Promise<ActionResponse & { reply?: Message }> {
   const ownerId = await getAuthenticatedUserId();
   if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
@@ -115,7 +115,7 @@ export async function createReplyMessage(
   }
 
   const existingReply = await prisma.message.findFirst({
-    where: { recipientId, parentId },
+    where: { recipientId, parentId, deletedAt: null },
     select: { id: true },
   });
   if (existingReply) {
@@ -126,7 +126,7 @@ export async function createReplyMessage(
     return { success: false, message: "Content cannot be empty" };
   }
 
-  await prisma.message.create({
+  const reply = await prisma.message.create({
     data: {
       content,
       recipientId,
@@ -135,7 +135,7 @@ export async function createReplyMessage(
   });
 
   revalidatePath(`/${recipientUsername}`);
-  return { success: true };
+  return { success: true, reply };
 }
 
 export async function updateReplyMessage(

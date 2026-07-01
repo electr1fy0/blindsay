@@ -288,7 +288,7 @@ export default async function Page() {
                       </p>
                     </div>
                     <div className="mt-10 flex items-center justify-center rounded-lg border border-white/[0.09] px-4 py-3 font-mono text-xs text-white/70">
-                      <span>blindsay.app/you</span>
+                      <span>blindsay.xyz/you</span>
                     </div>
                   </WobbleCard>
                 </ScrollReveal>

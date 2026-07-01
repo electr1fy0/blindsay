@@ -43,7 +43,7 @@ function MockPreviewContent({ step }: { step: number }) {
             Share your link
           </div>
           <div className="bg-black/35 border border-white/5 rounded-lg px-4 py-3 text-sm text-white/90 font-mono text-center select-all">
-            blindsay.app/you
+            blindsay.xyz/you
           </div>
           <button
             className="bg-[#00b9ff] text-white text-xs font-semibold px-4.5 py-2.5 rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-md select-none border border-white/5 hover:bg-[#00b9ff]/90 transition-colors w-full"

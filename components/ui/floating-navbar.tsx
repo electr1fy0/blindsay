@@ -32,21 +32,29 @@ export const FloatingNav = ({
     const container = wrapper.closest(".overflow-y-auto") as HTMLElement;
     if (!container) return;
 
+    let ticking = false;
+
     const handleScroll = () => {
-      const scrollTop = container.scrollTop;
-      const scrollHeight = container.scrollHeight - container.clientHeight;
-      const progress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
-      const direction = scrollTop - lastScrollRef.current;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollTop = container.scrollTop;
+          const scrollHeight = container.scrollHeight - container.clientHeight;
+          const progress = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+          const direction = scrollTop - lastScrollRef.current;
 
-      if (progress < 0.05) {
-        setVisible(true);
-      } else if (direction < 0) {
-        setVisible(true);
-      } else if (direction > 0) {
-        setVisible(false);
+          if (progress < 0.05) {
+            setVisible(true);
+          } else if (direction < 0) {
+            setVisible(true);
+          } else if (direction > 0) {
+            setVisible(false);
+          }
+
+          lastScrollRef.current = scrollTop;
+          ticking = false;
+        });
+        ticking = true;
       }
-
-      lastScrollRef.current = scrollTop;
     };
 
     container.addEventListener("scroll", handleScroll, { passive: true });

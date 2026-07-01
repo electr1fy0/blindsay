@@ -8,12 +8,17 @@ type AutoRefreshProps = {
   intervalMs?: number;
 };
 
-export function AutoRefresh({ intervalMs = 30000 }: AutoRefreshProps) {
+export function AutoRefresh({ intervalMs = 60000 }: AutoRefreshProps) {
   const router = useRouter();
-  const lastCheck = useRef(Date.now());
+  const lastCheck = useRef<number | null>(null);
+
+  useEffect(() => {
+    lastCheck.current = Date.now();
+  }, []);
 
   useEffect(() => {
     const check = async () => {
+      if (document.hidden || lastCheck.current === null) return;
       const { hasNew } = await checkForNewMessages(new Date(lastCheck.current));
       if (hasNew) {
         lastCheck.current = Date.now();

@@ -24,7 +24,7 @@ export default async function AnalyticsPage() {
   start.setHours(0, 0, 0, 0);
   start.setDate(start.getDate() - (days - 1));
 
-  const [messages, replies, latestMessage, latestReply, recent] = await Promise.all([
+  const [messages, replies, latestMessage, latestReply, rows] = await Promise.all([
     prisma.message.aggregate({
       where: { recipientId: user.id, parentId: null, deletedAt: null },
       _count: { id: true },
@@ -41,11 +41,18 @@ export default async function AnalyticsPage() {
       where: { recipientId: user.id, parentId: { not: null }, deletedAt: null },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.message.findMany({
-      where: { recipientId: user.id, createdAt: { gte: start }, deletedAt: null },
-      select: { createdAt: true, parentId: true },
-      take: 1000,
-    }),
+    prisma.$queryRaw<Array<{ date: Date; messages: bigint; replies: bigint }>>`
+      SELECT
+        DATE("createdAt") as date,
+        COUNT(*) FILTER (WHERE "parentId" IS NULL) as messages,
+        COUNT(*) FILTER (WHERE "parentId" IS NOT NULL) as replies
+      FROM "Message"
+      WHERE "recipientId" = ${user.id}
+        AND "createdAt" >= ${start}
+        AND "deletedAt" IS NULL
+      GROUP BY DATE("createdAt")
+      ORDER BY date ASC
+    `,
   ]);
 
   const now = new Date();
@@ -56,29 +63,26 @@ export default async function AnalyticsPage() {
     ? formatRelativeTime(latestReply.createdAt, now)
     : "—";
 
-  const buckets = Array.from({ length: days }, (_, index) => {
+  const dayMap = new Map<string, { messages: number; replies: number }>();
+  for (let i = 0; i < days; i++) {
     const date = new Date(start);
-    date.setDate(start.getDate() + index);
-    return {
-      date,
-      label: `${days - index - 1}d`,
-      messages: 0,
-      replies: 0,
-    };
-  });
-
-  for (const item of recent) {
-    const dayIndex = Math.floor(
-      (new Date(item.createdAt).setHours(0, 0, 0, 0) - start.getTime()) /
-        (24 * 60 * 60 * 1000)
-    );
-    if (dayIndex < 0 || dayIndex >= days) continue;
-    if (item.parentId) {
-      buckets[dayIndex].replies += 1;
-    } else {
-      buckets[dayIndex].messages += 1;
+    date.setDate(start.getDate() + i);
+    dayMap.set(date.toISOString().slice(0, 10), { messages: 0, replies: 0 });
+  }
+  for (const row of rows) {
+    const key = row.date.toISOString().slice(0, 10);
+    const entry = dayMap.get(key);
+    if (entry) {
+      entry.messages += Number(row.messages);
+      entry.replies += Number(row.replies);
     }
   }
+  const buckets = Array.from(dayMap.entries()).map(([key, val], index) => ({
+    date: new Date(key),
+    label: `${days - index - 1}d`,
+    messages: val.messages,
+    replies: val.replies,
+  }));
 
   const maxVal = Math.max(1, ...buckets.flatMap((b) => [b.messages, b.replies]));
 

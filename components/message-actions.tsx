@@ -16,12 +16,14 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type DeleteMessageButtonProps = {
   messageId: string;
   recipientUsername: string;
   size?: "xs" | "sm" | "icon-xs" | "default" | "lg";
   className?: string;
+  onSuccess?: () => void;
 };
 
 export function DeleteMessageButton({
@@ -29,10 +31,12 @@ export function DeleteMessageButton({
   recipientUsername,
   size = "icon-xs",
   className,
+  onSuccess,
 }: DeleteMessageButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -77,6 +81,8 @@ export function DeleteMessageButton({
                 if (result.success) {
                   setDone(true);
                   setOpen(false);
+                  onSuccess?.();
+                  router.refresh();
                   toast("Deleted.");
                 } else {
                   toast.error(result.message || "Failed to delete message.");

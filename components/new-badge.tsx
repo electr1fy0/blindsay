@@ -44,12 +44,14 @@ export function NewBadge({ messageId }: { messageId: string }) {
 }
 
 export function MarkMessagesSeen({ messageIds }: { messageIds: string[] }) {
+  const key = messageIds.join(",");
+
   useEffect(() => {
     if (messageIds.length > 0) {
       const timer = setTimeout(() => markSeen(messageIds), 100);
       return () => clearTimeout(timer);
     }
-  }, [messageIds]);
+  }, [key]);
 
   return null;
 }

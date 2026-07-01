@@ -17,6 +17,7 @@ import {
 import { usePathname, useParams, useRouter } from "next/navigation";
 import { SettingsDialog } from "@/components/settings-dialog";
 import { useTheme } from "next-themes";
+import { motion, LayoutGroup } from "motion/react";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -79,71 +80,87 @@ export function AppShell({ children, user }: AppShellProps) {
           >
             <div className="w-full flex h-12 items-center justify-between gap-4 px-6 z-10">
               {/* Navigation Elements */}
-              <nav className="flex items-center gap-1 sm:gap-1.5">
-                {/* Account Settings Avatar Button */}
-                <button
-                  onClick={() => setIsOpenManual(true)}
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer mr-2 overflow-hidden"
-                  title="Account Settings"
-                >
-                  {user?.image ? (
-                    <Image
-                      src={user.image}
-                      alt={username ?? "Profile"}
-                      width={28}
-                      height={28}
-                      className="rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[0.65rem] font-bold text-foreground">
-                      {(username ?? user?.email ?? "U")
-                        .slice(0, 1)
-                        .toUpperCase()}
-                    </div>
-                  )}
-                </button>
+              <LayoutGroup>
+                <nav className="flex items-center gap-1 sm:gap-1.5">
+                  {/* Account Settings Avatar Button */}
+                  <button
+                    onClick={() => setIsOpenManual(true)}
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer mr-2 overflow-hidden"
+                    title="Account Settings"
+                  >
+                    {user?.image ? (
+                      <Image
+                        src={user.image}
+                        alt={username ?? "Profile"}
+                        width={28}
+                        height={28}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-[0.65rem] font-bold text-foreground">
+                        {(username ?? user?.email ?? "U")
+                          .slice(0, 1)
+                          .toUpperCase()}
+                      </div>
+                    )}
+                  </button>
 
-                {username ? (
+                  {username ? (
+                    <Link
+                      href={`/${username}`}
+                      className={cn(
+                        "relative inline-flex items-center gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 rounded-[5px] sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
+                        isActive(`/${username}`)
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                      )}
+                    >
+                      {isActive(`/${username}`) && (
+                        <motion.div
+                          layoutId="active-tab"
+                          className="absolute inset-0 bg-foreground/[0.13] rounded-[7px]"
+                          transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
+                        />
+                      )}
+                      <span className="relative z-10 inline-flex items-center gap-1 sm:gap-1.5">
+                        <HugeiconsIcon
+                          icon={Notification03Icon}
+                          size={14}
+                          strokeWidth={1.45}
+                        />
+                        <span>Inbox</span>
+                      </span>
+                    </Link>
+                  ) : null}
+
                   <Link
-                    href={`/${username}`}
+                    href="/analytics"
                     className={cn(
-                    isActive(`/${username}`)
-                      ? "nav-pill-active"
-                      : buttonVariants({ variant: "ghost", size: "xs" }),
-                    isActive(`/${username}`) ? "" : "nav-pill",
-                      isActive(`/${username}`) ? "rounded-[7px]" : "rounded-[5px]",
-                      "gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 inline-flex items-center sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
+                      "relative inline-flex items-center gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 rounded-[5px] sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
+                      isActive("/analytics")
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
-                    <HugeiconsIcon
-                      icon={Notification03Icon}
-                      size={14}
-                      strokeWidth={1.45}
-                    />
-                    <span>Inbox</span>
+                    {isActive("/analytics") && (
+                      <motion.div
+                        layoutId="active-tab"
+                        className="absolute inset-0 bg-foreground/[0.13] rounded-[7px]"
+                        transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
+                      />
+                    )}
+                    <span className="relative z-10 inline-flex items-center gap-1 sm:gap-1.5">
+                      <HugeiconsIcon
+                        icon={Analytics01Icon}
+                        size={14}
+                        strokeWidth={1.45}
+                      />
+                      <span>Analytics</span>
+                    </span>
                   </Link>
-                ) : null}
 
-                <Link
-                  href="/analytics"
-                  className={cn(
-                    isActive("/analytics")
-                      ? "nav-pill-active"
-                      : buttonVariants({ variant: "ghost", size: "xs" }),
-                    isActive("/analytics") ? "" : "nav-pill",
-                    isActive("/analytics") ? "rounded-[7px]" : "rounded-[5px]",
-                    "gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 inline-flex items-center sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={Analytics01Icon}
-                    size={14}
-                    strokeWidth={1.45}
-                  />
-                  <span>Analytics</span>
-                </Link>
-
-              </nav>
+                </nav>
+              </LayoutGroup>
 
               <button
                 type="button"

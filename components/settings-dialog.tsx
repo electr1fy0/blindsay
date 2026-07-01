@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -54,6 +54,8 @@ type UserSettingsData = {
   hiddenWords: string[];
 };
 
+let cachedStars: string | null = null;
+
 export function SettingsDialog({
   isOpen,
   onClose,
@@ -69,6 +71,7 @@ export function SettingsDialog({
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const { accentTheme, setAccentTheme } = useAccentTheme();
+  const needsRefresh = useRef(false);
 
   useEffect(() => {
     if (initialTab) {
@@ -93,20 +96,28 @@ export function SettingsDialog({
       }
     }
 
-    loadData();
-  }, [isOpen]);
+    if (!user) {
+      loadData();
+    } else {
+      setLoading(false);
+    }
+  }, [isOpen, user]);
 
   useEffect(() => {
+    if (cachedStars) {
+      setStars(cachedStars);
+      return;
+    }
     fetch("https://api.github.com/repos/electr1fy0/blindsay")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data?.stargazers_count) {
           const starCount = data.stargazers_count;
-          setStars(
-            starCount >= 1000
-              ? `${(starCount / 1000).toFixed(1)}k`
-              : String(starCount),
-          );
+          const label = starCount >= 1000
+            ? `${(starCount / 1000).toFixed(1)}k`
+            : String(starCount);
+          cachedStars = label;
+          setStars(label);
         }
       })
       .catch(() => null);
@@ -131,13 +142,21 @@ export function SettingsDialog({
         toast.success(
           `Inbox ${!user.inboxOpen ? "opened" : "closed"} successfully.`,
         );
-        router.refresh();
+        needsRefresh.current = true;
       } else {
         toast.error(res.message ?? "Failed to toggle inbox status.");
       }
     } catch {
       toast.error("An error occurred.");
     }
+  };
+
+  const handleClose = () => {
+    if (needsRefresh.current) {
+      needsRefresh.current = false;
+      router.refresh();
+    }
+    onClose();
   };
 
   const isPaused = Boolean(
@@ -150,12 +169,12 @@ export function SettingsDialog({
       <button
         type="button"
         className="absolute inset-0 cursor-default"
-        onClick={onClose}
+        onClick={handleClose}
       />
       <div className="relative flex h-[640px] max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-xl animate-in zoom-in-95 duration-200 md:flex-row">
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute right-4 top-4 z-50 text-muted-foreground transition-colors hover:text-foreground cursor-pointer hidden md:block"
         >
           <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={1.5} />
@@ -239,7 +258,7 @@ export function SettingsDialog({
             Settings
           </span>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
           >
             <HugeiconsIcon icon={Cancel01Icon} size={20} strokeWidth={1.5} />
@@ -700,7 +719,7 @@ export function SettingsDialog({
                       <p className="text-[0.72rem] leading-relaxed text-muted-foreground">
                         Your inbox is active at{" "}
                         <code className="text-foreground font-semibold">
-                          blindsay.app/{user.username ?? "yourname"}
+                          blindsay.xyz/{user.username ?? "yourname"}
                         </code>
                         . Share this link on your social profiles.
                       </p>

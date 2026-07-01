@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 const STORAGE_PREFIX = "blindsay:draft:";
 
@@ -8,6 +8,8 @@ export function usePersistedDraft(storageKey: string, initialValue = "") {
   const key = `${STORAGE_PREFIX}${storageKey}`;
   const [value, setValue] = useState(initialValue);
   const [hydrated, setHydrated] = useState(false);
+  const latestValue = useRef(value);
+  latestValue.current = value;
 
   useEffect(() => {
     try {
@@ -16,37 +18,41 @@ export function usePersistedDraft(storageKey: string, initialValue = "") {
         setValue(storedValue);
       }
     } catch {
-      // Ignore storage read failures and keep the in-memory draft.
     } finally {
       setHydrated(true);
     }
   }, [key]);
 
-  useEffect(() => {
-    if (!hydrated) return;
-
-    const timer = setTimeout(() => {
-      try {
-        if (value.trim()) {
-          window.localStorage.setItem(key, value);
-        } else {
-          window.localStorage.removeItem(key);
-        }
-      } catch {
-        // Ignore storage write failures and keep the in-memory draft.
+  const persist = useCallback(() => {
+    try {
+      if (latestValue.current.trim()) {
+        window.localStorage.setItem(key, latestValue.current);
+      } else {
+        window.localStorage.removeItem(key);
       }
-    }, 300);
+    } catch {
+    }
+  }, [key]);
 
-    return () => clearTimeout(timer);
-  }, [hydrated, key, value]);
+  useEffect(() => {
+    window.addEventListener("beforeunload", persist);
+    window.addEventListener("pagehide", persist);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) persist();
+    });
+    const interval = setInterval(persist, 30000);
+    return () => {
+      window.removeEventListener("beforeunload", persist);
+      window.removeEventListener("pagehide", persist);
+      clearInterval(interval);
+    };
+  }, [persist]);
 
   const clearDraft = () => {
     setValue("");
-
     try {
       window.localStorage.removeItem(key);
     } catch {
-      // Ignore storage delete failures.
     }
   };
 
@@ -54,6 +60,7 @@ export function usePersistedDraft(storageKey: string, initialValue = "") {
     value,
     setValue,
     clearDraft,
+    persist,
     hydrated,
   };
 }

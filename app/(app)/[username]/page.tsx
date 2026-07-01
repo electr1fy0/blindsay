@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CreateMessageForm } from "@/components/create-message-form";
-import { ReplyForm } from "@/components/reply-form";
 import { formatRelativeTime } from "@/lib/relative-time";
 import { MessageCard } from "@/components/message-card";
 import { MarkMessagesSeen } from "@/components/new-badge";
@@ -287,16 +286,8 @@ export default async function UserInboxPage({
                     reply={reply}
                     now={now}
                     recipientUsername={profile.username ?? username}
+                    recipientId={profile.id}
                     isOwner={true}
-                    replyForm={
-                      !reply ? (
-                        <ReplyForm
-                          recipientId={profile.id}
-                          recipientUsername={profile.username ?? username}
-                          parentId={message.id}
-                        />
-                      ) : null
-                    }
                   />
                 );
               })
