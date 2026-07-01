@@ -143,24 +143,6 @@ export function AppShell({ children, user }: AppShellProps) {
                   <span>Analytics</span>
                 </Link>
 
-                <Link
-                  href="/share"
-                  className={cn(
-                    isActive("/share")
-                      ? "nav-pill-active"
-                      : buttonVariants({ variant: "ghost", size: "xs" }),
-                    isActive("/share") ? "" : "nav-pill",
-                    isActive("/share") ? "rounded-[7px]" : "rounded-[5px]",
-                    "gap-1 px-2 py-1 text-xs font-normal tracking-[0.02em] h-7.5 inline-flex items-center sm:gap-1.5 sm:px-2.5 sm:text-sm sm:tracking-[0.03em]",
-                  )}
-                >
-                  <HugeiconsIcon
-                    icon={Link01Icon}
-                    size={14}
-                    strokeWidth={1.45}
-                  />
-                  <span>Share</span>
-                </Link>
               </nav>
 
               <button
@@ -225,7 +207,7 @@ export function AppShell({ children, user }: AppShellProps) {
         </>
       ) : (
         <div className="w-full flex-1 overflow-y-auto overflow-x-hidden">
-          <div className="mx-auto flex max-w-lg flex-col gap-6 px-[19px] py-8 pb-24">
+          <div className="mx-auto flex max-w-xl flex-col gap-6 px-3 sm:px-[19px] py-8 pb-24">
             <header className="flex items-center justify-center gap-2 py-2">
               <Link href="/" className="flex items-center gap-2.5">
                 <Image

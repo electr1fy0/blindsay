@@ -175,12 +175,7 @@ export default async function UserInboxPage({
         </div>
 
         <div className="panel-card px-6 py-6 sm:px-7">
-          <div className="flex flex-col gap-2">
-            <p className="kicker">Leave a note</p>
-            <p className="max-w-xl text-sm text-muted-foreground">
-              Send something honest. Your name is never attached, and only a replied exchange becomes public.
-            </p>
-          </div>
+          <p className="kicker mb-5">Leave a note</p>
 
           {profile.inboxOpen && !isPaused ? (
             <div className="mt-5">
