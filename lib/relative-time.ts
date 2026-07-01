@@ -14,6 +14,10 @@ export function formatRelativeTime(date: Date, now = new Date()) {
   const diff = date.getTime() - now.getTime();
   const abs = Math.abs(diff);
 
+  if (abs < 1000 * 60) {
+    return "now";
+  }
+
   for (const [unit, ms] of units) {
     if (abs >= ms || unit === "second") {
       const value = Math.round(diff / ms);

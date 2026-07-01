@@ -73,11 +73,11 @@ export const FloatingNav = ({
           className
         )}
       >
-        <div className="flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/80 px-2 py-1.5 shadow-lg shadow-black/10 backdrop-blur-md dark:border-white/10 dark:bg-black/50">
+        <div className="flex items-center justify-center gap-2 rounded-full border border-white/10 bg-black/50 px-2 py-1.5 shadow-lg shadow-black/10 backdrop-blur-md">
           {logo && (
             <>
               {logo}
-              <div className="h-5 w-px bg-neutral-200 dark:bg-white/10" />
+              <div className="h-5 w-px bg-white/10" />
             </>
           )}
 
@@ -87,7 +87,7 @@ export const FloatingNav = ({
                 key={`link-${idx}`}
                 href={navItem.link}
                 className={cn(
-                  "relative flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    "relative flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-neutral-300 transition-colors hover:bg-white/10 hover:text-white"
                 )}
               >
                 <span className="block sm:hidden">{navItem.icon}</span>
@@ -96,10 +96,10 @@ export const FloatingNav = ({
             ))}
           </div>
 
-          <div className="h-5 w-px bg-neutral-200 dark:bg-white/10" />
+          <div className="h-5 w-px bg-white/10" />
 
           {cta || (
-            <button className="relative rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-lg hover:shadow-neutral-900/20 dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:hover:shadow-white/20">
+            <button className="relative rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-lg hover:shadow-neutral-900/20">
               <span>Login</span>
             </button>
           )}

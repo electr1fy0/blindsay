@@ -108,7 +108,7 @@ export default async function Page() {
           viewer?.username ? (
             <Link
               href={`/${viewer.username}`}
-              className="relative rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-lg hover:shadow-neutral-900/20 dark:bg-white dark:text-black dark:hover:bg-neutral-100 dark:hover:shadow-white/20"
+              className="relative rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-lg hover:shadow-neutral-900/20"
             >
               Open inbox
             </Link>
@@ -118,7 +118,7 @@ export default async function Page() {
               size="sm"
               variant="default"
               signInLabel="Start inbox"
-              className="[&_button]:relative [&_button]:rounded-full [&_button]:bg-neutral-900 [&_button]:px-4 [&_button]:py-2 [&_button]:text-sm [&_button]:font-medium [&_button]:text-white [&_button]:transition-all [&_button]:hover:bg-neutral-800 [&_button]:hover:shadow-lg [&_button]:hover:shadow-neutral-900/20 [&_button]:shadow-none [&_button]:border-0 [&_button]:h-auto [&_button]:gap-0 [&_button_>_svg]:hidden [&_button]:dark:bg-white [&_button]:dark:text-black [&_button]:dark:hover:bg-neutral-100 [&_button]:dark:hover:shadow-white/20"
+              className="[&_button]:relative [&_button]:rounded-full [&_button]:bg-neutral-900 [&_button]:px-4 [&_button]:py-2 [&_button]:text-sm [&_button]:font-medium [&_button]:text-white [&_button]:transition-all [&_button]:hover:bg-neutral-800 [&_button]:hover:shadow-lg [&_button]:hover:shadow-neutral-900/20 [&_button]:shadow-none [&_button]:border-0 [&_button]:h-auto [&_button]:gap-0 [&_button_>_svg]:hidden"
             />
           )
         }
@@ -136,7 +136,7 @@ export default async function Page() {
                 <HoverBorderGradient
                   containerClassName="rounded-full mb-6"
                   as="span"
-                  className="bg-[#1c1c1f] text-[#a8a5a1] dark:bg-[#1c1c1f] dark:text-[#a8a5a1] flex items-center gap-2.5 px-3.5 py-1.5 text-xs"
+                  className="bg-[#1c1c1f] text-[#a8a5a1] flex items-center gap-2.5 px-3.5 py-1.5 text-xs"
                   duration={2}
                 >
                   <svg
