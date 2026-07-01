@@ -108,7 +108,7 @@ export default async function Page() {
           viewer?.username ? (
             <Link
               href={`/${viewer.username}`}
-              className="relative rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-lg hover:shadow-neutral-900/20"
+              className="btn-tactile-primary relative rounded-full bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-neutral-800 hover:shadow-lg hover:shadow-neutral-900/20"
             >
               Open inbox
             </Link>
@@ -207,14 +207,14 @@ export default async function Page() {
               {viewer?.username ? (
                 <Link
                   href={`/${viewer.username}`}
-                  className="group inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap h-13 rounded-full px-9 text-base font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border border-[#2563EB] border-t-white/20 transition-all duration-200 cursor-pointer"
+                  className="group btn-tactile-primary inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap h-13 rounded-full px-9 text-base font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border transition-all duration-200 cursor-pointer"
                 >
                   <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
                     Open your inbox
                   </span>
                 </Link>
               ) : (
-                <div className="[&_button]:inline-flex [&_button]:shrink-0 [&_button]:select-none [&_button]:items-center [&_button]:justify-center [&_button]:whitespace-nowrap [&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button]:shadow-none [&_button]:hover:shadow-none [&_button]:focus:ring-0 [&_button]:outline-none [&_button_>_svg]:hidden">
+                <div className="[&_button]:inline-flex [&_button]:shrink-0 [&_button]:select-none [&_button]:items-center [&_button]:justify-center [&_button]:whitespace-nowrap [&_button]:h-13 [&_button]:rounded-full [&_button]:px-9 [&_button]:text-base [&_button]:font-medium [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button_>_svg]:hidden">
                   <AuthButtons
                     user={null}
                     size="lg"
@@ -475,16 +475,16 @@ export default async function Page() {
                     </h2>
                     <div className="flex flex-wrap items-center gap-4">
                       {viewer?.username ? (
-                        <Link
-                          href={`/${viewer.username}`}
-                          className="group inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap h-13 rounded-full px-8 text-base font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border border-[#2563EB] border-t-white/20 transition-all duration-200 cursor-pointer"
-                        >
-                          <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
-                            Open your inbox
-                          </span>
-                        </Link>
-                      ) : (
-                        <div className="[&_button]:inline-flex [&_button]:shrink-0 [&_button]:select-none [&_button]:items-center [&_button]:justify-center [&_button]:whitespace-nowrap [&_button]:h-13 [&_button]:rounded-full [&_button]:px-8 [&_button]:text-base [&_button]:font-medium [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button]:shadow-none [&_button]:hover:shadow-none [&_button]:focus:ring-0 [&_button]:outline-none [&_button_>_svg]:hidden">
+                <Link
+                  href={`/${viewer.username}`}
+                  className="group btn-tactile-primary inline-flex shrink-0 select-none items-center justify-center whitespace-nowrap h-13 rounded-full px-8 text-base font-medium bg-[#2563EB] text-white hover:bg-[#2563EB]/90 border transition-all duration-200 cursor-pointer"
+                >
+                  <span className="underline-offset-4 group-hover:underline group-hover:decoration-wavy group-hover:decoration-white/40">
+                    Open your inbox
+                  </span>
+                </Link>
+              ) : (
+                <div className="[&_button]:inline-flex [&_button]:shrink-0 [&_button]:select-none [&_button]:items-center [&_button]:justify-center [&_button]:whitespace-nowrap [&_button]:h-13 [&_button]:rounded-full [&_button]:px-8 [&_button]:text-base [&_button]:font-medium [&_button]:bg-[#2563EB] [&_button]:text-white [&_button]:hover:bg-[#2563EB]/90 [&_button]:transition-all [&_button]:duration-200 [&_button]:cursor-pointer [&_button_>_svg]:hidden">
                           <AuthButtons
                             user={null}
                             size="lg"

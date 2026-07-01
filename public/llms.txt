@@ -1,0 +1,7 @@
+# Blindsay
+
+Anonymous inboxes for the words people never said out loud.
+
+- [Blindsay](https://blindsay.xyz)
+- [Privacy](/privacy)
+- [GitHub](https://github.com/electr1fy0/blindsay)
