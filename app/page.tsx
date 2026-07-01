@@ -519,27 +519,35 @@ export default async function Page() {
             </section>
           </main>
 
-          <footer className="mt-48 border-t border-white/[0.08] pt-8 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5 text-[#eeecea] opacity-80 select-none">
+            <footer className="mt-48 border-t border-white/[0.08] pt-8 pb-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-[#eeecea] opacity-80 select-none">
               <Image
                 src="/blindsay.png"
                 alt="BLINDSAY"
-                width={20}
-                height={20}
+                width={24}
+                height={24}
                 className="opacity-70 grayscale rounded-md"
               />
-              <span className="text-[11px] font-medium tracking-[0.16em] uppercase">
+              <span className="text-[13px] font-medium tracking-[0.16em] uppercase">
                 BLINDSAY
               </span>
             </div>
-            <Link
-              href="https://github.com/electr1fy0/blindsay"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-[#85827e] transition-colors hover:text-[#ddd] font-mono text-[13px] tracking-wide"
-            >
-              github/blindsay
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/privacy"
+                className="text-sm text-[#85827e] transition-colors hover:text-[#ddd] font-mono text-[13px] tracking-wide"
+              >
+                privacy
+              </Link>
+              <Link
+                href="https://github.com/electr1fy0/blindsay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-[#85827e] transition-colors hover:text-[#ddd] font-mono text-[13px] tracking-wide"
+              >
+                github
+              </Link>
+            </div>
           </footer>
         </div>
       </div>
