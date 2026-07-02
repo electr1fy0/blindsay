@@ -503,14 +503,14 @@ export function SettingsDialog({
                     </p>
                   </div>
 
-                  <div className="panel-card-muted flex items-center justify-between gap-4 p-4">
+                  <div className="panel-card-muted flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4">
                     <div>
                       <p className="text-xs font-semibold">Color mode</p>
                       <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
                         Switch between light and dark themes.
                       </p>
                     </div>
-                    <div className="flex bg-muted p-0.5 rounded-lg border border-border/40 shrink-0 select-none">
+                    <div className="flex bg-muted p-0.5 rounded-lg border border-border/40 shrink-0 select-none self-start sm:self-auto">
                       <button
                         onClick={() => setTheme("light")}
                         className={cn(
