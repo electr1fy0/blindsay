@@ -78,15 +78,7 @@ export function ReplyForm({
   };
 
   return (
-    <motion.div
-      layout
-      transition={{
-        type: "spring",
-        stiffness: 700,
-        damping: 42
-      }}
-      className="w-full overflow-hidden p-1 -m-1"
-    >
+    <div className="w-full p-1 -m-1">
       <AnimatePresence mode="wait" initial={false}>
         {!open ? (
           <motion.div
@@ -102,18 +94,9 @@ export function ReplyForm({
             </Button>
           </motion.div>
         ) : (
-          <motion.form
-            key="reply-form-content"
+          <form
             ref={formRef}
             onSubmit={handleSubmit}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{
-              opacity: 0,
-              y: 8,
-              transition: { type: "spring", stiffness: 750, damping: 44 }
-            }}
-            transition={{ type: "spring", stiffness: 550, damping: 36 }}
             className="space-y-2"
           >
             <Textarea
@@ -126,11 +109,6 @@ export function ReplyForm({
               disabled={isPending}
               className="min-h-[112px] max-h-72 sm:text-sm"
             />
-            {draft.hydrated && content ? (
-              <p className="text-xs text-muted-foreground">
-                Draft saved on this device.
-              </p>
-            ) : null}
             <div className="flex items-center justify-between">
               <span
                 className={`text-[0.65rem] tabular-nums ${content.length >= MAX_LENGTH ? "text-destructive" : "text-muted-foreground"}`}
@@ -164,9 +142,9 @@ export function ReplyForm({
               </div>
             </div>
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          </motion.form>
+          </form>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

@@ -16,6 +16,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { usePathname, useParams, useRouter } from "next/navigation";
 import { SettingsDialog } from "@/components/settings-dialog";
+import { MobileNav } from "@/components/mobile-nav";
 import { useTheme } from "next-themes";
 import { motion, LayoutGroup } from "motion/react";
 
@@ -73,6 +74,9 @@ export function AppShell({ children, user }: AppShellProps) {
 
       {isOwner ? (
         <>
+          {/* Mobile Nav */}
+          <MobileNav username={username} isOwner={isOwner} />
+
           {/* Top Navbar */}
           <header 
             className="sticky top-0 z-40 w-full bg-body-bg shrink-0 z-10"
