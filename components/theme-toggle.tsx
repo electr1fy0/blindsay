@@ -13,8 +13,8 @@ const nextTheme: Record<string, string> = {
 
 const labels: Record<string, string> = {
   light: "Switch to dark mode",
-  dark: "Use system setting",
-  system: "Switch to light mode",
+  dark: "Switch to system theme",
+  system: "System theme",
 };
 
 const icons: Record<string, typeof Sun03Icon> = {
