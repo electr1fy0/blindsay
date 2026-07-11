@@ -11,6 +11,7 @@ import {
   Notification03Icon,
   Analytics01Icon,
   Link01Icon,
+  LaptopIcon,
   Moon02Icon,
   Sun03Icon,
 } from "@hugeicons/core-free-icons";
@@ -29,11 +30,29 @@ type AppShellProps = {
   } | null;
 };
 
+const nextTheme: Record<string, string> = {
+  light: "dark",
+  dark: "system",
+  system: "light",
+};
+
+const labels: Record<string, string> = {
+  light: "Switch to dark mode",
+  dark: "Switch to system theme",
+  system: "Switch to light mode",
+};
+
+const icons: Record<string, typeof Sun03Icon> = {
+  light: Moon02Icon,
+  dark: LaptopIcon,
+  system: Sun03Icon,
+};
+
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const params = useParams();
   const router = useRouter();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const viewedUsername =
     typeof params?.username === "string" ? params.username : undefined;
@@ -168,23 +187,13 @@ export function AppShell({ children, user }: AppShellProps) {
 
               <button
                 type="button"
-                onClick={() =>
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
+                onClick={() => setTheme(nextTheme[theme ?? "system"])}
                 className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer"
-                title={
-                  resolvedTheme === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
-                aria-label={
-                  resolvedTheme === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
+                title={labels[theme ?? "system"]}
+                aria-label={labels[theme ?? "system"]}
               >
                 <HugeiconsIcon
-                  icon={resolvedTheme === "dark" ? Sun03Icon : Moon02Icon}
+                  icon={icons[theme ?? "system"]}
                   size={17}
                   strokeWidth={1.7}
                 />

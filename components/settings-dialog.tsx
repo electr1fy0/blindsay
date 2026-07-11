@@ -24,6 +24,7 @@ import {
   UserIcon,
   Sun03Icon,
   Moon02Icon,
+  LaptopIcon,
 } from "@hugeicons/core-free-icons";
 import { toggleInboxOpen, getUserSettings } from "@/app/actions";
 import { formatRelativeTime } from "@/lib/relative-time";
@@ -69,7 +70,7 @@ export function SettingsDialog({
   const [stars, setStars] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState("");
   const router = useRouter();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const { accentTheme, setAccentTheme } = useAccentTheme();
   const needsRefresh = useRef(false);
 
@@ -515,7 +516,7 @@ export function SettingsDialog({
                         onClick={() => setTheme("light")}
                         className={cn(
                           "flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md cursor-pointer transition-all w-24 h-7.5",
-                          resolvedTheme === "light"
+                          theme === "light"
                             ? "bg-background text-foreground shadow-xs border border-border/10"
                             : "text-muted-foreground hover:text-foreground border border-transparent"
                         )}
@@ -524,10 +525,22 @@ export function SettingsDialog({
                         <span>Light</span>
                       </button>
                       <button
+                        onClick={() => setTheme("system")}
+                        className={cn(
+                          "flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md cursor-pointer transition-all w-24 h-7.5",
+                          theme === "system"
+                            ? "bg-background text-foreground shadow-xs border border-border/10"
+                            : "text-muted-foreground hover:text-foreground border border-transparent"
+                        )}
+                      >
+                        <HugeiconsIcon icon={LaptopIcon} size={13} strokeWidth={1.8} />
+                        <span>System</span>
+                      </button>
+                      <button
                         onClick={() => setTheme("dark")}
                         className={cn(
                           "flex items-center justify-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md cursor-pointer transition-all w-24 h-7.5",
-                          resolvedTheme === "dark"
+                          theme === "dark"
                             ? "bg-background text-foreground shadow-xs border border-border/10"
                             : "text-muted-foreground hover:text-foreground border border-transparent"
                         )}
