@@ -37,8 +37,8 @@ const nextTheme: Record<string, string> = {
 };
 
 const labels: Record<string, string> = {
-  light: "Switch to dark mode",
-  dark: "Switch to system theme",
+  light: "Light theme",
+  dark: "Dark theme",
   system: "System theme",
 };
 
