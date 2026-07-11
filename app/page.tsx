@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { AuthButtons } from "@/components/auth-buttons";
 import { LandingFaq } from "@/components/landing-faq";
 import { getServerSession } from "next-auth";
@@ -68,6 +69,14 @@ export default async function Page() {
         select: { username: true, name: true },
       })
     : null;
+
+  if (viewer?.username) {
+    redirect(`/${viewer.username}`);
+  }
+
+  if (session?.user?.email && !viewer?.username) {
+    redirect("/onboarding");
+  }
 
   let starsCount = 0;
   try {
