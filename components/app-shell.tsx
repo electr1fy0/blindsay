@@ -3,21 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import { RESERVED_USERNAMES } from "@/lib/constants";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Notification03Icon,
   Analytics01Icon,
-  Link01Icon,
   LaptopIcon,
   Moon02Icon,
   Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { usePathname, useParams, useRouter } from "next/navigation";
 import { SettingsDialog } from "@/components/settings-dialog";
-import { MobileNav } from "@/components/mobile-nav";
 import { useTheme } from "next-themes";
 import { motion, LayoutGroup } from "motion/react";
 
@@ -88,24 +85,17 @@ export function AppShell({ children, user }: AppShellProps) {
   };
 
   return (
-    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col bg-body-bg relative">
-
+    <div className="h-dvh overflow-hidden flex flex-col bg-body-bg relative">
 
       {isOwner ? (
         <>
-          {/* Mobile Nav */}
-          <MobileNav username={username} isOwner={isOwner} />
-
-          {/* Top Navbar */}
-          <header 
-            className="sticky top-0 z-40 w-full bg-body-bg shrink-0 z-10"
+          <header
+            className="sticky top-0 z-40 shrink-0 px-2 sm:px-3"
             style={{ paddingTop: "env(safe-area-inset-top)" }}
           >
-            <div className="w-full flex h-12 items-center justify-between gap-4 px-6 z-10">
-              {/* Navigation Elements */}
+            <div className="mx-auto max-w-2xl flex h-12 items-center justify-between gap-4 px-6 bg-background/80 backdrop-blur-md rounded-b-[1.25rem] border-b border-x border-border/70 shadow-xs">
               <LayoutGroup>
                 <nav className="flex items-center gap-1 sm:gap-1.5">
-                  {/* Account Settings Avatar Button */}
                   <button
                     onClick={() => setIsOpenManual(true)}
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer mr-2 overflow-hidden"
@@ -181,7 +171,6 @@ export function AppShell({ children, user }: AppShellProps) {
                       <span>Analytics</span>
                     </span>
                   </Link>
-
                 </nav>
               </LayoutGroup>
 
@@ -201,11 +190,8 @@ export function AppShell({ children, user }: AppShellProps) {
             </div>
           </header>
 
-          {/* Main Layout Area - Floating curved sheet above navbar */}
-          <div className="w-full flex-1 overflow-hidden px-2 sm:px-3 pb-0 z-10">
-            <div className="bg-background/80 backdrop-blur-md rounded-t-[1.25rem] border-t border-x border-border/70 shadow-xs h-full flex flex-col overflow-hidden">
-              <div className="shell-scrollbar flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-8 pb-32">
-                <main className="min-w-0 flex-1">
+          <div className="shell-scrollbar flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-8 pb-32">
+            <main className="min-w-0">
                   {username &&
                   RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
                     <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
@@ -224,11 +210,8 @@ export function AppShell({ children, user }: AppShellProps) {
                   ) : null}
                   {children}
                 </main>
-              </div>
-            </div>
           </div>
 
-          {/* Account Settings Dialog Modal */}
           <SettingsDialog
             isOpen={isSettingsOpen}
             onClose={handleCloseSettings}
