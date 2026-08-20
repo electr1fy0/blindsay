@@ -7,6 +7,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  persistAccentTheme,
+  readAccentTheme,
+  type AccentTheme,
+} from "@/lib/accent-theme";
 
 export const accentThemes = [
   {
@@ -41,9 +46,7 @@ export const accentThemes = [
   },
 ] as const;
 
-export type AccentTheme = (typeof accentThemes)[number]["id"];
-
-const STORAGE_KEY = "blindsay-accent-theme";
+export type { AccentTheme };
 
 type AccentThemeContextValue = {
   accentTheme: AccentTheme;
@@ -52,26 +55,21 @@ type AccentThemeContextValue = {
 
 const AccentThemeContext = createContext<AccentThemeContextValue | null>(null);
 
-function isAccentTheme(value: string): value is AccentTheme {
-  return accentThemes.some((theme) => theme.id === value);
-}
-
 export function AccentThemeProvider({ children }: { children: ReactNode }) {
   const [accentTheme, setAccentThemeState] = useState<AccentTheme>(() => {
     if (typeof window === "undefined") {
       return "sky";
     }
 
-    const existing = document.documentElement.dataset.accentTheme;
-    if (existing && isAccentTheme(existing)) return existing;
-
-    const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-    return storedTheme && isAccentTheme(storedTheme) ? storedTheme : "sky";
+    return readAccentTheme(
+      document.documentElement.dataset.accentTheme,
+      window.localStorage,
+    );
   });
 
   useEffect(() => {
     document.documentElement.dataset.accentTheme = accentTheme;
-    window.localStorage.setItem(STORAGE_KEY, accentTheme);
+    persistAccentTheme(window.localStorage, accentTheme);
   }, [accentTheme]);
 
   const value = {
