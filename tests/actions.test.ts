@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, mock, test } from "bun:test";
+import { MAX_MESSAGE_LENGTH } from "../lib/action-validation";
 
 const getServerSession = mock(async () => null as any);
 const revalidatePath = mock((_path: string) => {});
@@ -36,6 +37,14 @@ const actions = await import("../app/actions");
 
 function signInAs(id = "owner-1") {
   getServerSession.mockImplementation(async () => ({ user: { id } }));
+}
+
+function validReplyParent(recipientId = "owner") {
+  return {
+    recipientId,
+    parentId: null,
+    deletedAt: null,
+  };
 }
 
 beforeEach(() => {
@@ -105,6 +114,20 @@ describe("createAnonymousMessage", () => {
   test("rejects whitespace-only content", async () => {
     const result = await actions.createAnonymousMessage("recipient", "alice", " \n\t ");
     expect(result).toEqual({ success: false, message: "Content cannot be empty" });
+  });
+
+  test("rejects content over the server-side maximum", async () => {
+    const result = await actions.createAnonymousMessage(
+      "recipient",
+      "alice",
+      "x".repeat(MAX_MESSAGE_LENGTH + 1),
+    );
+    expect(result).toEqual({
+      success: false,
+      message: `Content must be ${MAX_MESSAGE_LENGTH} characters or fewer.`,
+    });
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
+    expect(prisma.message.create).not.toHaveBeenCalled();
   });
 
   test("rejects blocked words case-insensitively", async () => {
@@ -213,6 +236,7 @@ describe("createReplyMessage", () => {
       success: false,
       message: "You must be signed in.",
     });
+    expect(prisma.message.findUnique).not.toHaveBeenCalled();
     expect(prisma.message.findFirst).not.toHaveBeenCalled();
   });
 
@@ -222,10 +246,91 @@ describe("createReplyMessage", () => {
       success: false,
       message: "You cannot reply to this message.",
     });
+    expect(prisma.message.findUnique).not.toHaveBeenCalled();
+  });
+
+  test("rejects invalid content before querying the parent", async () => {
+    signInAs("owner");
+    expect(await actions.createReplyMessage("owner", "alice", "parent", "  ")).toEqual({
+      success: false,
+      message: "Content cannot be empty",
+    });
+    expect(prisma.message.findUnique).not.toHaveBeenCalled();
+  });
+
+  test("rejects overlong content before querying the parent", async () => {
+    signInAs("owner");
+    expect(
+      await actions.createReplyMessage(
+        "owner",
+        "alice",
+        "parent",
+        "x".repeat(MAX_MESSAGE_LENGTH + 1),
+      ),
+    ).toEqual({
+      success: false,
+      message: `Content must be ${MAX_MESSAGE_LENGTH} characters or fewer.`,
+    });
+    expect(prisma.message.findUnique).not.toHaveBeenCalled();
+  });
+
+  test("rejects a missing parent", async () => {
+    signInAs("owner");
+    expect(await actions.createReplyMessage("owner", "alice", "missing", "reply")).toEqual({
+      success: false,
+      message: "You cannot reply to this message.",
+    });
+    expect(prisma.message.findFirst).not.toHaveBeenCalled();
+  });
+
+  test("rejects a parent owned by another recipient", async () => {
+    signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent("other"));
+    expect(await actions.createReplyMessage("owner", "alice", "parent", "reply")).toEqual({
+      success: false,
+      message: "You cannot reply to this message.",
+    });
+  });
+
+  test("rejects replying to an existing reply", async () => {
+    signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => ({
+      recipientId: "owner",
+      parentId: "root",
+      deletedAt: null,
+    }));
+    expect(await actions.createReplyMessage("owner", "alice", "reply-parent", "reply")).toEqual({
+      success: false,
+      message: "You cannot reply to this message.",
+    });
+  });
+
+  test("rejects replying to a soft-deleted parent", async () => {
+    signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => ({
+      recipientId: "owner",
+      parentId: null,
+      deletedAt: new Date(),
+    }));
+    expect(await actions.createReplyMessage("owner", "alice", "parent", "reply")).toEqual({
+      success: false,
+      message: "You cannot reply to this message.",
+    });
+  });
+
+  test("queries the parent with ownership and hierarchy fields", async () => {
+    signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent());
+    await actions.createReplyMessage("owner", "alice", "parent", "reply");
+    expect(prisma.message.findUnique).toHaveBeenCalledWith({
+      where: { id: "parent" },
+      select: { recipientId: true, parentId: true, deletedAt: true },
+    });
   });
 
   test("rejects a second live reply", async () => {
     signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent());
     prisma.message.findFirst.mockImplementation(async () => ({ id: "existing-reply" }));
 
     expect(await actions.createReplyMessage("owner", "alice", "parent", "reply")).toEqual({
@@ -237,6 +342,7 @@ describe("createReplyMessage", () => {
 
   test("checks only non-deleted replies for duplication", async () => {
     signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent());
     await actions.createReplyMessage("owner", "alice", "parent", "reply");
     expect(prisma.message.findFirst).toHaveBeenCalledWith({
       where: { recipientId: "owner", parentId: "parent", deletedAt: null },
@@ -244,16 +350,35 @@ describe("createReplyMessage", () => {
     });
   });
 
-  test("rejects whitespace-only reply content", async () => {
+  test("maps a database uniqueness race to the duplicate-reply response", async () => {
     signInAs("owner");
-    expect(await actions.createReplyMessage("owner", "alice", "parent", "  ")).toEqual({
-      success: false,
-      message: "Content cannot be empty",
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent());
+    prisma.message.create.mockImplementation(async () => {
+      throw { code: "P2002" };
     });
+
+    expect(await actions.createReplyMessage("owner", "alice", "parent", "reply")).toEqual({
+      success: false,
+      message: "Only one reply is allowed.",
+    });
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  test("rethrows unexpected database failures", async () => {
+    signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent());
+    prisma.message.create.mockImplementation(async () => {
+      throw new Error("database unavailable");
+    });
+
+    await expect(
+      actions.createReplyMessage("owner", "alice", "parent", "reply"),
+    ).rejects.toThrow("database unavailable");
   });
 
   test("creates a reply and returns it", async () => {
     signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => validReplyParent());
     prisma.message.create.mockImplementation(async (args?: any) => ({ id: "reply-1", ...args.data }));
 
     const result = await actions.createReplyMessage("owner", "alice", "parent", "thanks");
@@ -286,6 +411,21 @@ describe("updateReplyMessage", () => {
     expect(prisma.message.findUnique).not.toHaveBeenCalled();
   });
 
+  test("rejects overlong content before looking up the reply", async () => {
+    signInAs("owner");
+    expect(
+      await actions.updateReplyMessage(
+        "reply",
+        "alice",
+        "x".repeat(MAX_MESSAGE_LENGTH + 1),
+      ),
+    ).toEqual({
+      success: false,
+      message: `Content must be ${MAX_MESSAGE_LENGTH} characters or fewer.`,
+    });
+    expect(prisma.message.findUnique).not.toHaveBeenCalled();
+  });
+
   test("rejects a missing reply", async () => {
     signInAs("owner");
     expect(await actions.updateReplyMessage("missing", "alice", "edited")).toEqual({
@@ -296,7 +436,7 @@ describe("updateReplyMessage", () => {
 
   test("rejects editing a root message", async () => {
     signInAs("owner");
-    prisma.message.findUnique.mockImplementation(async () => ({ recipientId: "owner", parentId: null }));
+    prisma.message.findUnique.mockImplementation(async () => ({ recipientId: "owner", parentId: null, deletedAt: null }));
     expect(await actions.updateReplyMessage("root", "alice", "edited")).toEqual({
       success: false,
       message: "You cannot edit this reply.",
@@ -305,16 +445,30 @@ describe("updateReplyMessage", () => {
 
   test("rejects editing another user's reply", async () => {
     signInAs("owner");
-    prisma.message.findUnique.mockImplementation(async () => ({ recipientId: "someone-else", parentId: "parent" }));
+    prisma.message.findUnique.mockImplementation(async () => ({ recipientId: "someone-else", parentId: "parent", deletedAt: null }));
     expect(await actions.updateReplyMessage("reply", "alice", "edited")).toEqual({
       success: false,
       message: "You cannot edit this reply.",
     });
   });
 
+  test("rejects editing a soft-deleted reply", async () => {
+    signInAs("owner");
+    prisma.message.findUnique.mockImplementation(async () => ({
+      recipientId: "owner",
+      parentId: "parent",
+      deletedAt: new Date(),
+    }));
+    expect(await actions.updateReplyMessage("reply", "alice", "edited")).toEqual({
+      success: false,
+      message: "You cannot edit this reply.",
+    });
+    expect(prisma.message.update).not.toHaveBeenCalled();
+  });
+
   test("updates an owned reply", async () => {
     signInAs("owner");
-    prisma.message.findUnique.mockImplementation(async () => ({ recipientId: "owner", parentId: "parent" }));
+    prisma.message.findUnique.mockImplementation(async () => ({ recipientId: "owner", parentId: "parent", deletedAt: null }));
 
     expect(await actions.updateReplyMessage("reply", "alice", "edited")).toEqual({ success: true });
     expect(prisma.message.update).toHaveBeenCalledWith({
@@ -476,9 +630,9 @@ describe("updateHiddenWords", () => {
     });
   });
 
-  test("trims, lowercases, and removes blank entries", async () => {
+  test("trims, lowercases, removes blanks, and deduplicates", async () => {
     signInAs("owner");
-    expect(await actions.updateHiddenWords(["  Alpha ", "", "  ", "BETA"])).toEqual({ success: true });
+    expect(await actions.updateHiddenWords(["  Alpha ", "", "  ", "BETA", "ALPHA"])).toEqual({ success: true });
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: "owner" },
       data: { hiddenWords: ["alpha", "beta"] },
@@ -486,7 +640,7 @@ describe("updateHiddenWords", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/account");
   });
 
-  test("caps the stored list at 50 entries", async () => {
+  test("caps the stored list at 50 unique entries", async () => {
     signInAs("owner");
     const words = Array.from({ length: 70 }, (_, index) => ` WORD_${index} `);
     await actions.updateHiddenWords(words);
@@ -526,6 +680,20 @@ describe("pauseInbox", () => {
       await actions.pauseInbox(-100);
       const until = prisma.user.update.mock.calls[0][0].data.inboxPausedUntil as Date;
       expect(until.getTime()).toBe(1_700_000_000_000 + 60 * 60 * 1000);
+    } finally {
+      Date.now = originalNow;
+    }
+  });
+
+  test("normalizes NaN to the minimum pause instead of storing an invalid date", async () => {
+    signInAs("owner");
+    const originalNow = Date.now;
+    Date.now = () => 1_700_000_000_000;
+    try {
+      await actions.pauseInbox(Number.NaN);
+      const until = prisma.user.update.mock.calls[0][0].data.inboxPausedUntil as Date;
+      expect(until.getTime()).toBe(1_700_000_000_000 + 60 * 60 * 1000);
+      expect(Number.isNaN(until.getTime())).toBe(false);
     } finally {
       Date.now = originalNow;
     }
@@ -637,7 +805,7 @@ describe("checkForNewMessages", () => {
     expect(prisma.message.count).not.toHaveBeenCalled();
   });
 
-  test("returns false when no newer root messages exist", async () => {
+  test("returns false when no newer live root messages exist", async () => {
     signInAs("owner");
     prisma.message.count.mockImplementation(async () => 0);
     const since = new Date("2026-01-01T00:00:00.000Z");
@@ -648,11 +816,12 @@ describe("checkForNewMessages", () => {
         recipientId: "owner",
         createdAt: { gt: since },
         parentId: null,
+        deletedAt: null,
       },
     });
   });
 
-  test("returns true when at least one newer root message exists", async () => {
+  test("returns true when at least one newer live root message exists", async () => {
     signInAs("owner");
     prisma.message.count.mockImplementation(async () => 3);
     expect(await actions.checkForNewMessages(new Date(0))).toEqual({ hasNew: true });
