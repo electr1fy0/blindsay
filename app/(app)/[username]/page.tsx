@@ -6,6 +6,7 @@ import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CreateMessageForm } from "@/components/create-message-form";
 import { formatRelativeTime } from "@/lib/relative-time";
+import { parsePositivePage } from "@/lib/pagination";
 import { MessageCard } from "@/components/message-card";
 import { MarkMessagesSeen } from "@/components/new-badge";
 import { AutoRefresh } from "@/components/auto-refresh";
@@ -76,7 +77,7 @@ export default async function UserInboxPage({
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const filter =
     resolvedSearchParams?.filter === "published" ? "published" : "all";
-  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1));
+  const page = parsePositivePage(resolvedSearchParams?.page);
   const pageSize = 12;
   const skip = (page - 1) * pageSize;
   const session = await getServerSession(authOptions);
