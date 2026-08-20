@@ -7,6 +7,10 @@ import {
   normalizePauseHours,
   validateMessageContent,
 } from "@/lib/action-validation";
+import {
+  containsHiddenWords,
+  normalizeHiddenWords,
+} from "@/lib/hidden-words";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -18,18 +22,6 @@ const blockedWords = ["slur1", "slur2", "hateword"] as const;
 function containsBlockedWords(content: string) {
   const normalized = content.toLowerCase();
   return blockedWords.some((word) => normalized.includes(word));
-}
-
-function normalizeHiddenWords(words: string[]) {
-  return words
-    .map((word) => word.trim().toLowerCase())
-    .filter((word) => word.length > 0);
-}
-
-function containsHiddenWords(content: string, words: string[]) {
-  if (words.length === 0) return false;
-  const normalized = content.toLowerCase();
-  return words.some((word) => normalized.includes(word));
 }
 
 export type ActionResponse = {
