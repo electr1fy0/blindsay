@@ -3,6 +3,10 @@
 import { RESERVED_USERNAMES } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  normalizePauseHours,
+  validateMessageContent,
+} from "@/lib/action-validation";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -56,8 +60,9 @@ export async function createAnonymousMessage(
     };
   }
 
-  if (!content || content.trim() === "") {
-    return { success: false, message: "Content cannot be empty" };
+  const contentError = validateMessageContent(content);
+  if (contentError) {
+    return { success: false, message: contentError };
   }
 
   if (containsBlockedWords(content)) {
@@ -122,8 +127,9 @@ export async function createReplyMessage(
     return { success: false, message: "Only one reply is allowed." };
   }
 
-  if (!content || content.trim() === "") {
-    return { success: false, message: "Content cannot be empty" };
+  const contentError = validateMessageContent(content);
+  if (contentError) {
+    return { success: false, message: contentError };
   }
 
   const reply = await prisma.message.create({
@@ -146,8 +152,9 @@ export async function updateReplyMessage(
   const ownerId = await getAuthenticatedUserId();
   if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
-  if (!content || content.trim() === "") {
-    return { success: false, message: "Content cannot be empty" };
+  const contentError = validateMessageContent(content);
+  if (contentError) {
+    return { success: false, message: contentError };
   }
 
   const reply = await prisma.message.findUnique({
@@ -276,7 +283,7 @@ export async function pauseInbox(hours: number): Promise<ActionResponse> {
   const userId = await getAuthenticatedUserId();
   if (!userId) return UNAUTHORIZED_RESPONSE;
 
-  const safeHours = Math.max(1, Math.min(720, Math.floor(hours)));
+  const safeHours = normalizePauseHours(hours);
   const pauseUntil = new Date(Date.now() + safeHours * 60 * 60 * 1000);
 
   await prisma.user.update({
