@@ -5,17 +5,11 @@ import { updateHiddenWords } from "@/app/actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { parseHiddenWordsInput } from "@/lib/hidden-words";
 
 type HiddenWordsFormProps = {
   initialValue: string[];
 };
-
-function parseHiddenWords(raw: string) {
-  return raw
-    .split(/\n|,/)
-    .map((word) => word.trim())
-    .filter((word) => word.length > 0);
-}
 
 export function HiddenWordsForm({ initialValue }: HiddenWordsFormProps) {
   const [value, setValue] = useState(initialValue.join("\n"));
@@ -30,7 +24,7 @@ export function HiddenWordsForm({ initialValue }: HiddenWordsFormProps) {
         startTransition(async () => {
           try {
             setError(null);
-            const result = await updateHiddenWords(parseHiddenWords(value));
+            const result = await updateHiddenWords(parseHiddenWordsInput(value));
             if (result.success) {
               toast("Saved.");
             } else {
