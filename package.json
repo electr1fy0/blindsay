@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage",
     "postinstall": "prisma generate",
     "doctor": "npx react-doctor@latest"
   },
