@@ -11,6 +11,7 @@ import {
   containsHiddenWords,
   normalizeHiddenWords,
 } from "@/lib/hidden-words";
+import { isPrismaUniqueConstraintError } from "@/lib/prisma-errors";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -32,6 +33,16 @@ export type ActionResponse = {
 const UNAUTHORIZED_RESPONSE: ActionResponse = {
   success: false,
   message: "You must be signed in.",
+};
+
+const CANNOT_REPLY_RESPONSE: ActionResponse = {
+  success: false,
+  message: "You cannot reply to this message.",
+};
+
+const DUPLICATE_REPLY_RESPONSE: ActionResponse = {
+  success: false,
+  message: "Only one reply is allowed.",
 };
 
 async function getAuthenticatedUserId(): Promise<string | null> {
@@ -108,15 +119,7 @@ export async function createReplyMessage(
   if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
   if (ownerId !== recipientId) {
-    return { success: false, message: "You cannot reply to this message." };
-  }
-
-  const existingReply = await prisma.message.findFirst({
-    where: { recipientId, parentId, deletedAt: null },
-    select: { id: true },
-  });
-  if (existingReply) {
-    return { success: false, message: "Only one reply is allowed." };
+    return CANNOT_REPLY_RESPONSE;
   }
 
   const contentError = validateMessageContent(content);
@@ -124,16 +127,45 @@ export async function createReplyMessage(
     return { success: false, message: contentError };
   }
 
-  const reply = await prisma.message.create({
-    data: {
-      content,
-      recipientId,
-      parentId,
-    },
+  const parent = await prisma.message.findUnique({
+    where: { id: parentId },
+    select: { recipientId: true, parentId: true, deletedAt: true },
   });
 
-  revalidatePath(`/${recipientUsername}`);
-  return { success: true, reply };
+  if (
+    !parent ||
+    parent.recipientId !== recipientId ||
+    parent.parentId !== null ||
+    parent.deletedAt !== null
+  ) {
+    return CANNOT_REPLY_RESPONSE;
+  }
+
+  const existingReply = await prisma.message.findFirst({
+    where: { recipientId, parentId, deletedAt: null },
+    select: { id: true },
+  });
+  if (existingReply) {
+    return DUPLICATE_REPLY_RESPONSE;
+  }
+
+  try {
+    const reply = await prisma.message.create({
+      data: {
+        content,
+        recipientId,
+        parentId,
+      },
+    });
+
+    revalidatePath(`/${recipientUsername}`);
+    return { success: true, reply };
+  } catch (error) {
+    if (isPrismaUniqueConstraintError(error)) {
+      return DUPLICATE_REPLY_RESPONSE;
+    }
+    throw error;
+  }
 }
 
 export async function updateReplyMessage(
@@ -151,10 +183,10 @@ export async function updateReplyMessage(
 
   const reply = await prisma.message.findUnique({
     where: { id: replyId },
-    select: { recipientId: true, parentId: true },
+    select: { recipientId: true, parentId: true, deletedAt: true },
   });
 
-  if (!reply || !reply.parentId || reply.recipientId !== ownerId) {
+  if (!reply || !reply.parentId || reply.recipientId !== ownerId || reply.deletedAt) {
     return { success: false, message: "You cannot edit this reply." };
   }
 
@@ -347,6 +379,7 @@ export async function checkForNewMessages(since: Date) {
       recipientId: session.user.id,
       createdAt: { gt: since },
       parentId: null,
+      deletedAt: null,
     },
   });
 
