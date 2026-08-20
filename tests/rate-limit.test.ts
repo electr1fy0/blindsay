@@ -96,7 +96,7 @@ describe("rate limiting", () => {
     });
   });
 
-  test("reuses a limiter for repeated calls to the same action", async () => {
+  test("reuses a limiter for repeated calls to the same action and configuration", async () => {
     await checkRateLimit("cached-action", 5, "60 s");
     await checkRateLimit("cached-action", 5, "60 s");
 
@@ -105,6 +105,20 @@ describe("rate limiting", () => {
     );
     expect(cachedConstructions).toHaveLength(1);
     expect(limit).toHaveBeenCalledTimes(2);
+  });
+
+  test("does not reuse a limiter when the same action changes configuration", async () => {
+    await checkRateLimit("mutable-action", 5, "60 s");
+    await checkRateLimit("mutable-action", 10, "5 m");
+
+    const constructions = limiterConstructor.mock.calls.filter(
+      ([options]) => options.prefix === "ratelimit:mutable-action",
+    );
+    expect(constructions).toHaveLength(2);
+    expect(constructions.map(([options]) => options.limiter)).toEqual([
+      { tokens: 5, window: "60 s" },
+      { tokens: 10, window: "5 m" },
+    ]);
   });
 
   test("creates independent limiters for different action names", async () => {
