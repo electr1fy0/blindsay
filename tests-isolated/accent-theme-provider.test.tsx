@@ -55,7 +55,6 @@ beforeEach(() => {
   contextValue = null;
   dataset = {};
   effects.length = 0;
-  createContext.mockClear();
   useContext.mockClear();
   useState.mockClear();
   useEffect.mockClear();
@@ -89,7 +88,8 @@ describe("accent theme catalog", () => {
 });
 
 describe("AccentThemeProvider initialization", () => {
-  test("creates context with a null default", () => {
+  test("creates context with a null default exactly once at module initialization", () => {
+    expect(createContext).toHaveBeenCalledTimes(1);
     expect(createContext).toHaveBeenCalledWith(null);
   });
 
