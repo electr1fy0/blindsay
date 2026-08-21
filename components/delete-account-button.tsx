@@ -59,12 +59,24 @@ export function DeleteAccountButton({
             disabled={isPending}
             onClick={() => {
               startTransition(async () => {
-                const result = await deleteAccount();
-                if (result.success) {
-                  setOpen(false);
-                  await signOut({ callbackUrl: "/" });
-                } else {
+                let result;
+                try {
+                  result = await deleteAccount();
+                } catch {
+                  toast.error("Failed to delete account.");
+                  return;
+                }
+
+                if (!result.success) {
                   toast.error(result.message || "Failed to delete account.");
+                  return;
+                }
+
+                setOpen(false);
+                try {
+                  await signOut({ callbackUrl: "/" });
+                } catch {
+                  toast.error("Account deleted, but sign out failed. Please refresh.");
                 }
               });
             }}
