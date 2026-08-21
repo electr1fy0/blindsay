@@ -159,7 +159,8 @@ describe("landing GitHub star lookup", () => {
       json: async () => ({ stargazers_count: 321 }),
     }) as any);
     const tree = await LandingPage();
-    expect(textContent(tree)).toContain("321");
+    const badge = findOne(tree, (node) => node.type === HoverBorderGradientMock);
+    expect(textContent(badge)).toContain("321");
   });
 
   test("hides star count for zero", async () => {
@@ -168,7 +169,8 @@ describe("landing GitHub star lookup", () => {
       json: async () => ({ stargazers_count: 0 }),
     }) as any);
     const tree = await LandingPage();
-    expect(textContent(tree)).not.toContain("0");
+    const badge = findOne(tree, (node) => node.type === HoverBorderGradientMock);
+    expect(textContent(badge)).toBe("GitHub");
   });
 
   test("does not parse response body when GitHub returns non-ok", async () => {
@@ -200,11 +202,15 @@ describe("landing GitHub star lookup", () => {
 });
 
 describe("landing call-to-action wiring", () => {
-  test("anonymous landing renders sign-in CTAs", async () => {
+  test("anonymous landing wires the floating CTA to sign in", async () => {
     const tree = await LandingPage();
-    const authButtons = findAll(tree, (node) => node.type === AuthButtonsMock);
-    expect(authButtons.length).toBeGreaterThanOrEqual(2);
-    expect(authButtons.some((node) => node.props.signInLabel === "Start inbox")).toBe(true);
+    const nav = findOne(tree, (node) => node.type === FloatingNavMock);
+    expect(nav.props.cta.type).toBe(AuthButtonsMock);
+    expect(nav.props.cta.props.user).toBeNull();
+    expect(nav.props.cta.props.signInLabel).toBe("Start inbox");
+
+    const inlineAuthButtons = findAll(tree, (node) => node.type === AuthButtonsMock);
+    expect(inlineAuthButtons.length).toBeGreaterThan(0);
   });
 
   test("floating navigation receives How it works and FAQ anchors", async () => {
