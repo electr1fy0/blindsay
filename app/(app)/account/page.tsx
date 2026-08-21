@@ -14,6 +14,8 @@ import { HiddenWordsForm } from "@/components/hidden-words-form";
 import { PauseInboxForm } from "@/components/pause-inbox-form";
 import { DeleteAccountButton } from "@/components/delete-account-button";
 import { SharePanel } from "@/components/share-panel";
+import { fetchGitHubStarCount, formatGitHubStarCount } from "@/lib/github-stars";
+import { getProfileUrl } from "@/lib/site-url";
 import Link from "next/link";
 
 export default async function AccountPage() {
@@ -41,25 +43,8 @@ export default async function AccountPage() {
 
   const now = new Date();
   const isPaused = Boolean(user.inboxPausedUntil && user.inboxPausedUntil > now);
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000");
-  const shareUrl = `${baseUrl}/${user.username}`;
-
-  const ghRes = await fetch("https://api.github.com/repos/electr1fy0/blindsay", {
-    next: { revalidate: 3600 },
-    headers: { Accept: "application/vnd.github+json" },
-  }).catch(() => null);
-  const ghData = ghRes?.ok ? await ghRes.json() : null;
-  const starCount: number | null = ghData?.stargazers_count ?? null;
-  const formattedStars =
-    starCount === null
-      ? null
-      : starCount >= 1000
-        ? `${(starCount / 1000).toFixed(1)}k`
-        : String(starCount);
+  const shareUrl = user.username ? getProfileUrl(user.username) : null;
+  const formattedStars = formatGitHubStarCount(await fetchGitHubStarCount());
 
   return (
     <div className="page-stack mx-auto w-full max-w-3xl">
@@ -87,7 +72,7 @@ export default async function AccountPage() {
             </div>
           </div>
 
-          {user.username ? (
+          {shareUrl ? (
             <div className="panel-card-muted overflow-hidden">
               <SharePanel
                 url={shareUrl}
