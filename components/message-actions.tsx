@@ -77,16 +77,24 @@ export function DeleteMessageButton({
             disabled={isPending || done}
             onClick={() => {
               startTransition(async () => {
-                const result = await deleteMessage(messageId, recipientUsername);
-                if (result.success) {
-                  setDone(true);
-                  setOpen(false);
-                  onSuccess?.();
-                  router.refresh();
-                  toast("Deleted.");
-                } else {
-                  toast.error(result.message || "Failed to delete message.");
+                let result;
+                try {
+                  result = await deleteMessage(messageId, recipientUsername);
+                } catch {
+                  toast.error("Failed to delete message.");
+                  return;
                 }
+
+                if (!result.success) {
+                  toast.error(result.message || "Failed to delete message.");
+                  return;
+                }
+
+                setDone(true);
+                setOpen(false);
+                onSuccess?.();
+                router.refresh();
+                toast("Deleted.");
               });
             }}
           >
