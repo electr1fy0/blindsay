@@ -5,6 +5,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { RESERVED_USERNAMES } from "@/lib/constants";
+import {
+  getNextShellTheme,
+  getSettingsClosePath,
+  getSettingsState,
+  getShellThemeLabel,
+  getViewedUsername,
+  isOwnerShellView,
+  normalizeShellTheme,
+  resolveShellUsername,
+  type ShellTheme,
+} from "@/lib/app-shell-state";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Notification03Icon,
@@ -27,19 +38,7 @@ type AppShellProps = {
   } | null;
 };
 
-const nextTheme: Record<string, string> = {
-  light: "dark",
-  dark: "system",
-  system: "light",
-};
-
-const labels: Record<string, string> = {
-  light: "Light theme",
-  dark: "Dark theme",
-  system: "System theme",
-};
-
-const icons: Record<string, typeof Sun03Icon> = {
+const icons: Record<ShellTheme, typeof Sun03Icon> = {
   light: Moon02Icon,
   dark: LaptopIcon,
   system: Sun03Icon,
@@ -51,42 +50,26 @@ export function AppShell({ children, user }: AppShellProps) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
-  const viewedUsername =
-    typeof params?.username === "string" ? params.username : undefined;
-
-  const isOwner =
-    (!viewedUsername && !!user?.username) ||
-    (!!viewedUsername &&
-      !!user?.username &&
-      viewedUsername.toLowerCase() === user.username.toLowerCase());
-
-  const username = viewedUsername ?? user?.username;
+  const viewedUsername = getViewedUsername(params);
+  const isOwner = isOwnerShellView(viewedUsername, user?.username);
+  const username = resolveShellUsername(viewedUsername, user?.username);
+  const shellTheme = normalizeShellTheme(theme);
 
   const isActive = (href: string) => pathname === href;
 
-  // Settings Dialog control state
   const [isOpenManual, setIsOpenManual] = useState(false);
-
-  // Deep linking logic for /account or /help pages opening settings automatically
-  const isSettingsOpen =
-    isOpenManual || pathname === "/account" || pathname === "/help";
-  const settingsTab =
-    pathname === "/help"
-      ? "support"
-      : pathname === "/account"
-        ? "account"
-        : "appearance";
+  const settings = getSettingsState(pathname, isOpenManual);
 
   const handleCloseSettings = () => {
     setIsOpenManual(false);
-    if (pathname === "/account" || pathname === "/help") {
-      router.push(`/${username || ""}`);
+    const closePath = getSettingsClosePath(pathname, username);
+    if (closePath) {
+      router.push(closePath);
     }
   };
 
   return (
     <div className="h-dvh overflow-hidden flex flex-col bg-body-bg relative">
-
       {isOwner ? (
         <>
           <header
@@ -176,13 +159,13 @@ export function AppShell({ children, user }: AppShellProps) {
 
               <button
                 type="button"
-                onClick={() => setTheme(nextTheme[theme ?? "system"])}
+                onClick={() => setTheme(getNextShellTheme(theme))}
                 className="ml-auto inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer"
-                title={labels[theme ?? "system"]}
-                aria-label={labels[theme ?? "system"]}
+                title={getShellThemeLabel(theme)}
+                aria-label={getShellThemeLabel(theme)}
               >
                 <HugeiconsIcon
-                  icon={icons[theme ?? "system"]}
+                  icon={icons[shellTheme]}
                   size={17}
                   strokeWidth={1.7}
                 />
@@ -192,30 +175,30 @@ export function AppShell({ children, user }: AppShellProps) {
 
           <div className="shell-scrollbar flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-8 pb-32">
             <main className="min-w-0">
-                  {username &&
-                  RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
-                    <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
-                      <div className="flex items-center gap-3">
-                        <HugeiconsIcon
-                          icon={Notification03Icon}
-                          size={20}
-                          className="shrink-0"
-                        />
-                        <p className="text-sm font-medium">
-                          Your username is reserved. Please trigger Settings to
-                          change it.
-                        </p>
-                      </div>
-                    </div>
-                  ) : null}
-                  {children}
-                </main>
+              {username &&
+              RESERVED_USERNAMES.includes(username.toLowerCase()) ? (
+                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
+                  <div className="flex items-center gap-3">
+                    <HugeiconsIcon
+                      icon={Notification03Icon}
+                      size={20}
+                      className="shrink-0"
+                    />
+                    <p className="text-sm font-medium">
+                      Your username is reserved. Please trigger Settings to
+                      change it.
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+              {children}
+            </main>
           </div>
 
           <SettingsDialog
-            isOpen={isSettingsOpen}
+            isOpen={settings.isOpen}
             onClose={handleCloseSettings}
-            initialTab={settingsTab}
+            initialTab={settings.tab}
           />
         </>
       ) : (
