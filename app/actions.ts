@@ -3,6 +3,15 @@
 import { RESERVED_USERNAMES } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  normalizePauseHours,
+  validateMessageContent,
+} from "@/lib/action-validation";
+import {
+  containsHiddenWords,
+  normalizeHiddenWords,
+} from "@/lib/hidden-words";
+import { isPrismaUniqueConstraintError } from "@/lib/prisma-errors";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -16,18 +25,6 @@ function containsBlockedWords(content: string) {
   return blockedWords.some((word) => normalized.includes(word));
 }
 
-function normalizeHiddenWords(words: string[]) {
-  return words
-    .map((word) => word.trim().toLowerCase())
-    .filter((word) => word.length > 0);
-}
-
-function containsHiddenWords(content: string, words: string[]) {
-  if (words.length === 0) return false;
-  const normalized = content.toLowerCase();
-  return words.some((word) => normalized.includes(word));
-}
-
 export type ActionResponse = {
   success: boolean;
   message?: string;
@@ -36,6 +33,16 @@ export type ActionResponse = {
 const UNAUTHORIZED_RESPONSE: ActionResponse = {
   success: false,
   message: "You must be signed in.",
+};
+
+const CANNOT_REPLY_RESPONSE: ActionResponse = {
+  success: false,
+  message: "You cannot reply to this message.",
+};
+
+const DUPLICATE_REPLY_RESPONSE: ActionResponse = {
+  success: false,
+  message: "Only one reply is allowed.",
 };
 
 async function getAuthenticatedUserId(): Promise<string | null> {
@@ -56,8 +63,9 @@ export async function createAnonymousMessage(
     };
   }
 
-  if (!content || content.trim() === "") {
-    return { success: false, message: "Content cannot be empty" };
+  const contentError = validateMessageContent(content);
+  if (contentError) {
+    return { success: false, message: contentError };
   }
 
   if (containsBlockedWords(content)) {
@@ -111,7 +119,26 @@ export async function createReplyMessage(
   if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
   if (ownerId !== recipientId) {
-    return { success: false, message: "You cannot reply to this message." };
+    return CANNOT_REPLY_RESPONSE;
+  }
+
+  const contentError = validateMessageContent(content);
+  if (contentError) {
+    return { success: false, message: contentError };
+  }
+
+  const parent = await prisma.message.findUnique({
+    where: { id: parentId },
+    select: { recipientId: true, parentId: true, deletedAt: true },
+  });
+
+  if (
+    !parent ||
+    parent.recipientId !== recipientId ||
+    parent.parentId !== null ||
+    parent.deletedAt !== null
+  ) {
+    return CANNOT_REPLY_RESPONSE;
   }
 
   const existingReply = await prisma.message.findFirst({
@@ -119,23 +146,26 @@ export async function createReplyMessage(
     select: { id: true },
   });
   if (existingReply) {
-    return { success: false, message: "Only one reply is allowed." };
+    return DUPLICATE_REPLY_RESPONSE;
   }
 
-  if (!content || content.trim() === "") {
-    return { success: false, message: "Content cannot be empty" };
+  try {
+    const reply = await prisma.message.create({
+      data: {
+        content,
+        recipientId,
+        parentId,
+      },
+    });
+
+    revalidatePath(`/${recipientUsername}`);
+    return { success: true, reply };
+  } catch (error) {
+    if (isPrismaUniqueConstraintError(error)) {
+      return DUPLICATE_REPLY_RESPONSE;
+    }
+    throw error;
   }
-
-  const reply = await prisma.message.create({
-    data: {
-      content,
-      recipientId,
-      parentId,
-    },
-  });
-
-  revalidatePath(`/${recipientUsername}`);
-  return { success: true, reply };
 }
 
 export async function updateReplyMessage(
@@ -146,16 +176,17 @@ export async function updateReplyMessage(
   const ownerId = await getAuthenticatedUserId();
   if (!ownerId) return UNAUTHORIZED_RESPONSE;
 
-  if (!content || content.trim() === "") {
-    return { success: false, message: "Content cannot be empty" };
+  const contentError = validateMessageContent(content);
+  if (contentError) {
+    return { success: false, message: contentError };
   }
 
   const reply = await prisma.message.findUnique({
     where: { id: replyId },
-    select: { recipientId: true, parentId: true },
+    select: { recipientId: true, parentId: true, deletedAt: true },
   });
 
-  if (!reply || !reply.parentId || reply.recipientId !== ownerId) {
+  if (!reply || !reply.parentId || reply.recipientId !== ownerId || reply.deletedAt) {
     return { success: false, message: "You cannot edit this reply." };
   }
 
@@ -276,7 +307,7 @@ export async function pauseInbox(hours: number): Promise<ActionResponse> {
   const userId = await getAuthenticatedUserId();
   if (!userId) return UNAUTHORIZED_RESPONSE;
 
-  const safeHours = Math.max(1, Math.min(720, Math.floor(hours)));
+  const safeHours = normalizePauseHours(hours);
   const pauseUntil = new Date(Date.now() + safeHours * 60 * 60 * 1000);
 
   await prisma.user.update({
@@ -348,6 +379,7 @@ export async function checkForNewMessages(since: Date) {
       recipientId: session.user.id,
       createdAt: { gt: since },
       parentId: null,
+      deletedAt: null,
     },
   });
 

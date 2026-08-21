@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import {
+  persistDraftValue,
+  readDraft,
+  subscribeDraftPersistence,
+} from "@/lib/draft-persistence";
 
 const STORAGE_PREFIX = "blindsay:draft:";
 
@@ -12,40 +17,19 @@ export function usePersistedDraft(storageKey: string, initialValue = "") {
   latestValue.current = value;
 
   useEffect(() => {
-    try {
-      const storedValue = window.localStorage.getItem(key);
-      if (storedValue !== null) {
-        setValue(storedValue);
-      }
-    } catch {
-    } finally {
-      setHydrated(true);
+    const storedValue = readDraft(window.localStorage, key);
+    if (storedValue !== null) {
+      setValue(storedValue);
     }
+    setHydrated(true);
   }, [key]);
 
   const persist = useCallback(() => {
-    try {
-      if (latestValue.current.trim()) {
-        window.localStorage.setItem(key, latestValue.current);
-      } else {
-        window.localStorage.removeItem(key);
-      }
-    } catch {
-    }
+    persistDraftValue(window.localStorage, key, latestValue.current);
   }, [key]);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", persist);
-    window.addEventListener("pagehide", persist);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) persist();
-    });
-    const interval = setInterval(persist, 30000);
-    return () => {
-      window.removeEventListener("beforeunload", persist);
-      window.removeEventListener("pagehide", persist);
-      clearInterval(interval);
-    };
+    return subscribeDraftPersistence(window, document, persist);
   }, [persist]);
 
   const clearDraft = () => {

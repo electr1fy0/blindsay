@@ -13,15 +13,16 @@ const redis = kvUrl && kvToken
 const ratelimits = new Map<string, Ratelimit>();
 
 function getRatelimiter(name: string, tokens: number, window: Duration) {
-  if (!ratelimits.has(name)) {
-    ratelimits.set(name, new Ratelimit({
+  const cacheKey = `${name}:${tokens}:${window}`;
+  if (!ratelimits.has(cacheKey)) {
+    ratelimits.set(cacheKey, new Ratelimit({
       redis: redis!,
       limiter: Ratelimit.slidingWindow(tokens, window),
       analytics: true,
       prefix: `ratelimit:${name}`,
     }));
   }
-  return ratelimits.get(name)!;
+  return ratelimits.get(cacheKey)!;
 }
 
 async function getClientIp(): Promise<string> {

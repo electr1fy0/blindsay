@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/blindsay
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run core tests with coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(tests/*.test.ts tests/*.test.tsx)
+          bun test "${files[@]}" --coverage
+
+      - name: Run isolated page and component suites
+        shell: bash
+        run: |
+          set -u -o pipefail
+          shopt -s nullglob
+          files=(tests-isolated/*.test.ts tests-isolated/*.test.tsx)
+          status=0
+          for file in "${files[@]}"; do
+            echo "::group::$file"
+            if ! bun test --preload ./tests-isolated/jsx-runtime-preload.ts "$file"; then
+              status=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$status"

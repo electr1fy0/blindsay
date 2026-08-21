@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { checkForNewMessages } from "@/app/actions";
+import { runAutoRefreshCheck } from "@/lib/auto-refresh";
 
 type AutoRefreshProps = {
   intervalMs?: number;
@@ -11,6 +12,7 @@ type AutoRefreshProps = {
 export function AutoRefresh({ intervalMs = 60000 }: AutoRefreshProps) {
   const router = useRouter();
   const lastCheck = useRef<number | null>(null);
+  const checking = useRef(false);
 
   useEffect(() => {
     lastCheck.current = Date.now();
@@ -18,11 +20,17 @@ export function AutoRefresh({ intervalMs = 60000 }: AutoRefreshProps) {
 
   useEffect(() => {
     const check = async () => {
-      if (document.hidden || lastCheck.current === null) return;
-      const { hasNew } = await checkForNewMessages(new Date(lastCheck.current));
-      if (hasNew) {
-        lastCheck.current = Date.now();
-        router.refresh();
+      if (checking.current) return;
+      checking.current = true;
+      try {
+        lastCheck.current = await runAutoRefreshCheck({
+          hidden: document.hidden,
+          lastCheck: lastCheck.current,
+          checkForNewMessages,
+          refresh: router.refresh,
+        });
+      } finally {
+        checking.current = false;
       }
     };
 

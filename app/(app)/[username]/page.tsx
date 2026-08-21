@@ -6,6 +6,8 @@ import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { CreateMessageForm } from "@/components/create-message-form";
 import { formatRelativeTime } from "@/lib/relative-time";
+import { parsePositivePage } from "@/lib/pagination";
+import { getBaseUrl, getProfileUrl } from "@/lib/site-url";
 import { MessageCard } from "@/components/message-card";
 import { MarkMessagesSeen } from "@/components/new-badge";
 import { AutoRefresh } from "@/components/auto-refresh";
@@ -17,14 +19,7 @@ type PageProps = {
   searchParams?: Promise<{ page?: string; filter?: string }>;
 };
 
-function getBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000")
-  );
-}
+const hasLiveReply = { replies: { some: { deletedAt: null } } } as const;
 
 export async function generateMetadata({
   params,
@@ -34,7 +29,7 @@ export async function generateMetadata({
   if (!username) return {};
 
   const baseUrl = getBaseUrl();
-  const pageUrl = `${baseUrl}/${username}`;
+  const pageUrl = getProfileUrl(username);
   const ogImageUrl = `${baseUrl}/api/og/${username}`;
 
   return {
@@ -76,7 +71,7 @@ export default async function UserInboxPage({
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const filter =
     resolvedSearchParams?.filter === "published" ? "published" : "all";
-  const page = Math.max(1, Number(resolvedSearchParams?.page ?? 1));
+  const page = parsePositivePage(resolvedSearchParams?.page);
   const pageSize = 12;
   const skip = (page - 1) * pageSize;
   const session = await getServerSession(authOptions);
@@ -110,9 +105,9 @@ export default async function UserInboxPage({
     deletedAt: null,
     ...(isOwner
       ? filter === "published"
-        ? { replies: { some: {} } }
+        ? hasLiveReply
         : {}
-      : { replies: { some: {} } }),
+      : hasLiveReply),
   };
   const totalWhere = {
     recipientId: profile.id,
@@ -120,7 +115,7 @@ export default async function UserInboxPage({
     deletedAt: null,
     ...(isOwner
       ? filter === "published"
-        ? { replies: { some: {} } }
+        ? hasLiveReply
         : {}
       : {}),
   };
@@ -134,7 +129,7 @@ export default async function UserInboxPage({
             recipientId: profile.id,
             parentId: null,
             deletedAt: null,
-            replies: { some: {} },
+            ...hasLiveReply,
           },
         })
       : Promise.resolve(0),
@@ -153,8 +148,7 @@ export default async function UserInboxPage({
     }),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const baseUrl = getBaseUrl();
-  const shareUrl = `${baseUrl}/${profile.username ?? username}`;
+  const shareUrl = getProfileUrl(profile.username ?? username);
 
   if (!isOwner) {
     const publishedMessages = messages.filter((m) => m.replies[0] != null);

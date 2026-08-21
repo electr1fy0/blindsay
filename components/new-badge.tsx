@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import {
+  mergeSeenMessageIds,
+  parseSeenMessageIds,
+} from "@/lib/seen-messages";
 
 const STORAGE_KEY = "blindsay:seen";
 
@@ -10,24 +14,24 @@ function getSeenIds(): Set<string> {
   if (cachedSeenIds) return cachedSeenIds;
   if (typeof window === "undefined") return new Set();
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return new Set();
-    cachedSeenIds = new Set(JSON.parse(raw));
+    cachedSeenIds = new Set(
+      parseSeenMessageIds(localStorage.getItem(STORAGE_KEY)),
+    );
     return cachedSeenIds;
   } catch {
-    return new Set();
+    cachedSeenIds = new Set();
+    return cachedSeenIds;
   }
 }
 
 function markSeen(ids: string[]) {
   if (typeof window === "undefined") return;
-  cachedSeenIds = null;
-  const seen = getSeenIds();
-  for (const id of ids) seen.add(id);
+
+  const merged = mergeSeenMessageIds(getSeenIds(), ids);
+  cachedSeenIds = new Set(merged);
+
   try {
-    const arr = [...seen];
-    if (arr.length > 500) arr.splice(0, arr.length - 500);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
   } catch {}
 }
 

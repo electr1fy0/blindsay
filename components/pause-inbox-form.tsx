@@ -36,11 +36,15 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
         onSubmit={(event) => {
           event.preventDefault();
           startClearing(async () => {
-            const result = await clearInboxPause();
-            if (result.success) {
-              toast("Inbox resumed.");
-            } else {
-              toast.error(result.message || "Failed to resume inbox.");
+            try {
+              const result = await clearInboxPause();
+              if (result.success) {
+                toast("Inbox resumed.");
+              } else {
+                toast.error(result.message || "Failed to resume inbox.");
+              }
+            } catch {
+              toast.error("Failed to resume inbox.");
             }
           });
         }}
@@ -58,11 +62,15 @@ export function PauseInboxForm({ isPaused }: PauseInboxFormProps) {
         onSubmit={(event) => {
           event.preventDefault();
           startTransition(async () => {
-            const result = await pauseInbox(Number(value));
-            if (result.success) {
-              toast("Inbox paused.");
-            } else {
-              toast.error(result.message || "Failed to pause inbox.");
+            try {
+              const result = await pauseInbox(Number(value));
+              if (result.success) {
+                toast("Inbox paused.");
+              } else {
+                toast.error(result.message || "Failed to pause inbox.");
+              }
+            } catch {
+              toast.error("Failed to pause inbox.");
             }
           });
         }}

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ReactQRCode } from "@lglab/react-qr-code";
 import { useAccentTheme } from "@/components/accent-theme-provider";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Link01Icon, QrCode01Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
 
+import { copyTextToClipboard } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 
 type SharePanelProps = {
@@ -17,7 +19,14 @@ type SharePanelProps = {
 
 export function SharePanel({ url, className, orientation = "horizontal" }: SharePanelProps) {
   const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { accentTheme } = useAccentTheme();
+
+  useEffect(() => {
+    return () => {
+      if (resetTimer.current !== null) clearTimeout(resetTimer.current);
+    };
+  }, []);
 
   const getQrColor = () => {
     switch (accentTheme) {
@@ -53,10 +62,18 @@ export function SharePanel({ url, className, orientation = "horizontal" }: Share
             <Button
               type="button"
               size="sm"
-              onClick={() => {
-                navigator.clipboard.writeText(url);
+              onClick={async () => {
+                if (!(await copyTextToClipboard(url))) {
+                  toast.error("Unable to copy link.");
+                  return;
+                }
+
                 setCopied(true);
-                setTimeout(() => setCopied(false), 1200);
+                if (resetTimer.current !== null) clearTimeout(resetTimer.current);
+                resetTimer.current = setTimeout(() => {
+                  resetTimer.current = null;
+                  setCopied(false);
+                }, 1200);
               }}
             >
               <HugeiconsIcon
