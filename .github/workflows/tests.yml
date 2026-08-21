@@ -28,7 +28,12 @@ jobs:
         run: bun install
 
       - name: Run core tests with coverage
-        run: bun test tests --coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(tests/*.test.ts tests/*.test.tsx)
+          bun test "${files[@]}" --coverage
 
       - name: Run isolated page and component suites
         shell: bash
