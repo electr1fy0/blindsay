@@ -3,15 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { SharePanel } from "@/components/share-panel";
-
-function getBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000")
-  );
-}
+import { getProfileUrl } from "@/lib/site-url";
 
 export default async function SharePage() {
   const session = await getServerSession(authOptions);
@@ -28,8 +20,7 @@ export default async function SharePage() {
     redirect("/");
   }
 
-  const baseUrl = getBaseUrl();
-  const shareUrl = `${baseUrl}/${user.username}`;
+  const shareUrl = getProfileUrl(user.username);
 
   return (
     <div className="page-stack mx-auto w-full max-w-2xl">
