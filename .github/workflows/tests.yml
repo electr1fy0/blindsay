@@ -38,11 +38,15 @@ jobs:
       - name: Run isolated page and component suites
         shell: bash
         run: |
-          set -euo pipefail
+          set -u -o pipefail
           shopt -s nullglob
           files=(tests-isolated/*.test.ts tests-isolated/*.test.tsx)
+          status=0
           for file in "${files[@]}"; do
             echo "::group::$file"
-            bun test "$file"
+            if ! bun test --preload ./tests-isolated/jsx-runtime-preload.ts "$file"; then
+              status=1
+            fi
             echo "::endgroup::"
           done
+          exit "$status"
