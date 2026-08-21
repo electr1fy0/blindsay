@@ -48,18 +48,22 @@ export function MessageCard({
     if (!currentReply) return;
     if (!editValue.trim()) return;
     startTransition(async () => {
-      const res = await updateReplyMessage(
-        currentReply.id,
-        recipientUsername,
-        editValue,
-      );
-      if (res.success) {
-        setIsEditing(false);
-        setCurrentReply({ ...currentReply, content: editValue });
-        toast.success("Updated.");
-        router.refresh();
-      } else {
-        toast.error(res.message ?? "Failed to save reply.");
+      try {
+        const res = await updateReplyMessage(
+          currentReply.id,
+          recipientUsername,
+          editValue,
+        );
+        if (res.success) {
+          setIsEditing(false);
+          setCurrentReply({ ...currentReply, content: editValue });
+          toast.success("Updated.");
+          router.refresh();
+        } else {
+          toast.error(res.message ?? "Failed to save reply.");
+        }
+      } catch {
+        toast.error("Failed to save reply.");
       }
     });
   };
@@ -74,7 +78,6 @@ export function MessageCard({
       }}
       className="relative border-b border-border/30 pb-6 mb-3 last:border-b-0 last:pb-0 last:mb-0 flex flex-col gap-4 w-full"
     >
-      {/* Incoming Anonymous Bubble */}
       <div className="flex flex-col gap-1.5 max-w-[88%] mr-auto">
         <div className="glass-bubble-incoming rounded-t-[1.15rem] rounded-r-[1.15rem] rounded-bl-[0.25rem] px-4.5 py-3">
           <p className="text-[13.5px] leading-relaxed font-normal tracking-wide text-foreground/90 whitespace-pre-wrap break-words">
@@ -97,7 +100,6 @@ export function MessageCard({
         </div>
       </div>
 
-      {/* Outbound Reply Bubble / Reply Form */}
       <AnimatePresence mode="popLayout" initial={false}>
         {currentReply ? (
           <motion.div
@@ -115,7 +117,6 @@ export function MessageCard({
             <div
               className="glass-bubble-reply rounded-t-[1.15rem] rounded-l-[1.15rem] rounded-br-[0.25rem] px-4.5 py-3 text-left"
             >
-              {/* Inline reply edit editor or read-only text */}
               {isEditing ? (
                 <div className="space-y-2 animate-in fade-in-20 duration-150 sm:min-w-[240px] min-w-0">
                   <Textarea
